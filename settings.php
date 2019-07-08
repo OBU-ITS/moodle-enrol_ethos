@@ -80,10 +80,12 @@ if ($ADMIN->fulltree) {
         $settingsethos->add(new admin_setting_configselect('enrol_ethos/catselect', get_string('catselect', 'enrol_ethos'),
                 get_string('catselecthelp', 'enrol_ethos'), 1, $displaylist));
         
-
-        $settingsethos->add(new admin_setting_configfile('enrol_ethos/alumnicourseidnumber', get_string('alumnicourseidnumber', 'enrol_ethos'),
+        $settingsethos->add(new admin_setting_configtext('enrol_ethos/alumnicourseidnumber', get_string('alumnicourseidnumber', 'enrol_ethos'),
                 get_string('alumnicourseidnumberhelp', 'enrol_ethos'), ''));
-    
+
+        $settingsethos->add(new admin_setting_configtext('enrol_ethos/disabilitycourseidnumber', get_string('disabilitycourseidnumber', 'enrol_ethos'),
+                get_string('disabilitycourseidnumberhelp', 'enrol_ethos'), ''));
+
 }
 
 

@@ -52,6 +52,11 @@ class course_service {
 
         $course = $this->getCourseById($data['idnumber']);
 
+        //Hack to migrate old course IDs
+        if (!$course && $data['oldidnumber'] && ($data['oldidnumber'] !== $data['idnumber'])) {
+            $course = $this->getCourseById($data['oldidnumber']);
+        }
+
         if (!$course) {
             
             $course = new course(
@@ -67,6 +72,7 @@ class course_service {
 
         } else {
 
+            $course->idnumber = $data['idnumber'];
             $course->shortname = $data['shortname'];
             $course->name = $data['name'];
             $course->category = $parentCategory;
@@ -74,7 +80,6 @@ class course_service {
             $this->courseRepository->update($course);
 
             return $course;
-
         }
     }
 }

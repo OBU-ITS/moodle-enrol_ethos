@@ -18,6 +18,10 @@ class program_info {
     public $schoolTypeCode;
     public $schoolTypeTitle;
 
+    /* Academic level */
+    public $academicLevelCode;
+    public $academicLevelTitle;
+
     /** Disciplines for the program of study */
     public $disciplines;
 

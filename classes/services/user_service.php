@@ -44,6 +44,25 @@ class user_service {
         }        
     }
 
+    private function processDisabilityEnrolment(user $user) {
+        // Alumni course
+
+        $disabilityCourseIdNumber = get_config('enrol_ethos', 'disabilitycourseidnumber');
+
+        if ($disabilityCourseIdNumber) {
+            if ($user->userProfile->dyslexic) {
+    
+                $course = $this->courseService->getCourseById($disabilityCourseIdNumber);
+    
+                if ($course) {
+                    $enrolment = new enrolment();
+                    $enrolment->course = $course;
+                    array_push($user->enrolments, $enrolment);
+                }
+            }    
+        }        
+    }
+
     private function processLeadProgramme(user $user) {
         // Lead programme
         $course = $this->courseService->getCourseByShortName($user->userProfile->courseCode);
@@ -60,6 +79,8 @@ class user_service {
         $this->processAlumniEnrolment($user);
 
         $this->processLeadProgramme($user);
+
+        $this->processDisabilityEnrolment($user);
     }
 
     public function updateUserProfile(user $user) {

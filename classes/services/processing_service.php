@@ -111,8 +111,11 @@ class processing_service {
         //Loop through each and create a moodle course for the year*
         foreach ($programmes as $programme) {
             
+            $idnumber = $this->getMoodleCourseIdNumber($programme->guid, $programme->academicLevelCode);
+
             $data = [
-            'idnumber' => $programme->guid,
+            'idnumber' => $idnumber,
+            'oldidnumber' => $programme->guid,
             'shortname' => $programme->courseCode,
             'name' => $programme->courseTitle,
             'categories' => array($programme->facultyCode)
@@ -124,6 +127,10 @@ class processing_service {
 
         $this->trace->output("...Finished creating psuedo courses");
         $this->trace->finished();
+    }
+
+    private function getMoodleCourseIdNumber($guid, $academicLevel) {
+        return "$academicLevel--$guid";
     }
 
     private function getApiKey() {

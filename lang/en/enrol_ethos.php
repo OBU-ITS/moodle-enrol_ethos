@@ -34,6 +34,7 @@ $string['coursecategorysettings'] = 'Course and category settings';
 
 $string['catselect'] = 'Root category'; 
 $string['alumnicourseidnumber'] = 'Alumni course ID Number'; 
+$string['disabilitycourseidnumber'] = 'Disability course ID Number'; 
 
 $string['aftersaving'] = 'Once you have saved your settings, you may wish to ';
 $string['importnow'] = 'import right now';
@@ -45,6 +46,7 @@ $string['ethosapikeyhelp'] = 'This is the API Key used by this plugin to authent
 
 $string['catselecthelp'] = 'All new courses will be placed under this category (nested into faculty/subject categories as required).'; 
 $string['alumnicourseidnumberhelp'] = 'Students due to complete studying in less than 1 year will be automatically enrolled onto this course. Leave blank to disable alumni auto-enrol.'; 
+$string['disabilitycourseidnumberhelp'] = 'Students with the disability flag in their profile will be automatically enrolled onto this course. Leave blank to disable disability auto-enrol.'; 
 
 $string['page_processuser'] = 'Process a single user';
 $string['page_processallusers'] = 'Process all users';

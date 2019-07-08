@@ -39,6 +39,12 @@ class curriculum_lookup_service {
             $programInfo->facultyTitle = $faculty->title;    
         } 
         
+        if (isset($academicProgram->academicLevel->id)) {
+            $academicLevel = $this->ethosClient->getAcademicLevel($academicProgram->academicLevel->id);
+            $programInfo->academicLevelCode = $academicLevel->code;
+            $programInfo->academicLevelTitle = $academicLevel->title;
+        }
+
         $programInfo->guid = $academicProgram->id;
         $programInfo->courseCode = $academicProgram->code;
         $programInfo->courseTitle = $academicProgram->title;
