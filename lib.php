@@ -91,7 +91,33 @@ class enrol_ethos_plugin extends enrol_plugin {
         }
     }
 
-/**
+
+
+    /**
+     * Unassigns a moodle role to a user in the provided course
+     *
+     * @param int $roleid id of the moodle role to unassign
+     * @param int $courseid id of the course to unassign
+     * @param int $userid id of the moodle user
+     * @param string $logline passed logline object to append log entries to
+     * @return bool success or failure of the role assignment
+     */
+    public function unassign_role($roleid, $courseid, $userid) {
+        if (!$courseid) {
+            return false;
+        }
+
+        if ($instance = $this->get_instance($courseid)) {
+            // TODO catch exceptions thrown.
+            $this->unenrol_user($instance, $userid, $roleid);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+ /**
  * Returns enrolment instance in given course.
  * @param int $courseid
  * @return object of enrol instances, or false

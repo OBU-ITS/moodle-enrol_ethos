@@ -103,6 +103,8 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
             $this->db->insert_records('user_info_data', $newRecords);
         }
 
+        $this->unenrol_missing_enrolments($user);
+
         foreach ($user->enrolments as $enrolment) {
             $restrictStart = 0;
             $restrictEnd = 0;
@@ -232,6 +234,41 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
         return $result;
     }
 
+
+    private function unenrol_missing_enrolments($user) {
+        $courseIds = array_column(array_column($user->enrolments, 'course'), 'id'); 
+
+        $params = array('now'=>time(), 'userid'=>$user->id);
+
+        $sql = "SELECT ue.*, e.courseid as courseid, c.id AS contextid
+                    FROM {user_enrolments} ue
+                    JOIN {enrol} e ON (e.id = ue.enrolid AND e.enrol = 'ethos')
+                    JOIN {context} c ON (c.instanceid = e.courseid AND c.contextlevel = 50)
+                    WHERE ue.userid = :userid";
+        $rs = $this->db->get_recordset_sql($sql, $params);
+
+        foreach ($rs as $ue) {
+            if (!in_array($ue->courseid, $courseIds)) {
+                $this->unassign_role(5, $ue->courseid, $user->id);
+            }
+        }
+        $rs->close();
+    }
+
+    private function unassign_role($roleid, $courseid, $userid) {
+        global $CFG;
+
+        require_once($CFG->dirroot . '/enrol/ethos/lib.php');
+
+        if (!enrol_is_enabled('ethos')) {
+            return;
+        }
+
+        // Instance of enrol_ethos_plugin.
+        $plugin = enrol_get_plugin('ethos');
+        $result = $plugin->unassign_role($roleid, $courseid, $userid);
+        return $result;
+    }
 
     public function getAllUsers() {
         // Join any user info data present with each user info field for the user object.
