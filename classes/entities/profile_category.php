@@ -1,5 +1,5 @@
 <?php
-namespace enrol_ethos;
+namespace enrol_ethos\entities;
 
 class profile_category {
     public $name;
