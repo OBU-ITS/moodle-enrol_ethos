@@ -13,7 +13,7 @@ class profile_field {
     public $visible;
     public $categoryid;
 
-    public function __construct($shortname, $name, $description, $categoryid, $datatype='text', $required=0, $locked=0, $forceunique=0, $signup=0, $visible=1) {
+    public function __construct($shortname, $name, $description, $categoryid, $datatype='text', $required=0, $locked=1, $forceunique=0, $signup=0, $visible=0) {
         $this->datatype = $datatype;
         $this->shortname = $shortname;
         $this->name = $name;
