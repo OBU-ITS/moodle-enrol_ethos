@@ -97,7 +97,6 @@ class student_lookup_service {
         $newStudent->status = $statusObj->code;
         $newStudent->statusTitle = $statusObj->title;
 
-
         //TODO
         //$leadProgramOfStudy = $programmeSelector->getRelevantProgramme($newStudent->programmes);
 
@@ -227,10 +226,10 @@ class student_lookup_service {
 
         $name = new name_info();
         //$name->prefix = $officialName->title;
-        $name->firstName = $officialName->firstName;
-        $name->lastName = $officialName->lastName;
-        $name->middleName = $officialName->middleName;
-        $name->fullName = $officialName->fullName;
+        $name->firstName = isset($officialName->firstName) ? $officialName->firstName : null;
+        $name->lastName = isset($officialName->lastName) ? $officialName->lastName : null;
+        $name->middleName = isset($officialName->middleName) ? $officialName->middleName : null;
+        $name->fullName = isset($officialName->fullName) ? $officialName->fullName : null;
         $name->nickName = count($preferredNameArray) ? $preferredNameArray[0]->firstName : null;
 
         return $name;
