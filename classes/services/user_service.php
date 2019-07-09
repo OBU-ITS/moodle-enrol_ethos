@@ -7,17 +7,12 @@ use enrol_ethos\entities\user;
 use enrol_ethos\entities\user_profile;
 use enrol_ethos\entities\enrolment;
 
-
 class user_service {
     private $userRepository;
     private $courseService;
-
-    private static $alumniDuration; 
       
-    public static function getAlumniDuration() { 
-        if (user_service::alumniDuration) {
-            $alumniDuration = date('Y-m-d', strtotime("+1 year"));
-        }
+    public function getAlumniDuration() { 
+        return date('Y-m-d', strtotime("+1 year"));
     } 
     
     public function __construct(user_repository_interface $userRepository, course_service $courseService) {
@@ -31,7 +26,7 @@ class user_service {
         $alumniCourseIdNumber = get_config('enrol_ethos', 'alumnicourseidnumber');
 
         if ($alumniCourseIdNumber) {
-            if ($user->userProfile->endDate < user_service::getAlumniDuration()) {
+            if ($user->userProfile->endDate < $this->getAlumniDuration()) {
     
                 $course = $this->courseService->getCourseById($alumniCourseIdNumber);
     
