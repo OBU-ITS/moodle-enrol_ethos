@@ -43,7 +43,7 @@ function xmldb_enrol_ethos_upgrade($oldversion=0) {
 
     $result = true;
 
-    if ($result && $oldversion < 2019061101) {
+    if ($result && $oldversion < 2019070901) {
         $profileFieldRepository = new \enrol_ethos\repositories\db_profile_field_repository($DB);
         $profileCategoryRepository = new \enrol_ethos\repositories\db_profile_category_repository($DB);
         $profileFieldService = new \enrol_ethos\services\profile_field_service($profileFieldRepository, $profileCategoryRepository);
