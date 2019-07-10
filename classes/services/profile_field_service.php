@@ -84,9 +84,12 @@ class profile_field_service {
         $defaultFields = $this->getDefaultFields();
 
         foreach($defaultFields as $profileField) {
-            if (!$this->profileFieldRepository->findOne($profileField->shortname)) {
-                $this->profileFieldRepository->save($profileField);
+            
+            if ($dbProfileField = $this->profileFieldRepository->findOne($profileField->shortname)){
+                $profileField->id = $dbProfileField->id;
             }
+            
+            $this->profileFieldRepository->save($profileField);
         }
     }
 

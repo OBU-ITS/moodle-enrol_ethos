@@ -30,7 +30,8 @@ class db_profile_field_repository implements profile_field_repository_interface
                                      $field->locked,
                                      $field->forceunique,
                                      $field->signup,
-                                     $field->visible);
+                                     $field->visible,
+                                     $field->id);
         }
 
         return null;
@@ -39,7 +40,16 @@ class db_profile_field_repository implements profile_field_repository_interface
     public function save(profile_field $profileField)
     {
         //Should we be marshalling between types here?
-        return $this->db->insert_record('user_info_field', $profileField);
+        if (!$profileField->id) {
+            if ($id = $this->db->insert_record('user_info_field', $profileField)) {
+                $profileField->id = $id;
+                $result = $id ? true : false;
+            }
+        } else {
+            $result = $this->db->update_record('user_info_field', $profileField);
+        }
+
+        return $result ? $profileField : false;
     }
 
     public function remove(profile_field $user)

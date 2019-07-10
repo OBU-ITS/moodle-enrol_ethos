@@ -41,14 +41,11 @@ function xmldb_enrol_ethos_upgrade($oldversion=0) {
 
     $dbman = $DB->get_manager();
 
-    $result = true;
+    $profileFieldRepository = new \enrol_ethos\repositories\db_profile_field_repository($DB);
+    $profileCategoryRepository = new \enrol_ethos\repositories\db_profile_category_repository($DB);
+    $profileFieldService = new \enrol_ethos\services\profile_field_service($profileFieldRepository, $profileCategoryRepository);
 
-    if ($result && $oldversion < 2019070901) {
-        $profileFieldRepository = new \enrol_ethos\repositories\db_profile_field_repository($DB);
-        $profileCategoryRepository = new \enrol_ethos\repositories\db_profile_category_repository($DB);
-        $profileFieldService = new \enrol_ethos\services\profile_field_service($profileFieldRepository, $profileCategoryRepository);
+    $profileFieldService->addDefaultFields();        
     
-        $profileFieldService->addDefaultFields();            
-    }
-    return $result;
+    return true;
 }
