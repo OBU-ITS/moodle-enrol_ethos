@@ -45,6 +45,7 @@ function xmldb_enrol_ethos_upgrade($oldversion=0) {
     $profileCategoryRepository = new \enrol_ethos\repositories\db_profile_category_repository($DB);
     $profileFieldService = new \enrol_ethos\services\profile_field_service($profileFieldRepository, $profileCategoryRepository);
 
+    $profileFieldService->addDefaultCategory();
     $profileFieldService->addDefaultFields();        
     
     return true;
