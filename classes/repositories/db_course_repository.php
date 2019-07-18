@@ -67,7 +67,9 @@ class db_course_repository implements \enrol_ethos\interfaces\course_repository_
             $dbCourse->category, 
             $dbCourse->id,
             $dbCourse->startdate, 
-            $dbCourse->enddate
+            $dbCourse->enddate,
+            false, //meta - todo
+            $dbCourse->visible
         );
 
         return $course;
@@ -98,8 +100,7 @@ class db_course_repository implements \enrol_ethos\interfaces\course_repository_
         $moodlecourse->startdate = $course->startdate;
         $moodlecourse->enddate = $course->enddate;
         $moodlecourse->category = $course->catid;
-
-        $moodlecourse->visible = 1;
+        $moodlecourse->visible = $course->visible;
 
         return $moodlecourse;
     }
