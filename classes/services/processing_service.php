@@ -156,7 +156,7 @@ class processing_service {
 
     private function process_user($user) {
 
-        $this->trace->output("Processing user: $user->username");
+        $this->trace->output("Processing user with username: '$user->username'");
 
         if ($student = $this->getEthosStudent($user)) {
 
