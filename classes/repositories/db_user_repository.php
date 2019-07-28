@@ -276,7 +276,7 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
         $sql .= 'FROM {user} ';
 
         if ($authType) {
-            $sql .=  'where user.auth = :authtype';    
+            $sql .=  'where auth = :authtype ';    
         }
 
         $sql .= 'ORDER BY username ';
@@ -288,6 +288,6 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
 
 
     public function getUsersByAuthType($authType) {
-        return getAllUsers($authType);
+        return $this->getAllUsers($authType);
     }
 }
