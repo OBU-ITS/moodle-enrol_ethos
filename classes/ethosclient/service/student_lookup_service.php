@@ -54,7 +54,7 @@ class student_lookup_service {
         $newStudent = new student_info($person->id);
         $students = $this->ethosClient->getStudentByPersonId($newStudent->personId);
 
-        if (count($students) != 1) {
+        if (!$students || (count($students) != 1)) {
             return false;
         }
 
@@ -71,7 +71,9 @@ class student_lookup_service {
 
         $nameInfo = $this->getName($person);
 
-        $newStudent->studentId = $student->id;
+        // TODO: WHY IS THIS MISSING IN BILD FOR API V7?
+        //$newStudent->studentId = $student->id;
+        
         //$newStudent->studentNumber = $person->credentials->filter { credential -> credential->type->equals("bannerId") }?->first()?->value
 
         $newStudent->forename = $nameInfo->firstName;

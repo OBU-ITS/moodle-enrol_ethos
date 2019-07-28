@@ -211,9 +211,9 @@ class ethos_client
 
             $options = [
                 'headers' => [
-                    'Content-Type'      => 'application/vnd.hedtech.applications.v7+json',
+                    'Content-Type'      => 'application/json',
                     'Accept-Charset'    => 'UTF-8',
-                    'Accept'            => 'application/json',
+                    'Accept'            => 'application/vnd.hedtech.integration.v7+json',
                     'Authorization'     => 'Bearer ' . $this->accessToken
                 ],
             ];
