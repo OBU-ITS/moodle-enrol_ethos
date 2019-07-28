@@ -270,14 +270,24 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
         return $result;
     }
 
-    public function getAllUsers() {
+    public function getAllUsers($authType=null) {
         // Join any user info data present with each user info field for the user object.
         $sql = 'SELECT username, id AS userid ';
         $sql .= 'FROM {user} ';
+
+        if ($authType) {
+            $sql .=  'where user.auth = :authtype';    
+        }
+
         $sql .= 'ORDER BY username ';
 
-        $dbusers = $this->db->get_records_sql($sql);
+        $dbusers = $this->db->get_records_sql($sql, ['authtype' => $authType]);
 
         return $dbusers;
+    }
+
+
+    public function getUsersByAuthType($authType) {
+        return getAllUsers($authType);
     }
 }

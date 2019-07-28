@@ -11,4 +11,5 @@ interface user_repository_interface
     public function getUsersWithoutProfileFieldData(string $profileFieldShortName);
     public function getUsersByProfileField(string $profileFieldShortName, array $dataArray);
     public function getAllUsers();
+    public function getUsersByAuthType(string $authType);
 }

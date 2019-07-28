@@ -57,7 +57,7 @@ class processing_service {
     public function process_all_users() {
         $this->trace->output('Processing all users...');
 
-        $users = $this->userService->getAllUsers();
+        $users = $this->userService->getUsersByAuthType('ldap');
         $this->process_users($users);
         
         $this->trace->output('...finished processing all users');
