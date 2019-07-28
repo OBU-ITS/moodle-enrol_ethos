@@ -45,7 +45,6 @@ class student_lookup_service {
      *
      */
     public function lookupStudent($person) {
-
         if (!$person || isset($person->errors)) {
             return false;
         }
@@ -61,7 +60,6 @@ class student_lookup_service {
 
         $student = $students[0];
         $studentAcademicPrograms = $this->ethosClient->getStudentAcademicProgramsByPersonId($newStudent->personId);
-        $attendanceMode = $this->ethosClient->getStudentType($student->type->id);
 
         // load in all of the academic programs
         $newStudent->programmes = array(); //studentAcademicPrograms->stream()->map { p -> getProgramInfo(personId, p) }->collect(Collectors->toList())
@@ -90,46 +88,49 @@ class student_lookup_service {
             $newStudent->dateOfBirth = $this->ArrayToDateTime(date_parse($person->dateOfBirth)) ?? null;
         }
 
-        $newStudent->attendanceMode = $attendanceMode->code;
-        $newStudent->attendanceModeTitle = $attendanceMode->title;
+        if (isset($student->type) && $attendanceMode = $this->ethosClient->getStudentType($student->type->id)) {
+            $newStudent->attendanceMode = $attendanceMode->code;
+            $newStudent->attendanceModeTitle = $attendanceMode->title;
+        }
 
-        $statusObj = $this->ethosClient->getStudentStatus($student->status->id);
-        $newStudent->status = $statusObj->code;
-        $newStudent->statusTitle = $statusObj->title;
+        if (isset($student->status) && $statusObj = $this->ethosClient->getStudentStatus($student->status->id)) {
+            $newStudent->status = $statusObj->code;
+            $newStudent->statusTitle = $statusObj->title;
+        }
 
         //TODO
         //$leadProgramOfStudy = $programmeSelector->getRelevantProgramme($newStudent->programmes);
 
-        $leadProgramOfStudy = $newStudent->programmes[0] ?? null;
-
-
-        $newStudent->leadProgramOfStudy = $leadProgramOfStudy;
-        $newStudent->courseCode = $leadProgramOfStudy->courseCode;
-        $newStudent->courseTitle = $leadProgramOfStudy->courseTitle;
-        $newStudent->facultyCode = $leadProgramOfStudy->facultyCode;
-        $newStudent->facultyTitle = $leadProgramOfStudy->facultyTitle;
-        $newStudent->schoolTypeCode = $leadProgramOfStudy->schoolTypeCode;
-        $newStudent->schoolTypeTitle = $leadProgramOfStudy->schoolTypeTitle;
-        $newStudent->academicLevel = $leadProgramOfStudy->schoolTypeTitle;
-
+        if ($leadProgramOfStudy = $newStudent->programmes[0] ?? null) {
+            $newStudent->leadProgramOfStudy = $leadProgramOfStudy;
+            $newStudent->courseCode = $leadProgramOfStudy->courseCode;
+            $newStudent->courseTitle = $leadProgramOfStudy->courseTitle;
+            $newStudent->facultyCode = $leadProgramOfStudy->facultyCode;
+            $newStudent->facultyTitle = $leadProgramOfStudy->facultyTitle;
+            $newStudent->schoolTypeCode = $leadProgramOfStudy->schoolTypeCode;
+            $newStudent->schoolTypeTitle = $leadProgramOfStudy->schoolTypeTitle;
+            $newStudent->academicLevel = $leadProgramOfStudy->schoolTypeTitle;
+            $newStudent->startDate = $leadProgramOfStudy->startOn;
+            $newStudent->endDate = $leadProgramOfStudy->endOn;
+            $newStudent->graduatedOn = $leadProgramOfStudy->graduatedOn;
+            $newStudent->creditsEarned = $leadProgramOfStudy->creditsEarned;
+            // Set the lead award code and title
+            $newStudent->awardCode = $leadProgramOfStudy->awardAbbreviation;
+            $newStudent->awardTitle = $leadProgramOfStudy->awardTitle;
+    
+        }
         
-        $newStudent->startDate = $leadProgramOfStudy->startOn;
-        $newStudent->endDate = $leadProgramOfStudy->endOn;
-        $newStudent->graduatedOn = $leadProgramOfStudy->graduatedOn;
-        $newStudent->creditsEarned = $leadProgramOfStudy->creditsEarned;
-
         // Get the first major
         //$disciplineMajor = null;//leadProgramOfStudy?->disciplines?->stream()?->filter( { d-> d->disciplineType->equals("major")} )?->collect(Collectors->toList())?->firstOrNull()
 
-        $disciplineMajor = array_values(array_filter($leadProgramOfStudy->disciplines, function($a) {return $a->disciplineType == "major";}))[0] ?? null;
-
         // If there is a major discipline code, set it
-        $newStudent->subjectCode = $disciplineMajor->disciplineCode;
-        $newStudent->subjectTitle = $disciplineMajor->disciplineTitle;
-
-        // Set the lead award code and title
-        $newStudent->awardCode = $leadProgramOfStudy->awardAbbreviation;
-        $newStudent->awardTitle = $leadProgramOfStudy->awardTitle;
+        
+        if ($disciplineMajor = array_values(array_filter($leadProgramOfStudy->disciplines, function ($a) {
+            return $a->disciplineType == "major";
+        }))[0] ?? null) {
+            $newStudent->subjectCode = $disciplineMajor->disciplineCode;
+            $newStudent->subjectTitle = $disciplineMajor->disciplineTitle;
+        }
 
         // Get the period profile for the leadProgramOfStudy
         //var periodProfile = ethosClient->getAcademicPeriodProfile(personId, leadProgramOfStudy->)
