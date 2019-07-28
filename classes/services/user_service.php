@@ -107,6 +107,7 @@ class user_service {
 
     public function getUsersByAuthType($authType) {
         $dbusers = $this->userRepository->getUsersByAuthType($authType);
+        return($this->convertUserProfiles($dbusers));
     }
 
     public function getUserById($id){
