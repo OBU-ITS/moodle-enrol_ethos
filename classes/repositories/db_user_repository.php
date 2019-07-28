@@ -287,7 +287,7 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
     }
 
 
-    public function getUsersByAuthType($authType) {
+    public function getUsersByAuthType(string $authType) {
         return $this->getAllUsers($authType);
     }
 }
