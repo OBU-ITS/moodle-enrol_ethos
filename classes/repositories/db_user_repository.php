@@ -281,7 +281,7 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
         }
 
         if (!$includeDeleted) {
-            $sql .= 'and deleted = 0';
+            $sql .= 'and deleted = 0 ';
         }
 
         $sql .= 'ORDER BY username ';
