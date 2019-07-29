@@ -174,9 +174,11 @@ class processing_service {
 
 
     private function getEthosStudent($user) {
-        if (isset($user->userProfile->bannerGuid)) {
+        if (isset($user->userProfile->bannerGuid) && $user->userProfile->bannerGuid) {
+            $this->trace->output("Using GUID: '{$user->userProfile->bannerGuid}'");
             return $this->studentLookupService->lookupStudentFromPersonId($user->userProfile->bannerGuid);
         } elseif (isset($user->username)) {
+            $this->trace->output("Using Username: '{$user->username}'");
             return $this->studentLookupService->lookupStudentFromBannerId($user->username);
         }
     }
