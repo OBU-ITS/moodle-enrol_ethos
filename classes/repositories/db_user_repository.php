@@ -133,7 +133,7 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
         $sql .= 'from {user} u ';
         $sql .= 'join {user_info_data} uind on uind.userid = u.id ';
         $sql .= 'join {user_info_field} uif on uind.fieldid = uif.id '; 
-        $sql .=  'where uif.shortname = :shortname';    
+        $sql .=  'where uif.shortname = :shortname';
         
         $dbusers = $this->db->get_records_sql($sql, ['shortname' => $profileFieldShortName]);
 
@@ -270,13 +270,18 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
         return $result;
     }
 
-    public function getAllUsers($authType=null) {
+    public function getAllUsers($authType=null, $includeDeleted=true) {
         // Join any user info data present with each user info field for the user object.
         $sql = 'SELECT username, id AS userid ';
         $sql .= 'FROM {user} ';
+        $sql .= 'where 1=1 ';
 
         if ($authType) {
-            $sql .=  'where auth = :authtype ';    
+            $sql .=  'and auth = :authtype ';    
+        }
+
+        if (!$includeDeleted) {
+            $sql .= 'and deleted = 0';
         }
 
         $sql .= 'ORDER BY username ';
@@ -288,6 +293,6 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
 
 
     public function getUsersByAuthType(string $authType) {
-        return $this->getAllUsers($authType);
+        return $this->getAllUsers($authType,false);
     }
 }
