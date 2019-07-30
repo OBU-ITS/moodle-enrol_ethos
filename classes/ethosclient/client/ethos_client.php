@@ -152,7 +152,7 @@ class ethos_client
                 $this->prepareAccessToken();
             }
             $url = self::API_URL . "/api/persons?criteria={\"credentials\":[{\"type\":\"bannerId\",\"value\":\"" . $bannerId . "\"}]}";
-            
+        
             $options = [
                 'headers' => [
                     'Content-Type'      => 'application/json',
@@ -162,10 +162,14 @@ class ethos_client
                 ],
             ];
 
+            var_dump($options);
+            var_dump($url);
+
             $response = $this->client->get($url, $options);
             $result = $response->getBody()->getContents();
             return json_decode($result);
         } catch (RequestException $e) {
+            var_dump($e);
             $response = $this->StatusCodeHandling($e);
             return $response;
         }

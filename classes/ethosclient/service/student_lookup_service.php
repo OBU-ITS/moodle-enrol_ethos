@@ -34,7 +34,13 @@ class student_lookup_service {
     }
 
     public function lookupStudentFromBannerId($bannerId) {
+        echo "LOOKING UP: $bannerId";
+
         $persons = $this->ethosClient->getPersonsByBannerId($bannerId);
+
+        //TODO: REMOVE
+        $this->log(var_dump($persons));
+
         if ($persons && count($persons) === 1) {
             return $this->lookupStudent($persons[0]);
         }
@@ -46,6 +52,7 @@ class student_lookup_service {
      */
     public function lookupStudent($person) {
         if (!$person || isset($person->errors)) {
+            echo "NO PERSON OR ERROR";
             return false;
         }
 
@@ -140,6 +147,7 @@ class student_lookup_service {
         //TODO
         //logger->info("Student info recovered: " + newStudent->toString())
 
+        var_dump($newStudent);
         return $newStudent;
     }
 
