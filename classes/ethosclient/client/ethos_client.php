@@ -162,14 +162,14 @@ class ethos_client
                 ],
             ];
 
-            var_dump($options);
-            var_dump($url);
+            if ($GLOBALS['alluser-debug']) var_dump($options);
+            if ($GLOBALS['alluser-debug']) var_dump($url);
 
             $response = $this->client->get($url, $options);
             $result = $response->getBody()->getContents();
             return json_decode($result);
         } catch (RequestException $e) {
-            var_dump($e);
+            if ($GLOBALS['alluser-debug']) var_dump($e);
             $response = $this->StatusCodeHandling($e);
             return $response;
         }

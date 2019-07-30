@@ -152,6 +152,13 @@ class processing_service {
 
         //Loop through each and fill in the missing profile fields
         foreach ($users as $user) {
+
+            $GLOBALS['alluser-debug'] = false;
+            if ($user->username == '18075886') {
+                $GLOBALS['alluser-debug'] = true;
+                $this->trace->output("DEBUGGING: {$user->username}");
+            }
+
             $this->process_user($user);
         }
     }
