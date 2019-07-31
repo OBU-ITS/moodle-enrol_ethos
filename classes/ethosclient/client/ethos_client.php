@@ -85,11 +85,24 @@ class ethos_client
                     ],
                 ];
         
+                if (isset($GLOBALS['debug-alluser-issue'])) {
+                    var_dump($url);
+                    var_dump($options);
+                }
+
                 $response = $this->client->get($url, $options);
+
+                if (isset($GLOBALS['debug-alluser-issue'])) var_dump($response);
                 return $response->getBody()->getContents();
 
             } catch (RequestException $e) {
                 // Handle non 200 responses - includes regenerating access token if necessary
+                
+                if (isset($GLOBALS['debug-alluser-issue'])) {
+                    echo "EXCEPTION";
+                    var_dump($response);
+                }
+
                 $response = $this->StatusCodeHandling($e);
                 $tries++;
                 if (++$tries == $maxTries) {
@@ -177,6 +190,10 @@ class ethos_client
 
 
     public function getPersonsByBannerId($bannerId) {
+        if ($bannerId == '17047217') {
+            $GLOBALS['debug-alluser-issue'] = true;
+        }
+        
         $url = self::API_URL . "/api/persons?criteria={\"credentials\":[{\"type\":\"bannerId\",\"value\":\"" . $bannerId . "\"}]}";        
         $accept = 'application/vnd.hedtech.integration.v12.1.0+json';
         return $this->getJson($url, $accept);
