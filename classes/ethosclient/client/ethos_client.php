@@ -100,11 +100,10 @@ class ethos_client
                 
                 if (isset($GLOBALS['debug-alluser-issue'])) {
                     echo "EXCEPTION";
-                    var_dump($response);
+                    var_dump($e);
                 }
 
                 $response = $this->StatusCodeHandling($e);
-                $tries++;
                 if (++$tries == $maxTries) {
                     // Max consecutive errors - not solved by retrying.
                     // TODO: Exponential back off.
@@ -153,8 +152,7 @@ class ethos_client
             $response = json_decode($e->getResponse()->getBody(true)->getContents());
             return $response;
         } elseif ($e->getResponse()->getStatusCode() == '401') {
-            $response = json_decode($e->getResponse()->getBody(true)->getContents());
-            return $response;
+            $this->prepareAccessToken();
         } elseif ($e->getResponse()->getStatusCode() == '403') {
             $response = json_decode($e->getResponse()->getBody(true)->getContents());
             return $response;
