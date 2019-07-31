@@ -143,8 +143,8 @@ class ethos_client
 
     public function StatusCodeHandling($e)
     {
-        var_dump($e);
-
+        if (isset($GLOBALS['debug-alluser-issue'])) var_dump($e->getResponse()->getStatusCode());
+    
         if ($e->getResponse()->getStatusCode() == '400') {
             $this->prepareAccessToken();
         } elseif ($e->getResponse()->getStatusCode() == '422') {
