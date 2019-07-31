@@ -143,6 +143,8 @@ class ethos_client
 
     public function StatusCodeHandling($e)
     {
+        var_dump($e);
+
         if ($e->getResponse()->getStatusCode() == '400') {
             $this->prepareAccessToken();
         } elseif ($e->getResponse()->getStatusCode() == '422') {
@@ -188,6 +190,8 @@ class ethos_client
 
 
     public function getPersonsByBannerId($bannerId) {
+        if (isset($GLOBALS['debug-alluser-issue'])) unset($GLOBALS['debug-alluser-issue']);
+        
         if ($bannerId == '17047217') {
             $GLOBALS['debug-alluser-issue'] = true;
         }
