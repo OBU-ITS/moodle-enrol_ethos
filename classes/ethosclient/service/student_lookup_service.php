@@ -34,13 +34,7 @@ class student_lookup_service {
     }
 
     public function lookupStudentFromBannerId($bannerId) {
-        
-        if ($GLOBALS['alluser-debug']) $this->log("LOOKING UP $bannerId");
-
         $persons = $this->ethosClient->getPersonsByBannerId($bannerId);
-
-        //TODO: REMOVE
-        if ($GLOBALS['alluser-debug']) $this->log(var_dump($persons));
 
         if ($persons && count($persons) === 1) {
             return $this->lookupStudent($persons[0]);
@@ -53,9 +47,6 @@ class student_lookup_service {
      */
     public function lookupStudent($person) {
         if (!$person || isset($person->errors)) {
-            if ($GLOBALS['alluser-debug']) {
-                echo "NO PERSON OR ERROR";
-            }
             return false;
         }
 
@@ -150,8 +141,6 @@ class student_lookup_service {
         //TODO
         //logger->info("Student info recovered: " + newStudent->toString())
 
-        if ($GLOBALS['alluser-debug']) $this->log(var_dump($newStudent));
-
         return $newStudent;
     }
 
@@ -204,16 +193,19 @@ class student_lookup_service {
 
         $startOn = $this->ArrayToDateTime(date_parse($period->startOn));
         $endOn = $this->ArrayToDateTime(date_parse($period->endOn));
-
-        $programInfo->periodInfo = new period_info($period->category->type, $period->category->parent->academicPeriod->id, $period->code, $period->title, $endOn, $period->id, $startOn, $period->registration);
-
+        
+        if ($period) {
+            $programInfo->periodInfo = new period_info($period->category->type, $period->category->parent->id, $period->code, $period->title, $endOn, $period->id, $startOn, $period->registration);
+        }
                 /*
         $programInfo->disciplines = $studentAcademicProgram->disciplines->stream()->map { d -> getDisciplineInfo(d) }?->collect(Collectors->toList())
         $programInfo->honours = $studentAcademicProgram->recognitions->stream()->map { r -> getHonoursInfo(r) }?->collect(Collectors->toList())
                 */
 
         foreach ($studentAcademicProgram->disciplines as $discipline) {
-            $programInfo->disciplines[] = $this->getDisciplineInfo($discipline->discipline->id);
+            if ($discipline = $this->getDisciplineInfo($discipline->discipline->id)) {
+                $programInfo->disciplines[] = $discipline;
+            }
         }
 
 
@@ -253,9 +245,11 @@ class student_lookup_service {
 
     public function getDisciplineInfo($disciplineId) {
         // TODO ethosDisciplineId.administeringInstitutionUnit should contain the department for the subject of study
-        $discipline = $this->ethosClient->getAcademicDiscipline($disciplineId);
-        return new discipline_info($discipline->abbreviation, $discipline->type, $discipline->title);
-        
+        if ($discipline = $this->ethosClient->getAcademicDiscipline($disciplineId)) {
+            return new discipline_info($discipline->abbreviation, $discipline->type, $discipline->title);
+        }
+
+        return null;
     }
 
 
