@@ -151,23 +151,31 @@ class student_lookup_service {
 
         $programInfo = new program_info();
 
-        $academicProgram = $this->ethosClient->getAcademicProgram($studentAcademicProgram->program->id);
-        $faculty = $this->ethosClient->getInstitution($academicProgram->authorizing->institutionalUnit->id);
-        $academicProgramLevel = $this->ethosClient->getAcademicLevel($studentAcademicProgram->academicLevel->id);
         $period = $this->ethosClient->getAcademicPeriod($studentAcademicProgram->academicPeriods->starting->id);
 
         if ($studentAcademicProgram->site->id != null) {
-            $site = $this->ethosClient->getSite($studentAcademicProgram->site->id);
-            $programInfo->siteCode = $site->code;
-            $programInfo->siteTitle = $site->title;
+            if ($site = $this->ethosClient->getSite($studentAcademicProgram->site->id)) {
+                $programInfo->siteCode = $site->code;
+                $programInfo->siteTitle = $site->title;
+            }
         }
 
-        $programInfo->facultyCode = $faculty->code;
-        $programInfo->facultyTitle = $faculty->title;
-        $programInfo->schoolTypeCode = $academicProgramLevel->code;
-        $programInfo->schoolTypeTitle = $academicProgramLevel->title;
-        $programInfo->courseCode = $academicProgram->code;
-        $programInfo->courseTitle = $academicProgram->title;
+        if ($academicProgramLevel = $this->ethosClient->getAcademicLevel($studentAcademicProgram->academicLevel->id)) {
+            $programInfo->schoolTypeCode = $academicProgramLevel->code;
+            $programInfo->schoolTypeTitle = $academicProgramLevel->title;
+        }
+
+        if ($academicProgram = $this->ethosClient->getAcademicProgram($studentAcademicProgram->program->id)) {
+            $programInfo->courseCode = $academicProgram->code;
+            $programInfo->courseTitle = $academicProgram->title;
+
+            if ($faculty = $this->ethosClient->getInstitution($academicProgram->authorizing->institutionalUnit->id)) {
+                $programInfo->facultyCode = $faculty->code;
+                $programInfo->facultyTitle = $faculty->title;
+            }
+    
+        }
+
         $programInfo->preference = $studentAcademicProgram->preference;
         $programInfo->startOn = $this->ArrayToDateTime(date_parse($studentAcademicProgram->startOn)) ?? null;
 
@@ -186,9 +194,10 @@ class student_lookup_service {
         //val eligibilities = ethosClient->getStudentRegistrationEligibility(personId, startingPeriodId)
 
         if (count($periodProfiles)) {
-            $enrollmentStatus = $this->ethosClient->getEnrollmentStatus($periodProfiles[0]->academicPeriodEnrollmentStatus->id);
-            $programInfo->periodProfileEnrollmentStatusCode = $enrollmentStatus->code;
-            $programInfo->periodProfileEnrollmentStatusTitle = $enrollmentStatus->title;
+            if ($enrollmentStatus = $this->ethosClient->getEnrollmentStatus($periodProfiles[0]->academicPeriodEnrollmentStatus->id)) {
+                $programInfo->periodProfileEnrollmentStatusCode = $enrollmentStatus->code;
+                $programInfo->periodProfileEnrollmentStatusTitle = $enrollmentStatus->title;
+            }
         }
 
         $startOn = $this->ArrayToDateTime(date_parse($period->startOn));
@@ -212,10 +221,11 @@ class student_lookup_service {
         $awardCredential = count($studentAcademicProgram->credentials) ? $studentAcademicProgram->credentials[0] : null;
 
         if ($awardCredential!=null) {
-            $award = $this->ethosClient->getAcademicCredential($awardCredential->id);
-            $programInfo->awardAbbreviation = $award->abbreviation;
-            $programInfo->awardTitle = $award->title;
-            $programInfo->awardType = $award->type;
+            if ($award = $this->ethosClient->getAcademicCredential($awardCredential->id)) {
+                $programInfo->awardAbbreviation = $award->abbreviation;
+                $programInfo->awardTitle = $award->title;
+                $programInfo->awardType = $award->type;
+            }
         }
 
         return $programInfo;

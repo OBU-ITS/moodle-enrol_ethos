@@ -16,21 +16,125 @@ class ethos_client
     public $authKey;
     public $accessToken;
 
-    private $studentTypeArray = array();
-    private $academicProgramArray = array();
-    private $institutionArray = array();
-    private $academicLevelArray = array();
-    private $academicPeriodArray = array();
-    private $siteArray = array();
-    private $enrollmentStatusArray = array();
-    private $academicCredentialArray = array();
-    private $studentStatusArray = array();
-    private $academicDisciplineArray = array();
+    private $cache = array();
 
+    private $apiMap = array(
+                    'AcademicDisciplines'   => array(   'path'      => 'academic-disciplines',
+                                                        'accept'    => 'application/vnd.hedtech.integration.v10+json',
+                                                        'cachable'  => true ),
+
+                    'StudentStatuses'       => array(   'path'      => 'student-statuses',
+                                                        'accept'    =>  'application/vnd.hedtech.integration.v7+json',
+                                                        'cachable'  => true ),
+
+                    'AcademicCredentials'   => array(   'path'      => 'academic-credentials',
+                                                        'accept'    =>  'application/vnd.hedtech.integration.v6+json',
+                                                        'cachable'  => true ),
+
+                    'EnrolmentStatuses'     => array(   'path'      => 'academic-period-enrollment-statuses',
+                                                        'accept'    =>  'application/vnd.hedtech.integration.v7+json',
+                                                        'cachable'  => true ),
+
+                    'Sites'                 => array(   'path'      => 'sites',
+                                                        'accept'    =>  'application/vnd.hedtech.integration.v6+json',
+                                                        'cachable'  => true ),
+
+                    'AcademicPeriods'       => array(   'path'      =>  'academic-periods',
+                                                        'accept'    =>  'application/vnd.hedtech.integration.v8+json',
+                                                        'cachable'  => true ),
+
+                    'AcademicLevels'        => array(   'path'      => 'academic-levels',
+                                                        'accept'    =>  'application/vnd.hedtech.integration.v6+json',
+                                                        'cachable'  => true ),
+
+                    'Institutions'          => array(   'path'      => 'educational-institution-units',
+                                                        'accept'    =>  'application/vnd.hedtech.integration.v7+json',
+                                                        'cachable'  => true ),
+
+                    'AcademicPrograms'      => array(   'path'      => 'academic-programs',
+                                                        'accept'    =>  'application/vnd.hedtech.integration.v7+json',
+                                                        'cachable'  => true ),
+     
+                    'StudentTypes'          => array(   'path'      => 'student-types',
+                                                        'accept'    =>  'application/vnd.hedtech.integration.v7+json',
+                                                        'cachable'  => true ),
+
+                    'Persons'               => array(   'path'      => 'persons',
+                                                        'accept'    => 'application/vnd.hedtech.integration.v12.1.0+json',
+                                                        'cachable'  => false ),
+
+                    'Students'              => array(   'path'      => 'students',
+                                                        'accept'    => 'application/vnd.hedtech.integration.v7+json',
+                                                        'cachable'  => false ),
+
+                    'StudentAcademicPrograms'  => array(     'path'      => 'student-academic-programs',
+                                                             'accept'    => 'application/vnd.hedtech.integration.v7+json',
+                                                             'cachable'  => false ),
+
+                    'AcademicPeriodProfiles'  => array(      'path'      => 'student-academic-period-profiles',
+                                                             'accept'    => 'application/vnd.hedtech.integration.v7+json',
+                                                             'cachable'  => false ));
+                                                             
+                                                                                            
     public function __construct($key)
     {
         $this->authKey = $key;
         $this->client = new Client();
+    }
+
+    public function consumeMessages(){
+        $url = self::API_URL . "/consume?limit=200";
+        return $this->getJson($url, null);
+    }
+
+    public function cacheAllReferenceTypes() {
+        foreach ($this->apiMap as $key=>$val) {
+            if ($val['cachable']) $this->getByMap($key);
+        }
+    }
+
+    public function getByMap($resourceName, $id=null, $urlOverride=null, $paged=null) {
+        if (array_key_exists($resourceName,$this->apiMap) && $resource = $this->apiMap[$resourceName]) {
+            
+            if ($resource['cachable'] 
+                && array_key_exists($resourceName,$this->cache)
+                && array_key_exists($id, $this->cache[$resourceName])) {
+                return $this->cache[$resourceName][$id];
+            }
+
+            $url = $urlOverride ? $urlOverride :
+                self::API_URL . "/api/{$resource['path']}";
+
+            
+            if (!$urlOverride) {
+                if ($id) {
+                    $url = $url . "/$id";
+                    $paged = $paged === null ? false : $paged;
+                } else {
+                    $paged = $paged === null ? true : $paged;
+                }
+            }
+            
+            if (!$paged) {
+                $result = $this->getJson($url, $resource['accept']);
+            } else {
+                $result = $this->getJson($url, $resource['accept'],0,500);
+            }
+
+            if ($resource['cachable']) {
+                if ($id) {
+                    // Cache single object using provided id
+                    $this->cache[$resourceName][$id] = $result;
+                } else {   
+                    // Assume array and cache all the results
+                    foreach ($result as $res) {
+                        $this->cache[$resourceName][$res->id] = $res;
+                    }
+                }
+            }
+
+            return $result;
+        }
     }
 
     public function getJson($url, $accept, $maxResults = 0, $resultsPerPage = 0){
@@ -142,20 +246,20 @@ class ethos_client
     }
 
     public function StatusCodeHandling($e)
-    {
-        if (isset($GLOBALS['debug-alluser-issue'])) var_dump($e->getResponse()->getStatusCode());
-    
-        if ($e->getResponse()->getStatusCode() == '400') {
+    {    
+        $statusCode = $e->getResponse()->getStatusCode();
+
+        if ($statusCode == '400') {
             $this->prepareAccessToken();
-        } elseif ($e->getResponse()->getStatusCode() == '422') {
+        } elseif ($statusCode == '422') {
             $response = json_decode($e->getResponse()->getBody(true)->getContents());
             return $response;
-        } elseif ($e->getResponse()->getStatusCode() == '500') {
+        } elseif ($statusCode == '500') {
             $response = json_decode($e->getResponse()->getBody(true)->getContents());
             return $response;
-        } elseif ($e->getResponse()->getStatusCode() == '401') {
+        } elseif ($statusCode == '401') {
             $this->prepareAccessToken();
-        } elseif ($e->getResponse()->getStatusCode() == '403') {
+        } elseif ($statusCode == '403') {
             $response = json_decode($e->getResponse()->getBody(true)->getContents());
             return $response;
         } else {
@@ -165,49 +269,19 @@ class ethos_client
     }
 
     public function getPersonById($id) {
-        try {
-            if (!$this->accessToken) {
-                $this->prepareAccessToken();
-            }
-            $url = self::API_URL . '/api/persons/' . $id;
-            $options = [
-                'headers' => [
-                    'Content-Type'      => 'application/vnd.hedtech.applications.v12+json',
-                    'Accept-Charset'    => 'UTF-8',
-                    'Accept'            => 'application/json',
-                    'Authorization'     => 'Bearer ' . $this->accessToken
-                ],
-            ];
-
-            $response = $this->client->get($url, $options);
-            $result = $response->getBody()->getContents();
-            return json_decode($result);
-        } catch (RequestException $e) {
-            $response = $this->StatusCodeHandling($e);
-            return $response;
-        }
+        return $this->getByMap('Persons',$id);
     }
 
-
     public function getPersonsByBannerId($bannerId) {
-        if (isset($GLOBALS['debug-alluser-issue'])) unset($GLOBALS['debug-alluser-issue']);
-        
-        if ($bannerId == '17047217') {
-            $GLOBALS['debug-alluser-issue'] = true;
-        }
-        
         $url = self::API_URL . "/api/persons?criteria={\"credentials\":[{\"type\":\"bannerId\",\"value\":\"" . $bannerId . "\"}]}";        
-        $accept = 'application/vnd.hedtech.integration.v12.1.0+json';
-        return $this->getJson($url, $accept);
+        return $this->getByMap('Persons',null,$url);
     }
 
     public function getStudentById($id) {
         /**
          * Get a single student
          */
-        $url = self::API_URL . '/api/students/' . $id;
-        $accept = 'application/vnd.hedtech.integration.v7+json';
-        return $this->getJson($url, $accept);
+        return $this->getByMap('Students',$id);
     }
 
     public function getStudentByPersonId($personId) {
@@ -215,26 +289,12 @@ class ethos_client
          * Get a single student
          */
         $url = self::API_URL . '/api/students?person=' . $personId;
-        $accept = 'application/vnd.hedtech.integration.v7+json';
-        return $this->getJson($url, $accept);
-    }
-
-    public function getStudentType($id) {
-        if (!array_key_exists($id, $this->studentTypeArray)) {
-            $url = self::API_URL . "/api/student-types/" . $id;
-            $accept = 'application/vnd.hedtech.integration.v7+json';
-
-            $this->studentTypeArray[$id] = $this->getJson($url, $accept);
-        }
-
-        return $this->studentTypeArray[$id];
+        return $this->getByMap('Students',null,$url);
     }
 
     public function getStudents()
     {
-        $url = self::API_URL . "/api/students";
-        $accept = 'application/vnd->hedtech->applications->v7+json';
-        return $this->getJson($url, $accept);
+        return $this->getByMap('Students');
     }
 
 
@@ -262,128 +322,95 @@ class ethos_client
 
     public function getStudentAcademicProgramsByPersonId($personId) {
         $url = self::API_URL . "/api/student-academic-programs?student=" . $personId;
-        $accept = 'application/vnd.hedtech.integration.v7+json';
-        return $this->getJson($url, $accept);
-    }
-
-
-    public function getAcademicProgram($id) {
-
-        if (!array_key_exists($id, $this->academicProgramArray)) {
-            $url = self::API_URL . "/api/academic-programs/" . $id;
-            $accept = 'application/vnd.hedtech.integration.v7+json';
-            $this->academicProgramArray[$id] = $this->getJson($url, $accept);
-        }
-
-        return $this->academicProgramArray[$id];
-    }
-
-    public function getAcademicPrograms() {
-        $url = self::API_URL . "/api/academic-programs";
-        $accept = 'application/vnd.hedtech.integration.v7+json';
-        $result = $this->getJson($url, $accept, 0, 500);
-    
-        return $result;
-    }
-
-
-    public function getInstitution($id) {
-
-        if (!array_key_exists($id, $this->institutionArray)) {
-            $url = self::API_URL . "/api/educational-institution-units/" . $id;
-            $accept = 'application/vnd.hedtech.integration.v7+json';
-            $this->institutionArray[$id] = $this->getJson($url, $accept);
-        }
-
-        return $this->institutionArray[$id];
-    }
-
-    public function getAcademicLevel($id) {
-        if (!array_key_exists($id, $this->academicLevelArray)) {
-            $url = self::API_URL . "/api/academic-levels/" . $id;
-            $accept = 'application/vnd.hedtech.integration.v6+json';
-            $this->academicLevelArray[$id] = $this->getJson($url, $accept);
-        }
-
-        return $this->academicLevelArray[$id];
-
-    }
-
-    public function getAcademicPeriod($id) {
-        if (!array_key_exists($id, $this->academicPeriodArray)) {
-            $url = self::API_URL . "/api/academic-periods/" . $id;
-            $accept = 'application/vnd.hedtech.integration.v8+json';
-            $this->academicPeriodArray[$id] = $this->getJson($url, $accept);
-        }
-
-        return $this->academicPeriodArray[$id];
-
-    }
-
-    public function getSite($id) {
-        if (!array_key_exists($id, $this->siteArray)) {
-            $url = self::API_URL . "/api/sites/" . $id;
-            $accept = 'application/vnd.hedtech.integration.v6+json';
-            $this->siteArray[$id] = $this->getJson($url, $accept);
-        }
-
-        return $this->siteArray[$id];
-
+        return $this->getByMap('StudentAcademicPrograms', null, $url);
     }
 
     public function getAcademicPeriodProfiles($personId, $academicPeriodId) {
         $url = self::API_URL . "/api/student-academic-period-profiles?person=" . $personId . "&academicPeriod=" . $academicPeriodId;
-        $accept = 'application/vnd.hedtech.integration.v7+json';
-        return $this->getJson($url, $accept);
+        return $this->getByMap('AcademicPeriodProfiles', null, $url);
+    }
+
+
+
+    /* Reference data API calls */
+
+    public function getStudentType($id) {
+        return $this->getByMap('StudentTypes', $id);
+    }
+
+    public function getStudentTypes() {
+        return $this->getByMap('StudentTypes');
+    }
+
+    public function getAcademicProgram($id) {
+        return $this->getByMap('AcademicPrograms', $id);
+    }
+
+    public function getAcademicPrograms() {
+        return $this->getByMap('AcademicPrograms');
+    }
+
+    public function getInstitution($id) {
+        return $this->getByMap('Institutions',$id);
+    }
+
+    public function getInstitutions() {
+        return $this->getByMap('Institutions');
+    }
+
+    public function getAcademicLevel($id) {
+        return $this->getByMap('AcademicLevels',$id);
+    }
+
+    public function getAcademicLevels() {
+        return $this->getByMap('AcademicLevels');
+    }
+
+    public function getAcademicPeriod($id) {
+        return $this->getByMap('AcademicPeriods',$id);
+    }
+
+    public function getAcademicPeriods() {
+        return $this->getByMap('AcademicPeriods');
+    }
+
+    public function getSite($id) {
+        return $this->getByMap('Sites',$id);
+    }
+
+    public function getSites() {
+        return $this->getByMap('Sites');
     }
 
     public function getEnrollmentStatus($id) {
-        if (!array_key_exists($id, $this->enrollmentStatusArray)) {
-            $url = self::API_URL . "/api/academic-period-enrollment-statuses/" . $id;
-            $accept = 'application/vnd.hedtech.integration.v7+json';
-            $this->enrollmentStatusArray[$id] = $this->getJson($url, $accept);
-        }
-
-        return $this->enrollmentStatusArray[$id];
+        return $this->getByMap('EnrolmentStatuses',$id); 
     }
 
+    public function getEnrollmentStatuses() {
+        return $this->getByMap('EnrolmentStatuses'); 
+    }
 
     public function getAcademicCredential($id) {
-        if (!array_key_exists($id, $this->academicCredentialArray)) {
-            $url = self::API_URL . "/api/academic-credentials/" . $id;
-            $accept = 'application/vnd.hedtech.integration.v6+json';
-            $this->academicCredentialArray[$id] = $this->getJson($url, $accept);
-        }
-
-        return $this->academicCredentialArray[$id];
+        return $this->getByMap('AcademicCredentials',$id); 
     }
 
+    public function getAcademicCredentials() {
+        return $this->getByMap('AcademicCredentials'); 
+    }
 
     public function getStudentStatus($id) {
-        if (!array_key_exists($id, $this->studentStatusArray)) {
-            $url = self::API_URL . "/api/student-statuses/" . $id;
-            $accept = 'application/vnd.hedtech.integration.v7+json';
-            $this->studentStatusArray[$id] = $this->getJson($url, $accept);
-        }
-
-        return $this->studentStatusArray[$id];
+        return $this->getByMap('StudentStatuses',$id);  
     }
 
+    public function getStudentStatuses() {
+        return $this->getByMap('StudentStatuses');  
+    }
 
     public function getAcademicDiscipline($id) {
-        if (!array_key_exists($id, $this->academicDisciplineArray)) {
-            $url = self::API_URL . "/api/academic-disciplines/" . $id;
-            $accept = 'application/vnd.hedtech.integration.v10+json';
-            $this->academicDisciplineArray[$id] = $this->getJson($url, $accept);
-        }
-
-        return $this->academicDisciplineArray[$id];
+        return $this->getByMap('AcademicDisciplines',$id);
     }
 
-
-    public function consumeMessages(){
-        $url = self::API_URL . "/consume?limit=200";
-        return $this->getJson($url, null);
+    public function getAcademicDisciplines() {
+        return $this->getByMap('AcademicDisciplines');
     }
-
 }

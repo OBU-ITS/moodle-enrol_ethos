@@ -55,8 +55,12 @@ class processing_service {
     }
 
     public function process_all_users() {
-        $this->trace->output('Processing all users...');
+        $this->trace->output('Caching all reference values...');
+        $this->ethosClient->cacheAllReferenceTypes();
+        $this->trace->output('...finished caching values');
 
+
+        $this->trace->output('Processing all users...');
         if ($users = $this->userService->getUsersByAuthType('ldap')) {
             $count = count($users);
             $this->trace->output("Found $count users in Moodle to process");
