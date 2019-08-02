@@ -17,6 +17,8 @@ class ethos_client
     public $accessToken;
 
     private $cache = array();
+    private $personCache = array();
+    private $personBannerIdMap = array();
 
     private $apiMap = array(
                     'AcademicDisciplines'   => array(   'path'      => 'academic-disciplines',
@@ -60,7 +62,7 @@ class ethos_client
                                                         'cachable'  => true ),
 
                     'Persons'               => array(   'path'      => 'persons',
-                                                        'accept'    => 'application/vnd.hedtech.integration.v12.1.0+json',
+                                                        'accept'    => 'application/vnd.hedtech.integration.v12+json',
                                                         'cachable'  => false ),
 
                     'Students'              => array(   'path'      => 'students',
@@ -93,7 +95,25 @@ class ethos_client
         }
     }
 
-    public function getByMap($resourceName, $id=null, $urlOverride=null, $paged=null) {
+    public function cacheAllPersonRecords() {
+
+        ini_set('memory_limit', '-1');
+
+        $personRecords = $this->getPersonsWithStudentRole();
+        //if ($drew = $this->getPersonsByBannerId('19003314',false)) array_push($personRecords,$drew[0]);
+        $this->personCache = $personRecords;
+
+        foreach ($personRecords as $person) {
+            foreach ($person->credentials as $credential) {
+                if ($credential->type=='bannerId') {
+                    $this->personBannerIdMap[$credential->value] = $person;
+                }
+            }
+            //$this->personBannerIdMap[]
+        }
+    }
+
+    public function getByMap($resourceName, $id=null, $urlOverride=null, $paged=null, $maxResults=0) {
         if (array_key_exists($resourceName,$this->apiMap) && $resource = $this->apiMap[$resourceName]) {
             
             if ($resource['cachable'] 
@@ -118,7 +138,7 @@ class ethos_client
             if (!$paged) {
                 $result = $this->getJson($url, $resource['accept']);
             } else {
-                $result = $this->getJson($url, $resource['accept'],0,500);
+                $result = $this->getJson($url, $resource['accept'],$maxResults,500);
             }
 
             if ($resource['cachable']) {
@@ -155,7 +175,8 @@ class ethos_client
         $results = array();
 
         for ($offset = 0; $offset < $maxResults; $offset+=$resultsPerPage) {
-            $url1 = "$url?limit=$resultsPerPage&offset=$offset";
+            $qjoin = strpos($url,'?') ? '&' : '?';
+            $url1 = "{$url}{$qjoin}limit=$resultsPerPage&offset=$offset";
             $jsonResult = json_decode($this->get($url1, $accept));
             $results = array_merge($jsonResult,$results);
             
@@ -272,9 +293,22 @@ class ethos_client
         return $this->getByMap('Persons',$id);
     }
 
-    public function getPersonsByBannerId($bannerId) {
-        $url = self::API_URL . "/api/persons?criteria={\"credentials\":[{\"type\":\"bannerId\",\"value\":\"" . $bannerId . "\"}]}";        
-        return $this->getByMap('Persons',null,$url);
+    public function getPersonsByBannerId($bannerId, $useCache=true) {        
+        if ($useCache) {
+            if (array_key_exists($bannerId, $this->personBannerIdMap)) {
+                return array($this->personBannerIdMap[$bannerId]);
+            }
+        } else {
+            $url = self::API_URL . "/api/persons?criteria={\"credentials\":[{\"type\":\"bannerId\",\"value\":\"" . $bannerId . "\"}]}";
+            return $this->getByMap('Persons', null, $url);
+        }
+
+        return false;
+    }
+
+    public function getPersonsWithStudentRole() {
+        $url = self::API_URL . '/api/persons?criteria={"roles":[{"role":"student"}]}';
+        return $this->getByMap('Persons',null,$url,true);
     }
 
     public function getStudentById($id) {

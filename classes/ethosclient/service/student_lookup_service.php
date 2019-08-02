@@ -34,7 +34,12 @@ class student_lookup_service {
     }
 
     public function lookupStudentFromBannerId($bannerId) {
+        
+        $start_time = microtime(true);
         $persons = $this->ethosClient->getPersonsByBannerId($bannerId);
+        $end_time = microtime(true);
+        $time = $end_time-$start_time;
+        $this->log("Ethos person lookup took $time seconds");
 
         if ($persons && count($persons) === 1) {
             return $this->lookupStudent($persons[0]);
@@ -53,7 +58,12 @@ class student_lookup_service {
         //logger->info("Looking up a student with person id %s"->format(personId))
 
         $newStudent = new student_info($person->id);
+        
+        $start_time = microtime(true);
         $students = $this->ethosClient->getStudentByPersonId($newStudent->personId);
+        $end_time = microtime(true);
+        $time = $end_time-$start_time;
+        $this->log("Ethos student lookup took $time seconds");
 
         if (!$students || (count($students) != 1)) {
             return false;
