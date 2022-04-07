@@ -55,15 +55,35 @@ class processing_service {
     }
 
     public function process_all_users() {
-        $this->trace->output('Processing all users...');
+        $this->trace->output('Caching all reference values...');
+        $time_start = microtime(true);
+        $this->ethosClient->cacheAllReferenceTypes();
+        $time_end = microtime(true);
+        $time = $time_end - $time_start;
+        $this->trace->output("...finished caching values in $time seconds");
 
+        $this->trace->output('Caching all person records');
+        $time_start = microtime(true);
+        $this->ethosClient->cacheAllPersonRecords();
+        $time_end = microtime(true);
+        $time = $time_end - $time_start;
+        $this->trace->output("...finished caching person records in $time seconds");
+
+        $this->trace->output('Processing all users...');
+        $time_start = microtime(true);
         if ($users = $this->userService->getUsersByAuthType('ldap')) {
+            $time_end = microtime(true);
+            $time = $time_end - $time_start;    
             $count = count($users);
-            $this->trace->output("Found $count users in Moodle to process");
+            $this->trace->output("Found $count users in Moodle to process in $time seconds");
+
+            $time_start = microtime(true);
             $this->process_users($users);
+            $time_end = microtime(true);
+            $time = $time_end - $time_start;   
+            $this->trace->output("...finished processing all users in $time seconds"); 
         }
 
-        $this->trace->output('...finished processing all users');
         $this->trace->finished();
     }
     
@@ -160,13 +180,33 @@ class processing_service {
 
         $this->trace->output("Processing user with username: '$user->username'");
 
+        $time_start_ethos = microtime(true);
+
         if ($student = $this->getEthosStudent($user)) {
 
-            $this->trace->output("Found Ethos user - Banner GUID: $student->personId");
+            $time_end = microtime(true);
+            $time = $time_end - $time_start_ethos;       
 
+            $this->trace->output("Found Ethos user - Banner GUID: {$student->personId} in $time seconds");
+
+            $time_start = microtime(true);
             $this->fill_user_profile($student, $user);
+            $time_end = microtime(true);
+            $time = $time_end - $time_end;       
+            $this->trace->output("Filled user profile in $time seconds");
+
+            $time_start = microtime(true);
             $this->userService->addDefaultEnrolments($user);
+            $time_end = microtime(true);
+            $time = $time_end - $time_end;       
+            $this->trace->output("Added default enrolments in $time seconds");
+
+            $time_start = microtime(true);
             $this->userService->updateUserProfile($user);
+            $time_end = microtime(true);
+            $time = $time_end - $time_end;       
+            $this->trace->output("Updated user profile in $time seconds");
+
         } else {
             $this->trace->output("No ethos user found");
         }
@@ -182,7 +222,6 @@ class processing_service {
             return $this->studentLookupService->lookupStudentFromBannerId($user->username);
         }
     }
-
 
     private function fill_user_profile($student, $user) {
 
