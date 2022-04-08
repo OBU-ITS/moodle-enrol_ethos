@@ -22,7 +22,7 @@ class ethos_client
 
     private $apiMap = array(
                     'AcademicDisciplines'   => array(   'path'      => 'academic-disciplines',
-                                                        'accept'    => 'application/vnd.hedtech.integration.v10+json',
+                                                        'accept'    => 'application/vnd.hedtech.integration.v15+json',
                                                         'cachable'  => true ),
 
                     'StudentStatuses'       => array(   'path'      => 'student-statuses',
@@ -33,8 +33,8 @@ class ethos_client
                                                         'accept'    =>  'application/vnd.hedtech.integration.v6+json',
                                                         'cachable'  => true ),
 
-                    'EnrolmentStatuses'     => array(   'path'      => 'academic-period-enrollment-statuses',
-                                                        'accept'    =>  'application/vnd.hedtech.integration.v7+json',
+                    'EnrolmentStatuses'     => array(   'path'      => 'student-academic-period-statuses',
+                                                        'accept'    =>  'application/vnd.hedtech.integration.v1+json',
                                                         'cachable'  => true ),
 
                     'Sites'                 => array(   'path'      => 'sites',
@@ -42,7 +42,7 @@ class ethos_client
                                                         'cachable'  => true ),
 
                     'AcademicPeriods'       => array(   'path'      =>  'academic-periods',
-                                                        'accept'    =>  'application/vnd.hedtech.integration.v8+json',
+                                                        'accept'    =>  'application/vnd.hedtech.integration.v16+json',
                                                         'cachable'  => true ),
 
                     'AcademicLevels'        => array(   'path'      => 'academic-levels',
@@ -54,7 +54,7 @@ class ethos_client
                                                         'cachable'  => true ),
 
                     'AcademicPrograms'      => array(   'path'      => 'academic-programs',
-                                                        'accept'    =>  'application/vnd.hedtech.integration.v7+json',
+                                                        'accept'    =>  'application/vnd.hedtech.integration.v15+json',
                                                         'cachable'  => true ),
      
                     'StudentTypes'          => array(   'path'      => 'student-types',
@@ -66,15 +66,15 @@ class ethos_client
                                                         'cachable'  => false ),
 
                     'Students'              => array(   'path'      => 'students',
-                                                        'accept'    => 'application/vnd.hedtech.integration.v7+json',
+                                                        'accept'    => 'application/vnd.hedtech.integration.v16+json',
                                                         'cachable'  => false ),
 
                     'StudentAcademicPrograms'  => array(     'path'      => 'student-academic-programs',
-                                                             'accept'    => 'application/vnd.hedtech.integration.v7+json',
+                                                             'accept'    => 'application/vnd.hedtech.integration.v17+json',
                                                              'cachable'  => false ),
 
-                    'AcademicPeriodProfiles'  => array(      'path'      => 'student-academic-period-profiles',
-                                                             'accept'    => 'application/vnd.hedtech.integration.v7+json',
+                    'AcademicPeriodProfiles'  => array(      'path'      => 'student-academic-periods',
+                                                             'accept'    => 'application/vnd.hedtech.integration.v1+json',
                                                              'cachable'  => false ));
                                                              
                                                                                             
