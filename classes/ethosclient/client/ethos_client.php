@@ -351,12 +351,12 @@ class ethos_client
     // }
 
     public function getStudentAcademicProgramsByPersonId($personId) {
-        $url = self::API_URL . "/api/student-academic-programs?student=" . $personId;
+        $url = self::API_URL . "/api/student-academic-programs?criteria={\"student\":{\"id\":\"".$personId."\"}}";
         return $this->getByMap('StudentAcademicPrograms', null, $url);
     }
 
     public function getAcademicPeriodProfiles($personId, $academicPeriodId) {
-        $url = self::API_URL . "/api/student-academic-period-profiles?person=" . $personId . "&academicPeriod=" . $academicPeriodId;
+        $url = self::API_URL . "/api/student-academic-periods?criteria={\"person\":{\"id\":\"".$personId."\"}, \"academicPeriod\":{\"id\":\"".$academicPeriodId."\"}}";
         return $this->getByMap('AcademicPeriodProfiles', null, $url);
     }
 
