@@ -40,6 +40,12 @@ class student_lookup_service {
         $end_time = microtime(true);
         $time = $end_time-$start_time;
         $this->log("Ethos person lookup took $time seconds");
+        if($persons) {
+            $this->log(count($persons) . " Ethos persons found");
+        }
+        else{
+            $this->log(" No Ethos persons found");
+        }
 
         if ($persons && count($persons) === 1) {
             return $this->lookupStudent($persons[0]);
@@ -52,10 +58,17 @@ class student_lookup_service {
      */
     public function lookupStudent($person) {
         if (!$person || isset($person->errors)) {
+            $this->log("lookupStudent: No person OR errors is set");
+            if(isset($person->errors)) {
+                foreach ($person->errors as $error) {
+                    $this->log($error);
+                }
+            }
             return false;
         }
 
         //logger->info("Looking up a student with person id %s"->format(personId))
+        $this->log("Looking up a student with person id: " . $person->id);
 
         $newStudent = new student_info($person->id);
         
