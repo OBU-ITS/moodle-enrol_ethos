@@ -44,7 +44,7 @@ class student_lookup_service {
             $this->log(count($persons) . " Ethos persons found");
         }
         else{
-            $this->log(" No Ethos persons found");
+            $this->log("No Ethos persons found");
         }
 
         if ($persons && count($persons) === 1) {

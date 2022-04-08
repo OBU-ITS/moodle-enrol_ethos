@@ -293,17 +293,13 @@ class ethos_client
         return $this->getByMap('Persons',$id);
     }
 
-    public function getPersonsByBannerId($bannerId, $useCache=true) {        
-        if ($useCache) {
-            if (array_key_exists($bannerId, $this->personBannerIdMap)) {
+    public function getPersonsByBannerId($bannerId, $useCache=true) {
+        if ($useCache && array_key_exists($bannerId, $this->personBannerIdMap)) {
                 return array($this->personBannerIdMap[$bannerId]);
-            }
-        } else {
-            $url = self::API_URL . "/api/persons?criteria={\"credentials\":[{\"type\":\"bannerId\",\"value\":\"" . $bannerId . "\"}]}";
-            return $this->getByMap('Persons', null, $url);
         }
 
-        return false;
+        $url = self::API_URL . "/api/persons?criteria={\"credentials\":[{\"type\":\"bannerId\",\"value\":\"" . $bannerId . "\"}]}";
+        return $this->getByMap('Persons', null, $url);
     }
 
     public function getPersonsWithStudentRole() {
