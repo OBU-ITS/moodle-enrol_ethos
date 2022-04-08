@@ -295,7 +295,7 @@ class ethos_client
 
     public function getPersonsByBannerId($bannerId, $useCache=true) {
         if ($useCache && array_key_exists($bannerId, $this->personBannerIdMap)) {
-                return array($this->personBannerIdMap[$bannerId]);
+            return array($this->personBannerIdMap[$bannerId]);
         }
 
         $url = self::API_URL . "/api/persons?criteria={\"credentials\":[{\"type\":\"bannerId\",\"value\":\"" . $bannerId . "\"}]}";
@@ -318,7 +318,7 @@ class ethos_client
         /**
          * Get a single student
          */
-        $url = self::API_URL . '/api/students?person=' . $personId;
+        $url = self::API_URL . "/api/students?criteria={\"person\": {\"id\": \"" . $personId ."\"}}";
         return $this->getByMap('Students',null,$url);
     }
 
