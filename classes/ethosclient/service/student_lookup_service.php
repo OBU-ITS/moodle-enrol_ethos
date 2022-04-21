@@ -309,12 +309,11 @@ class student_lookup_service {
                 
                 switch ($resourceName) {
                     case 'persons':
+                    case 'person-holds':
                         $id = $messageContent->id;
                         break;
-                    case 'students':
-                        $id = $messageContent->person->id;
-                        break;
                     case 'student-academic-period-profiles':
+                    case 'students':
                         $id = $messageContent->person->id;
                         break;
                     case 'student-academic-programs':
