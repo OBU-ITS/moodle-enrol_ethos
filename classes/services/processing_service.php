@@ -182,27 +182,6 @@ class processing_service {
         return $bannerId;
     }
 
-    public function processUserProfilesWithOrWithoutBannerIds($bannerIds) {
-        $users = getUserProfilesWithBannerIds($bannerIds);
-        foreach ($users as $user) {
-            process_user($user);
-        }
-        // Process users with banner Guids
-
-        // Get list of users from Ethos which are not in Moodle with Banner Guid
-        $bannerIds = array_diff($bannerIds, $users->userProfile->bannerGuid);
-
-        // Get users details from Ethos API
-        $bannerPersonRecords = null;
-
-        // Get users in moodle which do not have bannerGuid -- using username
-        // Update records accordingly
-
-        // Get list of users which are not in moodle yet
-
-        // Create users
-    }
-
     public function create_psuedo_courses() {
 
         $this->trace->output("Create psuedo courses...");
