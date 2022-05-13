@@ -4,7 +4,9 @@ use enrol_ethos\entities\user;
 
 interface user_repository_interface
 {
-    public function findOne($id);
+    public function getById($id);
+    public function getByUsername($username);
+    public function createUser(string $username, string $firstname, string $lastname, string $email) : int;
     public function save(user $user);
     public function remove(user $user);
     public function getAllUsersWithProfileFieldData(string $profileFieldShortName);

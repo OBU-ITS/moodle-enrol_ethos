@@ -9,7 +9,7 @@ class course_service {
     private $courseRepository;
     private $courseCategoryRepository;
 
-    public function __construct(course_repository_interface $courseRepository, course_category_repository_interface $courseCategoryRepository = null) {
+    public function __construct(course_repository_interface $courseRepository, course_category_repository_interface $courseCategoryRepository) {
         $this->courseRepository = $courseRepository;
         $this->courseCategoryRepository = $courseCategoryRepository;
     }
@@ -23,11 +23,6 @@ class course_service {
     }
         
     public function updateOrCreateCourse($data) {
-
-        if (!$this->courseCategoryRepository) {
-            throw Exception("No course category repo set");
-        }
-
         $categories = $data['categories'];
         $parentCategory = get_config('enrol_ethos', 'catselect') ?: 1;
         $currentCategory = $parentCategory;
@@ -68,8 +63,6 @@ class course_service {
 
             $course = $this->courseRepository->create($course);
 
-            return $course;
-
         } else {
 
             $course->idnumber = $data['idnumber'];
@@ -79,7 +72,8 @@ class course_service {
 
             $this->courseRepository->update($course);
 
-            return $course;
         }
+
+        return $course;
     }
 }
