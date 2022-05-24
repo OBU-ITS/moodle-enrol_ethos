@@ -18,13 +18,13 @@
  * Flat file enrolment plugin version specification.
  *
  * @package    enrol_ethos
- * @copyright  
- * @author     
+ * @copyright
+ * @author
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2019071801;        // The current plugin version (Date: YYYYMMDDRR)
+$plugin->version   = 2022052401;        // The current plugin version (Date: YYYYMMDDRR)
 $plugin->requires  = 2018112800;        // Requires this Moodle version
 $plugin->component = 'enrol_ethos';  // Full name of the plugin (used for diagnostics)

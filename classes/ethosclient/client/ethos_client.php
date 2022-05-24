@@ -12,6 +12,7 @@ class ethos_client
 {
     private $client = null;
     const API_URL = "https://integrate.elluciancloud.ie";
+    const verify = false;
 
     public $authKey;
     public $accessToken;
@@ -56,7 +57,7 @@ class ethos_client
                     'AcademicPrograms'      => array(   'path'      => 'academic-programs',
                                                         'accept'    =>  'application/vnd.hedtech.integration.v15+json',
                                                         'cachable'  => true ),
-     
+
                     'StudentTypes'          => array(   'path'      => 'student-types',
                                                         'accept'    =>  'application/vnd.hedtech.integration.v7+json',
                                                         'cachable'  => true ),
@@ -76,16 +77,16 @@ class ethos_client
                     'AcademicPeriodProfiles'  => array(      'path'      => 'student-academic-periods',
                                                              'accept'    => 'application/vnd.hedtech.integration.v1+json',
                                                              'cachable'  => false ));
-                                                             
-                                                                                            
+
+
     public function __construct($key)
     {
         $this->authKey = $key;
         $this->client = new Client();
     }
 
-    public function consumeMessages(){
-        $url = self::API_URL . "/consume?limit=200";
+    public function consumeMessages($lastProcessedId = 0, $consumeLimit = 200) {
+        $url = self::API_URL . "/consume?limit=". $consumeLimit ."&lastProcessedID=" . $lastProcessedId;
         return $this->getJson($url, null);
     }
 
@@ -115,8 +116,8 @@ class ethos_client
 
     public function getByMap($resourceName, $id=null, $urlOverride=null, $paged=null, $maxResults=0) {
         if (array_key_exists($resourceName,$this->apiMap) && $resource = $this->apiMap[$resourceName]) {
-            
-            if ($resource['cachable'] 
+
+            if ($resource['cachable']
                 && array_key_exists($resourceName,$this->cache)
                 && array_key_exists($id, $this->cache[$resourceName])) {
                 return $this->cache[$resourceName][$id];
@@ -125,7 +126,7 @@ class ethos_client
             $url = $urlOverride ? $urlOverride :
                 self::API_URL . "/api/{$resource['path']}";
 
-            
+
             if (!$urlOverride) {
                 if ($id) {
                     $url = $url . "/$id";
@@ -134,7 +135,7 @@ class ethos_client
                     $paged = $paged === null ? true : $paged;
                 }
             }
-            
+
             if (!$paged) {
                 $result = $this->getJson($url, $resource['accept']);
             } else {
@@ -145,7 +146,7 @@ class ethos_client
                 if ($id) {
                     // Cache single object using provided id
                     $this->cache[$resourceName][$id] = $result;
-                } else {   
+                } else {
                     // Assume array and cache all the results
                     foreach ($result as $res) {
                         $this->cache[$resourceName][$res->id] = $res;
@@ -160,11 +161,11 @@ class ethos_client
     public function getJson($url, $accept, $maxResults = 0, $resultsPerPage = 0){
 
         // Do we need to page the results?
-        
+
         // 0 0 dont page
         // 500 500 dont page
         // 400 500 dont page
-        // 0 500 page 
+        // 0 500 page
 
         if ((!$resultsPerPage) || ($maxResults && ($maxResults <= $resultsPerPage))) {
             return json_decode($this->get($url, $accept));
@@ -179,7 +180,7 @@ class ethos_client
             $url1 = "{$url}{$qjoin}limit=$resultsPerPage&offset=$offset";
             $jsonResult = json_decode($this->get($url1, $accept));
             $results = array_merge($jsonResult,$results);
-            
+
             if (count($jsonResult) < $resultsPerPage) {
                 break;
             }
@@ -189,7 +190,7 @@ class ethos_client
     }
 
     public function get($url, $accept) {
-        
+
         $maxTries = 3;
         $tries = 0;
 
@@ -202,6 +203,7 @@ class ethos_client
 
             try {
                 $options = [
+                    'verify' => self::verify,
                     'headers' => [
                         'Content-Type'      => 'application/json',
                         'Accept-Charset'    => 'UTF-8',
@@ -209,26 +211,25 @@ class ethos_client
                         'Authorization'     => 'Bearer ' . $this->getAccessToken()
                     ],
                 ];
-        
-                if (isset($GLOBALS['debug-alluser-issue'])) {
-                    var_dump($url);
-                    var_dump($options);
-                }
 
                 $response = $this->client->get($url, $options);
 
-                if (isset($GLOBALS['debug-alluser-issue'])) var_dump($response);
                 return $response->getBody()->getContents();
 
             } catch (RequestException $e) {
                 // Handle non 200 responses - includes regenerating access token if necessary
-                
-                if (isset($GLOBALS['debug-alluser-issue'])) {
-                    echo "EXCEPTION";
-                    var_dump($e);
+
+                $statusCode = $e->getResponse()->getStatusCode();
+
+                switch ($statusCode) {
+                    case '400':
+                    case '401':
+                        $this->prepareAccessToken();
+                        break;
+                    default:
+                        return $e->getResponse()->getBody(true)->getContents();
                 }
 
-                $response = $this->StatusCodeHandling($e);
                 if (++$tries == $maxTries) {
                     // Max consecutive errors - not solved by retrying.
                     // TODO: Exponential back off.
@@ -241,11 +242,12 @@ class ethos_client
     public function prepareAccessToken()
     {
         try {
-            $url = self::API_URL . '/auth';
 
+            $url = self::API_URL . '/auth';
             $options = [
+                'verify' => self::verify,
                 'headers' => [
-                    'Authorization'      => "Bearer {$this->authKey}",
+                    'Authorization'      => "Bearer " . $this->authKey,
                     'Cache-Control'      => 'no-cache'
                 ],
             ];
@@ -266,31 +268,14 @@ class ethos_client
         return $this->accessToken;
     }
 
-    public function StatusCodeHandling($e)
-    {    
-        $statusCode = $e->getResponse()->getStatusCode();
-
-        if ($statusCode == '400') {
-            $this->prepareAccessToken();
-        } elseif ($statusCode == '422') {
-            $response = json_decode($e->getResponse()->getBody(true)->getContents());
-            return $response;
-        } elseif ($statusCode == '500') {
-            $response = json_decode($e->getResponse()->getBody(true)->getContents());
-            return $response;
-        } elseif ($statusCode == '401') {
-            $this->prepareAccessToken();
-        } elseif ($statusCode == '403') {
-            $response = json_decode($e->getResponse()->getBody(true)->getContents());
-            return $response;
-        } else {
-            $response = json_decode($e->getResponse()->getBody(true)->getContents());
-            return $response;
-        }
-    }
-
     public function getPersonById($id) {
-        return $this->getByMap('Persons',$id);
+        $person = $this->getByMap('Persons',$id);
+
+        if(!$person || isset($person->errors)) {
+            return null;
+        }
+
+        return $person;
     }
 
     public function getPersonsByBannerId($bannerId, $useCache=true) {
@@ -319,7 +304,7 @@ class ethos_client
          * Get a single student
          */
         $url = self::API_URL . "/api/students?criteria={\"person\": {\"id\": \"" . $personId ."\"}}";
-        return $this->getByMap('Students',null,$url);
+        return $this->getByMap('Students',null, $url);
     }
 
     public function getStudents()
@@ -413,27 +398,27 @@ class ethos_client
     }
 
     public function getEnrollmentStatus($id) {
-        return $this->getByMap('EnrolmentStatuses',$id); 
+        return $this->getByMap('EnrolmentStatuses',$id);
     }
 
     public function getEnrollmentStatuses() {
-        return $this->getByMap('EnrolmentStatuses'); 
+        return $this->getByMap('EnrolmentStatuses');
     }
 
     public function getAcademicCredential($id) {
-        return $this->getByMap('AcademicCredentials',$id); 
+        return $this->getByMap('AcademicCredentials',$id);
     }
 
     public function getAcademicCredentials() {
-        return $this->getByMap('AcademicCredentials'); 
+        return $this->getByMap('AcademicCredentials');
     }
 
     public function getStudentStatus($id) {
-        return $this->getByMap('StudentStatuses',$id);  
+        return $this->getByMap('StudentStatuses',$id);
     }
 
     public function getStudentStatuses() {
-        return $this->getByMap('StudentStatuses');  
+        return $this->getByMap('StudentStatuses');
     }
 
     public function getAcademicDiscipline($id) {

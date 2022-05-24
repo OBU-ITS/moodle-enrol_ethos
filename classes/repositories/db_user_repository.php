@@ -30,9 +30,9 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
     {
         $sql  = 'select u.id AS userid, username ';
         $sql .= 'from {user} u ';
-        $sql .=  'where u.username = :username';
+        $sql .= 'where u.username = :username';
 
-        return $this->db->get_record_sql($sql, ['username' => username]);
+        return $this->db->get_record_sql($sql, ['username' => $username]);
     }
 
     public function getAllUsers($authType=null, $includeDeleted=true) {
@@ -71,7 +71,6 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
         $user->firstname = $firstname;
         $user->lastname = $lastname;
         $user->email = $email;
-        $user->calendartype = $CFG->calendartype;
 
         return user_create_user($user, false, false);
     }
@@ -105,7 +104,8 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
              'recognitions' => 0,
              'creditsEarned' => 0,
              'academicLevel' => 0,
-             'dyslexic' => 0);
+             'dyslexic' => 0,
+             'bannerGuid' => 0);
              /*'programmes' => 0,
              'leadProgramOfStudy' => 0);*/
 

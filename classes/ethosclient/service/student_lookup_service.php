@@ -26,7 +26,6 @@ class student_lookup_service {
     }
 
     public function lookupStudentFromPersonId($bannerId) {
-        //logger.info("Looking up a student with student id %s".format(studentId))
 
         $person = $this->ethosClient->getPersonById($bannerId);
 
@@ -34,7 +33,7 @@ class student_lookup_service {
     }
 
     public function lookupStudentFromBannerId($bannerId) {
-        
+
         $start_time = microtime(true);
         $persons = $this->ethosClient->getPersonsByBannerId($bannerId);
         $end_time = microtime(true);
@@ -71,7 +70,7 @@ class student_lookup_service {
         $this->log("Looking up a student with person id: " . $person->id);
 
         $newStudent = new student_info($person->id);
-        
+
         $start_time = microtime(true);
         $students = $this->ethosClient->getStudentByPersonId($newStudent->personId);
         $end_time = microtime(true);
@@ -97,7 +96,7 @@ class student_lookup_service {
 
         // TODO: WHY IS THIS MISSING IN BILD FOR API V7?
         //$newStudent->studentId = $student->id;
-        
+
         //$newStudent->studentNumber = $person->credentials->filter { credential -> credential->type->equals("bannerId") }?->first()?->value
 
         $newStudent->forename = $nameInfo->firstName;
@@ -143,14 +142,14 @@ class student_lookup_service {
             // Set the lead award code and title
             $newStudent->awardCode = $leadProgramOfStudy->awardAbbreviation;
             $newStudent->awardTitle = $leadProgramOfStudy->awardTitle;
-    
+
         }
-        
+
         // Get the first major
         //$disciplineMajor = null;//leadProgramOfStudy?->disciplines?->stream()?->filter( { d-> d->disciplineType->equals("major")} )?->collect(Collectors->toList())?->firstOrNull()
 
         // If there is a major discipline code, set it
-        
+
         if ($disciplineMajor = array_values(array_filter($leadProgramOfStudy->disciplines, function ($a) {
             return $a->disciplineType == "major";
         }))[0] ?? null) {
@@ -196,7 +195,7 @@ class student_lookup_service {
                 $programInfo->facultyCode = $faculty->code;
                 $programInfo->facultyTitle = $faculty->title;
             }
-    
+
         }
 
         $programInfo->preference = $studentAcademicProgram->preference;
@@ -225,7 +224,7 @@ class student_lookup_service {
 
         $startOn = $this->ArrayToDateTime(date_parse($period->startOn));
         $endOn = $this->ArrayToDateTime(date_parse($period->endOn));
-        
+
         if ($period) {
             $programInfo->periodInfo = new period_info($period->category->type, $period->category->parent->id, $period->code, $period->title, $endOn, $period->id, $startOn, $period->registration);
         }
@@ -285,53 +284,86 @@ class student_lookup_service {
         return null;
     }
 
+    public function getStudentsWithChanges($lastProcessedID = 0, $maxProcessedID = 0, $processLimit = 2000) {
+        $this->log("----------------------------------------");
+        $this->log("Ethos consume started.");
 
-
-
-    public function getStudentsWithChanges() {
-
-        $messages = $this->ethosClient->consumeMessages();
-
-        $count = count($messages);
-        $this->log("Found $count messages");
+        $time_start = microtime(true);
 
         $studentArray = array();
+        $processedCount = 0;
+        $maxProcessedIdReached = false;
 
-        foreach ($messages as $message) {
+        do {
+            $messages = $this->ethosClient->consumeMessages($lastProcessedID);
 
-            if (isset($message->resource) 
-            && isset($message->content) 
-            && isset($message->operation)
-            && ($message->operation !== 'deleted')) {
+            $messagesCount = count($messages);
+            $this->log("$messagesCount messages consumed from Ethos.");
 
-                $resourceName = $message->resource->name;
-                $messageContent = $message->content;
-                
-                switch ($resourceName) {
-                    case 'persons':
-                    case 'person-holds':
-                        $id = $messageContent->id;
-                        break;
-                    case 'student-academic-period-profiles':
-                    case 'students':
-                        $id = $messageContent->person->id;
-                        break;
-                    case 'student-academic-programs':
-                        $id = $messageContent->student->id;
-                        break;
+            foreach ($messages as $message) {
+                $messageId = $message->id;
+
+                // TODO : Remove maxProcessedID after testing. The following code will consume but not process any messages above a given Ethos message ID.
+                if($maxProcessedID > 0 && $messageId > $maxProcessedID){
+                    $maxProcessedIdReached = true;
+                    break;
                 }
 
-                if (!in_array($id, $studentArray))
-                {
-                    $studentArray[] = $id; 
-                }
+                $lastProcessedID = $messageId;
 
+                $processedCount++;
+
+                if (isset($message->resource)
+                    && isset($message->content)
+                    && isset($message->operation)
+                    && ($message->operation !== 'deleted')) {
+
+                    $resourceName = $message->resource->name;
+                    $messageContent = $message->content;
+
+                    $id = 0;
+                    switch ($resourceName) {
+                        case 'persons':
+                        case 'person-holds':
+                            $id = $messageContent->id;
+                            break;
+                        case 'student-academic-period-profiles':
+                        case 'students':
+                            $id = $messageContent->person->id;
+                            break;
+                        case 'student-academic-programs':
+                            $id = $messageContent->student->id;
+                            break;
+                    }
+
+                    if ($id > 0 && !in_array($id, $studentArray))
+                    {
+                        $studentArray[] = $id;
+                    }
+                }
             }
 
+        } while (!$maxProcessedIdReached && $messagesCount > 0 && $processedCount < $processLimit);
+
+        if($maxProcessedIdReached) {
+            $this->log("Ethos consume finished: Max processed ID reached.");
+        }
+        else if($processedCount >= $processLimit) {
+            $this->log("Ethos consume finished: Process limit ($processLimit) reached. $processedCount messages processed.");
+        }
+        else {
+            $this->log("Ethos consume finished: All messages consumed.");
         }
 
+        $studentCount = count($studentArray);
+        $this->log("Found $processedCount messages containing changes to $studentCount students.");
+
+
+        $time_end = microtime(true);
+        $time = $time_end - $time_start;
+
+        $this->log("Ethos consume finished in $time seconds");
+
         return $studentArray;
-
     }
-
 }

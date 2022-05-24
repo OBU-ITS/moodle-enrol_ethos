@@ -84,7 +84,7 @@ class user_service {
         $this->userRepository->save($user);
     }
 
-    public function createUser(string $username, string $firstname, string $lastname, string $email) : int {
+    public function createUser(string $username, string $firstname, string $lastname, string $email) {
         $id = $this->userRepository->createUser($username, $firstname, $lastname, $email);
 
         return $this->getUserById($id);
@@ -127,7 +127,12 @@ class user_service {
 
     public function getUserByUsername($username){
         $dbuser = $this->userRepository->getByUsername($username);
-        return($this->convertUserProfile($dbuser));
+
+        if($dbuser) {
+            return ($this->convertUserProfile($dbuser));
+        }
+
+        return null;
     }
 
     private function convertUserProfiles($dbusers, $profileField = null) {

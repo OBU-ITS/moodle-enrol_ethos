@@ -91,15 +91,14 @@ class processing_service {
         $this->trace->finished();
     }
 
-    public function process_ethos_updates() {
-        $this->trace->output("Reading messages from ethos queue");
-        $bannerGuidsFromEthos = $this->studentLookupService->getStudentsWithChanges();
+    public function process_ethos_updates($lastProcessedID = 0, $maxProcessedID = 0) {
 
-        $count = count($bannerGuidsFromEthos);
-        $this->trace->output("Found $count persons with changes");
+        $bannerGuidsFromEthos = $this->studentLookupService->getStudentsWithChanges($lastProcessedID, $maxProcessedID);
+
+        $this->trace->output("----------------------------------------");
 
         if(!$bannerGuidsFromEthos) {
-            $this->trace->output("Finished reading messages from ethos queue");
+            $this->trace->output("Finished reading messages from ethos queue..");
             $this->trace->finished();
             return;
         }
@@ -107,11 +106,20 @@ class processing_service {
         $moodleUsersWithMatchingBannerGuid = $this->userService->getUserProfilesWithBannerIds($bannerGuidsFromEthos);
         $count = count($moodleUsersWithMatchingBannerGuid);
         $this->trace->output("Found $count Moodle users that have matching Banner GUIDs");
+        $this->trace->output("----------------------------------------");
+        $existingBannerGuids = array();
         foreach ($moodleUsersWithMatchingBannerGuid as $user) {
-            process_user($user);
+            $bannerGuid = $user->userProfile->bannerGuid;
+            if (!in_array($bannerGuid, $existingBannerGuids))
+            {
+                $existingBannerGuids[] = $bannerGuid;
+            }
+            $this->process_user($user);
+
+            $this->trace->output("----------------------------------------");
         }
 
-        $bannerGuidsNotInMoodle = array_diff($bannerGuidsFromEthos, $moodleUsersWithMatchingBannerGuid->userProfile->bannerGuid);
+        $bannerGuidsNotInMoodle = array_diff($bannerGuidsFromEthos, $existingBannerGuids);
 
         if(!$bannerGuidsNotInMoodle) {
             $this->trace->output("Finished reading messages from ethos queue");
@@ -121,15 +129,20 @@ class processing_service {
 
         $count = count($bannerGuidsNotInMoodle);
         $this->trace->output("Found $count persons with changes which cannot be found in Moodle");
+        $this->trace->output("----------------------------------------");
 
         $moodleUsersWithoutMatchingBannerGuid = array();
         foreach($bannerGuidsNotInMoodle as $bannerGuid) {
-            $bannerPerson = ethos_client::getPersonById($bannerGuid);
+            $bannerPerson = $this->ethosClient->getPersonById($bannerGuid);
             if(!$bannerPerson) {
+                $this->trace->output("Cannot find ($bannerGuid) within Ethos");
                 continue;
             }
 
-            $username = getBannerIdFromEthosPerson($bannerPerson);
+            $bannerFirstName = $bannerPerson->names[0]->firstName ?? "Unknown";
+            $bannerLastName = $bannerPerson->names[0]->lastName ?? "Unknown";
+            $username = $this->getBannerIdFromEthosPerson($bannerPerson);
+
             // check user in Moodle
             $moodleUserWithoutBannerGuid = $this->userService->getUserByUsername($username);
             if($moodleUserWithoutBannerGuid) {
@@ -137,28 +150,33 @@ class processing_service {
                 $moodleUserWithoutBannerGuid->userProfile->bannerGuid = $bannerGuid;
                 $this->userService->updateUserProfile($moodleUserWithoutBannerGuid);
 
-                $this->trace->output("User updated Banner Guid ($bannerGuid)");
+                $this->trace->output("User updated Banner Guid ($bannerGuid). $bannerFirstName $bannerLastName ($username)");
             }
             else {
                 // Create stub user
                 $moodleUserWithoutBannerGuid = $this->userService->createUser(
                     $username,
-                    $bannerPerson->names->firstName,
-                    $bannerPerson->names->lastName,
-                    $bannerPerson->emails->address);
+                    $bannerFirstName,
+                    $bannerLastName,
+                    $username . '@brookes.ac.uk');
 
                 $moodleUserWithoutBannerGuid->userProfile->bannerGuid = $bannerGuid;
                 $this->userService->updateUserProfile($moodleUserWithoutBannerGuid);
 
-                $this->trace->output("User created ($bannerGuid)");
+                $this->trace->output("User created ($bannerGuid). $bannerFirstName $bannerLastName ($username)");
             }
 
             array_push($moodleUsersWithoutMatchingBannerGuid, $moodleUserWithoutBannerGuid);
         }
 
+        $this->trace->output("----------------------------------------");
+
         foreach ($moodleUsersWithoutMatchingBannerGuid as $user) {
-            process_user($user);
+            $this->process_user($user);
+
+            $this->trace->output("----------------------------------------");
         }
+
 
         $this->trace->output("Finished reading messages from ethos queue");
         $this->trace->finished();
