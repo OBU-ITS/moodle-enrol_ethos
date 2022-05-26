@@ -70,6 +70,10 @@ class ethos_client
                                                         'accept'    => 'application/vnd.hedtech.integration.v16+json',
                                                         'cachable'  => false ),
 
+                    'AlternativeCredentialTypes'    => array(   'path'      => 'alternative-credential-types',
+                                                                'accept'    => 'application/vnd.hedtech.integration.v1+json',
+                                                                'cachable'  => true ),
+
                     'StudentAcademicPrograms'  => array(     'path'      => 'student-academic-programs',
                                                              'accept'    => 'application/vnd.hedtech.integration.v17+json',
                                                              'cachable'  => false ),
@@ -335,6 +339,10 @@ class ethos_client
     //     return responseEntity->body!!
     // }
 
+    public function getStudentAcademicProgram($id) {
+        return $this->getByMap('StudentAcademicPrograms', $id);
+    }
+
     public function getStudentAcademicProgramsByPersonId($personId) {
         $url = self::API_URL . "/api/student-academic-programs?criteria={\"student\":{\"id\":\"".$personId."\"}}";
         return $this->getByMap('StudentAcademicPrograms', null, $url);
@@ -345,9 +353,29 @@ class ethos_client
         return $this->getByMap('AcademicPeriodProfiles', null, $url);
     }
 
+    public function getEmployeeNumberAlternativeCredentialType() {
 
+        if (array_key_exists("EmployeeNumberAlternativeCredentialType", $this->cache)) {
+            return $this->cache["EmployeeNumberAlternativeCredentialType"];
+        }
+
+        $alternativeCredentialTypes = $this->getAlternativeCredentialTypes();
+
+        foreach ( $alternativeCredentialTypes as $alternativeCredentialType ) {
+            if ( $alternativeCredentialType->code == "EMPN") {
+                $this->cache["EmployeeNumberAlternativeCredentialType"] = $alternativeCredentialType;
+                return $alternativeCredentialType;
+            }
+        }
+
+        return null;
+    }
 
     /* Reference data API calls */
+
+    public function getAlternativeCredentialTypes() {
+        return $this->getByMap('AlternativeCredentialTypes');
+    }
 
     public function getStudentType($id) {
         return $this->getByMap('StudentTypes', $id);

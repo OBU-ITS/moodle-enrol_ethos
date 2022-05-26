@@ -1,5 +1,4 @@
 <?php
-
 namespace enrol_ethos\ethosclient\service;
 
 class student_lookup_service {
@@ -284,13 +283,13 @@ class student_lookup_service {
         return null;
     }
 
-    public function getStudentsWithChanges($lastProcessedID = 0, $maxProcessedID = 0, $processLimit = 2000) {
-        $this->log("----------------------------------------");
+    public function getStudentsWithChanges($lastProcessedID = 0, $maxProcessedID = 0, $processLimit = 2000): messages_model
+    {
         $this->log("Ethos consume started.");
 
         $time_start = microtime(true);
 
-        $studentArray = array();
+        $messagesModel = new messages_model();
         $processedCount = 0;
         $maxProcessedIdReached = false;
 
@@ -298,7 +297,7 @@ class student_lookup_service {
             $messages = $this->ethosClient->consumeMessages($lastProcessedID);
 
             $messagesCount = count($messages);
-            $this->log("$messagesCount messages consumed from Ethos.");
+            //$this->log("$messagesCount messages consumed from Ethos.");
 
             foreach ($messages as $message) {
                 $messageId = $message->id;
@@ -311,6 +310,8 @@ class student_lookup_service {
 
                 $lastProcessedID = $messageId;
 
+                $messageModel = null;
+
                 $processedCount++;
 
                 if (isset($message->resource)
@@ -319,51 +320,51 @@ class student_lookup_service {
                     && ($message->operation !== 'deleted')) {
 
                     $resourceName = $message->resource->name;
+                    $resourceId = $message->resource->id;
                     $messageContent = $message->content;
 
-                    $id = 0;
                     switch ($resourceName) {
                         case 'persons':
                         case 'person-holds':
-                            $id = $messageContent->id;
+                            $messageModel = new message_model($messageId, $resourceId, $messageContent->id);
+                            $messagesModel->addPerson($messageModel);
                             break;
                         case 'student-academic-period-profiles':
                         case 'students':
-                            $id = $messageContent->person->id;
+                            // TODO : Implement student update
+                            // $messageModel = new message_model($messageId, $resourceId, $messageContent->person->id);
                             break;
                         case 'student-academic-programs':
-                            $id = $messageContent->student->id;
+                            $messageModel = new message_model($messageId, $resourceId, $messageContent->student->id);
+                            $messagesModel->addStudentAcademicPrograms($messageModel);
                             break;
-                    }
-
-                    if ($id > 0 && !in_array($id, $studentArray))
-                    {
-                        $studentArray[] = $id;
                     }
                 }
             }
 
         } while (!$maxProcessedIdReached && $messagesCount > 0 && $processedCount < $processLimit);
 
-        if($maxProcessedIdReached) {
-            $this->log("Ethos consume finished: Max processed ID reached.");
-        }
-        else if($processedCount >= $processLimit) {
-            $this->log("Ethos consume finished: Process limit ($processLimit) reached. $processedCount messages processed.");
-        }
-        else {
-            $this->log("Ethos consume finished: All messages consumed.");
-        }
 
-        $studentCount = count($studentArray);
-        $this->log("Found $processedCount messages containing changes to $studentCount students.");
-
+        $this->log("Found $processedCount messages.");
+        if($processedCount > 0) {
+            $personCount = count($messagesModel->persons);
+            $this->log("Found $personCount persons to process.");
+            $studentAcademicProgramsCount = count($messagesModel->studentAcademicPrograms);
+            $this->log("Found $studentAcademicProgramsCount student academic programs to process.");
+        }
 
         $time_end = microtime(true);
         $time = $time_end - $time_start;
+        if($maxProcessedIdReached) {
+            $this->log("Ethos consume finished in $time seconds: Max processed ID reached.");
+        }
+        else if($processedCount >= $processLimit) {
+            $this->log("Ethos consume finished in $time seconds: Process limit ($processLimit) reached. $processedCount messages processed.");
+        }
+        else {
+            $this->log("Ethos consume finished in $time seconds: All messages consumed.");
+        }
 
-        $this->log("Ethos consume finished in $time seconds");
-
-        return $studentArray;
+        return $messagesModel;
     }
 }

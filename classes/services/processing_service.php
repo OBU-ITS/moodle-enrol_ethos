@@ -5,6 +5,8 @@ namespace enrol_ethos\services;
 use enrol_ethos\ethosclient\client\ethos_client;
 use enrol_ethos\entities\user;
 use enrol_ethos\entities\user_profile;
+use enrol_ethos\ethosclient\service\messages_model;
+use enrol_ethos\ethosclient\service\message_model;
 
 class processing_service {
 
@@ -93,12 +95,80 @@ class processing_service {
 
     public function process_ethos_updates($lastProcessedID = 0, $maxProcessedID = 0) {
 
-        $bannerGuidsFromEthos = $this->studentLookupService->getStudentsWithChanges($lastProcessedID, $maxProcessedID);
+        $messagesModel = $this->studentLookupService->getStudentsWithChanges($lastProcessedID, $maxProcessedID);
 
         $this->trace->output("----------------------------------------");
 
+        $bannerGuidsFromEthos = array();
+
+        if(isset($messagesModel->persons) && count($messagesModel->persons) > 0) {
+            $this->trace->output("Processing person messages started.");
+            $employeeNumberAlternativeCredentialType = $this->ethosClient->getEmployeeNumberAlternativeCredentialType();
+
+            $personsDiscardedCount = 0;
+            $personsProcessedCount = 0;
+            $personsDuplicateCount = 0;
+            foreach ($messagesModel->persons as $messageModel) {
+                $person = $this->ethosClient->getPersonById($messageModel->personId);
+                if(!$this->hasAlternativeCredentialOfType($person, $employeeNumberAlternativeCredentialType)) {
+                    $personsDiscardedCount++;
+                    continue;
+                }
+
+                if (!in_array($messageModel->personId, $bannerGuidsFromEthos)) {
+                    $personsProcessedCount++;
+                    $this->trace->output("Staff identified with person change (PersonGuid: {$messageModel->personId})");
+                    $bannerGuidsFromEthos[] = $messageModel->personId;
+                }
+                else {
+                    $personsDuplicateCount++;
+                }
+            }
+            $this->trace->output("Discarded: $personsDiscardedCount (No Employee Number).");
+            $this->trace->output("Duplicates: $personsDuplicateCount.");
+            $this->trace->output("Processed: $personsProcessedCount.");
+            $this->trace->output("Processing Person messages finished.");
+
+            $this->trace->output("----------------------------------------");
+        }
+
+
+        if(isset($messagesModel->studentAcademicPrograms) && count($messagesModel->studentAcademicPrograms) > 0) {
+            $this->trace->output("Processing Student Academic Program messages started.");
+            $studentAcademicProgramsDiscardedCount = 0;
+            $studentAcademicProgramsProcessedCount = 0;
+            $studentAcademicProgramsDuplicateCount = 0;
+            foreach ($messagesModel->studentAcademicPrograms as $messageModel) {
+                $studentAcademicProgram = $this->ethosClient->getStudentAcademicProgram($messageModel->resourceId);
+                if(!isset($studentAcademicProgram)
+                    || !isset($studentAcademicProgram->obu_SorlcurCactCode)
+                    || $studentAcademicProgram->obu_SorlcurCactCode !== 'ACTIVE'
+                    || !isset($studentAcademicProgram->obu_SorlcurLmodCode)
+                    || $studentAcademicProgram->obu_SorlcurLmodCode !== 'LEARNER') {
+                    $studentAcademicProgramsDiscardedCount++;
+                    continue;
+                }
+
+                if (!in_array($messageModel->personId, $bannerGuidsFromEthos))
+                {
+                    $studentAcademicProgramsProcessedCount++;
+                    $this->trace->output("Student identified with program change (PersonGuid: {$messageModel->personId})");
+                    $bannerGuidsFromEthos[] = $messageModel->personId;
+                }
+                else{
+                    $studentAcademicProgramsDuplicateCount++;
+                }
+            }
+            $this->trace->output("Discarded: $studentAcademicProgramsDiscardedCount (Not ACTIVE and LEARNER).");
+            $this->trace->output("Duplicates: $studentAcademicProgramsDuplicateCount.");
+            $this->trace->output("Processed: $studentAcademicProgramsProcessedCount.");
+            $this->trace->output("Processing Student Academic Program messages finished.");
+
+            $this->trace->output("----------------------------------------");
+        }
+
         if(!$bannerGuidsFromEthos) {
-            $this->trace->output("Finished reading messages from ethos queue..");
+            $this->trace->output("Finished reading messages from ethos queue.");
             $this->trace->finished();
             return;
         }
@@ -114,9 +184,10 @@ class processing_service {
             {
                 $existingBannerGuids[] = $bannerGuid;
             }
-            $this->process_user($user);
+            // TODO : Process user
+            //$this->process_user($user);
 
-            $this->trace->output("----------------------------------------");
+            //$this->trace->output("----------------------------------------");
         }
 
         $bannerGuidsNotInMoodle = array_diff($bannerGuidsFromEthos, $existingBannerGuids);
@@ -169,17 +240,34 @@ class processing_service {
             array_push($moodleUsersWithoutMatchingBannerGuid, $moodleUserWithoutBannerGuid);
         }
 
-        $this->trace->output("----------------------------------------");
-
-        foreach ($moodleUsersWithoutMatchingBannerGuid as $user) {
-            $this->process_user($user);
-
-            $this->trace->output("----------------------------------------");
-        }
+//        $this->trace->output("----------------------------------------");
+//        // TODO : Process user
+//        foreach ($moodleUsersWithoutMatchingBannerGuid as $user) {
+//            $this->process_user($user);
+//
+//            $this->trace->output("----------------------------------------");
+//        }
 
 
         $this->trace->output("Finished reading messages from ethos queue");
         $this->trace->finished();
+    }
+
+    private function hasAlternativeCredentialOfType($peron, $alternativeCredentialType) : bool {
+        if(!isset($peron) || !isset($peron->alternativeCredentials) || !isset($alternativeCredentialType) || !isset($alternativeCredentialType->id)) {
+            return false;
+        }
+
+        foreach ($peron->alternativeCredentials as $alternativeCredential) {
+            if(!isset($alternativeCredential->type)
+                || !isset($alternativeCredential->type->id)
+                || $alternativeCredential->type->id != $alternativeCredentialType->id) {
+                continue;
+            }
+            return true;
+        }
+
+        return false;
     }
 
     private function getBannerIdFromEthosPerson($bannerPerson) : string {
