@@ -102,6 +102,7 @@ class processing_service {
         $bannerGuidsFromEthos = array();
 
         if(isset($messagesModel->persons) && count($messagesModel->persons) > 0) {
+            $time_start = microtime(true);
             $this->trace->output("Processing person messages started.");
             $employeeNumberAlternativeCredentialType = $this->ethosClient->getEmployeeNumberAlternativeCredentialType();
 
@@ -127,13 +128,17 @@ class processing_service {
             $this->trace->output("Discarded: $personsDiscardedCount (No Employee Number).");
             $this->trace->output("Duplicates: $personsDuplicateCount.");
             $this->trace->output("Processed: $personsProcessedCount.");
-            $this->trace->output("Processing Person messages finished.");
+
+            $time_end = microtime(true);
+            $time = round($time_end - $time_start, 2, PHP_ROUND_HALF_UP);
+            $this->trace->output("Processing Person messages finished in $time seconds.");
 
             $this->trace->output("----------------------------------------");
         }
 
 
         if(isset($messagesModel->studentAcademicPrograms) && count($messagesModel->studentAcademicPrograms) > 0) {
+            $time_start = microtime(true);
             $this->trace->output("Processing Student Academic Program messages started.");
             $studentAcademicProgramsDiscardedCount = 0;
             $studentAcademicProgramsProcessedCount = 0;
@@ -162,7 +167,10 @@ class processing_service {
             $this->trace->output("Discarded: $studentAcademicProgramsDiscardedCount (Not ACTIVE and LEARNER).");
             $this->trace->output("Duplicates: $studentAcademicProgramsDuplicateCount.");
             $this->trace->output("Processed: $studentAcademicProgramsProcessedCount.");
-            $this->trace->output("Processing Student Academic Program messages finished.");
+
+            $time_end = microtime(true);
+            $time = round($time_end - $time_start, 2, PHP_ROUND_HALF_UP);
+            $this->trace->output("Processing Student Academic Program messages finished in $time seconds.");
 
             $this->trace->output("----------------------------------------");
         }

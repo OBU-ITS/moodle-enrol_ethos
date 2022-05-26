@@ -354,7 +354,7 @@ class student_lookup_service {
         }
 
         $time_end = microtime(true);
-        $time = $time_end - $time_start;
+        $time = round($time_end - $time_start, 2, PHP_ROUND_HALF_UP);
         if($maxProcessedIdReached) {
             $this->log("Ethos consume finished in $time seconds: Max processed ID reached.");
         }
