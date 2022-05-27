@@ -223,7 +223,7 @@ class processing_service {
             $username = $this->getBannerIdFromEthosPerson($bannerPerson);
 
             if($this->hasAlternativeCredentialOfType($bannerPerson, $employeeNumberAlternativeCredentialType)) {
-                $username = strtolower(getAlternativeCredentialOfType($bannerPerson, $employeeNumberAlternativeCredentialType));
+                $username = strtolower($this->getAlternativeCredentialOfType($bannerPerson, $employeeNumberAlternativeCredentialType));
             }
 
             // check user in Moodle
