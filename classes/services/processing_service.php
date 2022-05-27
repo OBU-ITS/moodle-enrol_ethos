@@ -283,7 +283,7 @@ class processing_service {
     }
 
     private function hasAlternativeCredentialOfType($peron, $alternativeCredentialType) : bool {
-        $value = getAlternativeCredentialOfType($peron, $alternativeCredentialType);
+        $value = $this->getAlternativeCredentialOfType($peron, $alternativeCredentialType);
 
         return $value != '';
     }
