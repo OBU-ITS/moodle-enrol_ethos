@@ -7,8 +7,8 @@ require_once($CFG->libdir.'/weblib.php');
 
 $trace = new html_progress_trace();
 $processingService = new processing_service($trace);
-$lastProcessedID = 0;
-$maxProcessedID = 0;
+$lastProcessedID = 1348;
+$maxProcessedID = 4244;
 $processingService->process_ethos_updates($lastProcessedID, $maxProcessedID);
 
 
