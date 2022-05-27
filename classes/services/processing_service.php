@@ -101,10 +101,10 @@ class processing_service {
 
         $bannerGuidsFromEthos = array();
 
+        $employeeNumberAlternativeCredentialType = $this->ethosClient->getEmployeeNumberAlternativeCredentialType();
         if(isset($messagesModel->persons) && count($messagesModel->persons) > 0) {
             $time_start = microtime(true);
             $this->trace->output("Processing person messages started.");
-            $employeeNumberAlternativeCredentialType = $this->ethosClient->getEmployeeNumberAlternativeCredentialType();
 
             $personsDiscardedCount = 0;
             $personsProcessedCount = 0;
@@ -222,6 +222,10 @@ class processing_service {
             $bannerLastName = $bannerPerson->names[0]->lastName ?? "Unknown";
             $username = $this->getBannerIdFromEthosPerson($bannerPerson);
 
+            if($this->hasAlternativeCredentialOfType($bannerPerson, $employeeNumberAlternativeCredentialType)) {
+                $username = strtolower(getAlternativeCredentialOfType($bannerPerson, $employeeNumberAlternativeCredentialType));
+            }
+
             // check user in Moodle
             $moodleUserWithoutBannerGuid = $this->userService->getUserByUsername($username);
             if($moodleUserWithoutBannerGuid) {
@@ -261,9 +265,9 @@ class processing_service {
         $this->trace->finished();
     }
 
-    private function hasAlternativeCredentialOfType($peron, $alternativeCredentialType) : bool {
+    private function getAlternativeCredentialOfType($peron, $alternativeCredentialType) : string {
         if(!isset($peron) || !isset($peron->alternativeCredentials) || !isset($alternativeCredentialType) || !isset($alternativeCredentialType->id)) {
-            return false;
+            return '';
         }
 
         foreach ($peron->alternativeCredentials as $alternativeCredential) {
@@ -272,10 +276,16 @@ class processing_service {
                 || $alternativeCredential->type->id != $alternativeCredentialType->id) {
                 continue;
             }
-            return true;
+            return $alternativeCredential->value;
         }
 
-        return false;
+        return '';
+    }
+
+    private function hasAlternativeCredentialOfType($peron, $alternativeCredentialType) : bool {
+        $value = getAlternativeCredentialOfType($peron, $alternativeCredentialType);
+
+        return $value != '';
     }
 
     private function getBannerIdFromEthosPerson($bannerPerson) : string {
