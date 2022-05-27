@@ -283,7 +283,7 @@ class student_lookup_service {
         return null;
     }
 
-    public function getStudentsWithChanges($lastProcessedID = 0, $maxProcessedID = 0, $processLimit = 2000): messages_model
+    public function getStudentsWithChanges($lastProcessedID = 0, $maxProcessedID = 0, $processLimit = 4000): messages_model
     {
         $this->log("Ethos consume started.");
 
