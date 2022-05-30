@@ -24,7 +24,7 @@
  *
  * The upgrade function in this file will attempt
  * to perform all the necessary actions to upgrade
- * your older installtion to the current version.
+ * your older installation to the current version.
  *
  * If there's something it cannot do itself, it
  * will tell you what you need to do.
@@ -35,9 +35,9 @@
 
 // TODO update older upgrade code?
 
-function xmldb_enrol_ethos_upgrade($oldversion=0) {
+function xmldb_enrol_ethos_upgrade($oldversion) {
 
-    global $CFG, $THEME, $DB;
+    global $DB;
 
     $dbman = $DB->get_manager();
 
@@ -46,7 +46,36 @@ function xmldb_enrol_ethos_upgrade($oldversion=0) {
     $profileFieldService = new \enrol_ethos\services\profile_field_service($profileFieldRepository, $profileCategoryRepository);
 
     $profileFieldService->addDefaultCategory();
-    $profileFieldService->addDefaultFields();        
-    
-    return true;
+    $profileFieldService->addDefaultFields();
+
+    if($oldversion < 2022052705) {
+
+        $table = new xmldb_table('enrol_ethos_message');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('published', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
+        $table->add_field('resource_name', XMLDB_TYPE_CHAR, '50', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('resource_id', XMLDB_TYPE_CHAR, '36', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('operation', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('person_id', XMLDB_TYPE_CHAR, '36', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('processed', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
+
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        upgrade_plugin_savepoint(true, 2022052705, 'enrol', 'ethos');
+    }
+
+    if($oldversion < 2022052708) {
+        $table = new xmldb_table('enrol_ethos_message');
+        $field = new xmldb_field('processed', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2022052708, 'enrol', 'ethos');
+    }
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="enrol/ethos/db" VERSION="2022052708" COMMENT="XMLDB file for Ethos plugin"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="enrol_ethos_message" COMMENT="Ethos message">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="published" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="resource_name" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="resource_id" TYPE="char" LENGTH="36" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="operation" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="person_id" TYPE="char" LENGTH="36" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="processed" TYPE="int" LENGTH="1" NOTNULL="true"   SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="id" TYPE="primary" FIELDS="id" COMMENT="primary key"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>
