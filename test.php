@@ -1,14 +1,11 @@
 <?php
 
-use enrol_ethos\services\processing_service;
+use enrol_ethos\handlers\ethos_notifications_handler;
 
 require_once('../../config.php');
 require_once($CFG->libdir.'/weblib.php');
 
 $trace = new html_progress_trace();
-$processingService = new processing_service($trace);
-$lastProcessedID = 0;
-$maxProcessedID = 16929;
-$processingService->process_ethos_updates($lastProcessedID, $maxProcessedID);
 
-
+$handler = new ethos_notifications_handler($trace);
+$handler->handleNotifications();

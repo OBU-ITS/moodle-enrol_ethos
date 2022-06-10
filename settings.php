@@ -16,6 +16,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$ADMIN->add('reports', new admin_externalpage('reportenrolethos', get_string('pluginname', 'enrol_ethos'),
+    $CFG->wwwroot . "/enrol/ethos/reports/index.php", 'report/log:view'));
+
 $hidden = $settings->hidden;
 
 $settings = new admin_category('ethosenrolsettingscat', get_string('pluginname', 'enrol_ethos'), $hidden);
@@ -62,28 +65,13 @@ if ($ADMIN->fulltree) {
             ''));
 
 
-        $moodleversion = $CFG->version;
+    $settingsethos->add(new admin_setting_configselect('enrol_ethos/catselect', get_string('catselect', 'enrol_ethos'),
+            get_string('catselecthelp', 'enrol_ethos'), 1, \core_course_category::make_categories_list()));
 
-        if ($moodleversion >= 2018120300) { // Moodle 3.6 changed coursecat to core_course_category
-        $displaylist = \core_course_category::make_categories_list();
-        }
-        // Check for coursecat::make_categories_list, new in 2.5.
-        // Old make_categories_list() depricated in 2.5.
-        elseif (method_exists('coursecat', 'make_categories_list')) {
-        $displaylist = coursecat::make_categories_list();
-        } else {
-        $displaylist = array();
-        $parentlist = array();
-        make_categories_list($displaylist, $parentlist);
-        }
+    $settingsethos->add(new admin_setting_configtext('enrol_ethos/alumnicourseidnumber', get_string('alumnicourseidnumber', 'enrol_ethos'),
+            get_string('alumnicourseidnumberhelp', 'enrol_ethos'), ''));
 
-        $settingsethos->add(new admin_setting_configselect('enrol_ethos/catselect', get_string('catselect', 'enrol_ethos'),
-                get_string('catselecthelp', 'enrol_ethos'), 1, $displaylist));
-        
-        $settingsethos->add(new admin_setting_configtext('enrol_ethos/alumnicourseidnumber', get_string('alumnicourseidnumber', 'enrol_ethos'),
-                get_string('alumnicourseidnumberhelp', 'enrol_ethos'), ''));
-
-        $settingsethos->add(new admin_setting_configtext('enrol_ethos/disabilitycourseidnumber', get_string('disabilitycourseidnumber', 'enrol_ethos'),
+    $settingsethos->add(new admin_setting_configtext('enrol_ethos/disabilitycourseidnumber', get_string('disabilitycourseidnumber', 'enrol_ethos'),
                 get_string('disabilitycourseidnumberhelp', 'enrol_ethos'), ''));
 
 }

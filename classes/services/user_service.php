@@ -1,7 +1,6 @@
 <?php
 namespace enrol_ethos\services;
 
-use enrol_ethos\ethosclient\client\ethos_client;
 use enrol_ethos\interfaces\user_repository_interface;
 use enrol_ethos\services\course_service;
 use enrol_ethos\entities\user;
