@@ -2,18 +2,16 @@
 
 namespace enrol_ethos\services;
 
-use enrol_ethos\ethosclient\client\ethos_client;
-use enrol_ethos\entities\user;
-use enrol_ethos\entities\user_profile;
+use enrol_ethos\entities\reports\report_action;
+use enrol_ethos\entities\reports\report_run;
 use enrol_ethos\ethosclient\service\messages_model;
-use enrol_ethos\ethosclient\service\message_model;
 
 class processing_service {
 
-    private $ethosApiKey;
     private $ethosClient;
     private $studentLookupService;
     private $curriculumLookupService;
+    private alternative_credential_service $alternativeCredentialService;
 
     private $courseCategoryRepository;
     private $courseRepository;
@@ -28,8 +26,8 @@ class processing_service {
     {
         global $DB, $CFG;
 
-        $this->ethosApiKey = $this->getApiKey();
-        $this->ethosClient = new \enrol_ethos\ethosclient\client\ethos_client($this->ethosApiKey);
+        $this->ethosClient = new \enrol_ethos\ethosclient\client\ethos_client();
+        $this->alternativeCredentialService = new \enrol_ethos\services\alternative_credential_service();
         $this->studentLookupService = new \enrol_ethos\ethosclient\service\student_lookup_service($this->ethosClient, $trace);
         $this->curriculumLookupService = new \enrol_ethos\ethosclient\service\curriculum_lookup_service($this->ethosClient);
         $this->courseRepository = new \enrol_ethos\repositories\db_course_repository($DB, $CFG);
@@ -93,56 +91,33 @@ class processing_service {
         $this->trace->finished();
     }
 
-    public function process_ethos_updates($lastProcessedID = 0, $maxProcessedID = 0) {
-
-        $messagesModel = $this->studentLookupService->getStudentsWithChanges($lastProcessedID, $maxProcessedID);
-
-        $this->trace->output("----------------------------------------");
-
+    /**
+     * @param report_run $report
+     * @param messages_model $messagesModel
+     * @return report_action[]
+     */
+    public function process_ethos_updates(report_run $report, messages_model $messagesModel) : array {
         $bannerGuidsFromEthos = array();
+        $reportActions = array();
 
-        $employeeNumberAlternativeCredentialType = $this->ethosClient->getEmployeeNumberAlternativeCredentialType();
+        $employeeNumberAlternativeCredentialType = $this->alternativeCredentialService->getEmployeeNumberAlternativeCredentialType();
         if(isset($messagesModel->persons) && count($messagesModel->persons) > 0) {
-            $time_start = microtime(true);
-            $this->trace->output("Processing person messages started.");
 
-            $personsDiscardedCount = 0;
-            $personsProcessedCount = 0;
-            $personsDuplicateCount = 0;
             foreach ($messagesModel->persons as $messageModel) {
                 $person = $this->ethosClient->getPersonById($messageModel->personId);
-                if(!$this->hasAlternativeCredentialOfType($person, $employeeNumberAlternativeCredentialType)) {
-                    $personsDiscardedCount++;
+                if(!$this->alternativeCredentialService->hasAlternativeCredentialOfType($person, $employeeNumberAlternativeCredentialType)) {
                     continue;
                 }
 
-                if (!in_array($messageModel->personId, $bannerGuidsFromEthos)) {
-                    $personsProcessedCount++;
-                    $this->trace->output("Staff identified with person change (PersonGuid: {$messageModel->personId})");
-                    $bannerGuidsFromEthos[] = $messageModel->personId;
+                if (in_array($messageModel->personId, $bannerGuidsFromEthos)) {
+                    continue;
                 }
-                else {
-                    $personsDuplicateCount++;
-                }
+
+                $bannerGuidsFromEthos[] = $messageModel->personId;
             }
-            $this->trace->output("Discarded: $personsDiscardedCount (No Employee Number).");
-            $this->trace->output("Duplicates: $personsDuplicateCount.");
-            $this->trace->output("Processed: $personsProcessedCount.");
-
-            $time_end = microtime(true);
-            $time = round($time_end - $time_start, 2, PHP_ROUND_HALF_UP);
-            $this->trace->output("Processing Person messages finished in $time seconds.");
-
-            $this->trace->output("----------------------------------------");
         }
 
-
         if(isset($messagesModel->studentAcademicPrograms) && count($messagesModel->studentAcademicPrograms) > 0) {
-            $time_start = microtime(true);
-            $this->trace->output("Processing Student Academic Program messages started.");
-            $studentAcademicProgramsDiscardedCount = 0;
-            $studentAcademicProgramsProcessedCount = 0;
-            $studentAcademicProgramsDuplicateCount = 0;
             foreach ($messagesModel->studentAcademicPrograms as $messageModel) {
                 $studentAcademicProgram = $this->ethosClient->getStudentAcademicProgram($messageModel->resourceId);
                 if(!isset($studentAcademicProgram)
@@ -150,41 +125,25 @@ class processing_service {
                     || $studentAcademicProgram->obu_SorlcurCactCode !== 'ACTIVE'
                     || !isset($studentAcademicProgram->obu_SorlcurLmodCode)
                     || $studentAcademicProgram->obu_SorlcurLmodCode !== 'LEARNER') {
-                    $studentAcademicProgramsDiscardedCount++;
                     continue;
                 }
 
                 if (!in_array($messageModel->personId, $bannerGuidsFromEthos))
                 {
-                    $studentAcademicProgramsProcessedCount++;
-                    $this->trace->output("Student identified with program change (PersonGuid: {$messageModel->personId})");
-                    $bannerGuidsFromEthos[] = $messageModel->personId;
+                    continue;
                 }
-                else{
-                    $studentAcademicProgramsDuplicateCount++;
-                }
+
+                $bannerGuidsFromEthos[] = $messageModel->personId;
             }
-            $this->trace->output("Discarded: $studentAcademicProgramsDiscardedCount (Not ACTIVE and LEARNER).");
-            $this->trace->output("Duplicates: $studentAcademicProgramsDuplicateCount.");
-            $this->trace->output("Processed: $studentAcademicProgramsProcessedCount.");
-
-            $time_end = microtime(true);
-            $time = round($time_end - $time_start, 2, PHP_ROUND_HALF_UP);
-            $this->trace->output("Processing Student Academic Program messages finished in $time seconds.");
-
-            $this->trace->output("----------------------------------------");
         }
 
         if(!$bannerGuidsFromEthos) {
             $this->trace->output("Finished reading messages from ethos queue.");
             $this->trace->finished();
-            return;
+            return array();
         }
 
         $moodleUsersWithMatchingBannerGuid = $this->userService->getUserProfilesWithBannerIds($bannerGuidsFromEthos);
-        $count = count($moodleUsersWithMatchingBannerGuid);
-        $this->trace->output("Found $count Moodle users that have matching Banner GUIDs");
-        $this->trace->output("----------------------------------------");
         $existingBannerGuids = array();
         foreach ($moodleUsersWithMatchingBannerGuid as $user) {
             $bannerGuid = $user->userProfile->bannerGuid;
@@ -192,29 +151,21 @@ class processing_service {
             {
                 $existingBannerGuids[] = $bannerGuid;
             }
+
             // TODO : Process user
             //$this->process_user($user);
-
-            //$this->trace->output("----------------------------------------");
         }
 
         $bannerGuidsNotInMoodle = array_diff($bannerGuidsFromEthos, $existingBannerGuids);
 
         if(!$bannerGuidsNotInMoodle) {
-            $this->trace->output("Finished reading messages from ethos queue");
-            $this->trace->finished();
-            return;
+            return array();
         }
-
-        $count = count($bannerGuidsNotInMoodle);
-        $this->trace->output("Found $count persons with changes which cannot be found in Moodle");
-        $this->trace->output("----------------------------------------");
 
         $moodleUsersWithoutMatchingBannerGuid = array();
         foreach($bannerGuidsNotInMoodle as $bannerGuid) {
             $bannerPerson = $this->ethosClient->getPersonById($bannerGuid);
             if(!$bannerPerson) {
-                $this->trace->output("Cannot find ($bannerGuid) within Ethos");
                 continue;
             }
 
@@ -222,8 +173,8 @@ class processing_service {
             $bannerLastName = $bannerPerson->names[0]->lastName ?? "Unknown";
             $username = $this->getBannerIdFromEthosPerson($bannerPerson);
 
-            if($this->hasAlternativeCredentialOfType($bannerPerson, $employeeNumberAlternativeCredentialType)) {
-                $username = strtolower($this->getAlternativeCredentialOfType($bannerPerson, $employeeNumberAlternativeCredentialType));
+            if($this->alternativeCredentialService->hasAlternativeCredentialOfType($bannerPerson, $employeeNumberAlternativeCredentialType)) {
+                $username = strtolower($this->alternativeCredentialService->getAlternativeCredentialOfType($bannerPerson, $employeeNumberAlternativeCredentialType));
             }
 
             // check user in Moodle
@@ -233,7 +184,8 @@ class processing_service {
                 $moodleUserWithoutBannerGuid->userProfile->bannerGuid = $bannerGuid;
                 $this->userService->updateUserProfile($moodleUserWithoutBannerGuid);
 
-                $this->trace->output("User updated Banner Guid ($bannerGuid). $bannerFirstName $bannerLastName ($username)");
+                $reportActions[] = new report_action("update", "user", $bannerGuid, $username);
+                $report->incrementUsersUpdated();
             }
             else {
                 // Create stub user
@@ -246,46 +198,19 @@ class processing_service {
                 $moodleUserWithoutBannerGuid->userProfile->bannerGuid = $bannerGuid;
                 $this->userService->updateUserProfile($moodleUserWithoutBannerGuid);
 
-                $this->trace->output("User created ($bannerGuid). $bannerFirstName $bannerLastName ($username)");
+                $reportActions[] = new report_action("create", "user", $bannerGuid, $username);
+                $report->incrementUsersCreated();
             }
 
             array_push($moodleUsersWithoutMatchingBannerGuid, $moodleUserWithoutBannerGuid);
         }
 
-//        $this->trace->output("----------------------------------------");
 //        // TODO : Process user
 //        foreach ($moodleUsersWithoutMatchingBannerGuid as $user) {
 //            $this->process_user($user);
-//
-//            $this->trace->output("----------------------------------------");
 //        }
 
-
-        $this->trace->output("Finished reading messages from ethos queue");
-        $this->trace->finished();
-    }
-
-    private function getAlternativeCredentialOfType($peron, $alternativeCredentialType) : string {
-        if(!isset($peron) || !isset($peron->alternativeCredentials) || !isset($alternativeCredentialType) || !isset($alternativeCredentialType->id)) {
-            return '';
-        }
-
-        foreach ($peron->alternativeCredentials as $alternativeCredential) {
-            if(!isset($alternativeCredential->type)
-                || !isset($alternativeCredential->type->id)
-                || $alternativeCredential->type->id != $alternativeCredentialType->id) {
-                continue;
-            }
-            return $alternativeCredential->value;
-        }
-
-        return '';
-    }
-
-    private function hasAlternativeCredentialOfType($peron, $alternativeCredentialType) : bool {
-        $value = $this->getAlternativeCredentialOfType($peron, $alternativeCredentialType);
-
-        return $value != '';
+        return $reportActions;
     }
 
     private function getBannerIdFromEthosPerson($bannerPerson) : string {
@@ -342,16 +267,6 @@ class processing_service {
 
     private function getMoodleCourseIdNumber($guid, $academicLevel) {
         return "$academicLevel--$guid";
-    }
-
-    private function getApiKey() {
-        $apiKey = get_config('enrol_ethos', 'ethosapikey');
-
-        if (!$apiKey) {
-            throw new \Exception('Ethos API key not set');
-        }
-
-        return $apiKey;
     }
 
     private function process_users($users) {

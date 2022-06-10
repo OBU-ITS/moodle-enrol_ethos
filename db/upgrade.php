@@ -33,8 +33,6 @@
  * using the functions defined in lib/ddllib.php
  */
 
-// TODO update older upgrade code?
-
 function xmldb_enrol_ethos_upgrade($oldversion) {
 
     global $DB;
@@ -48,16 +46,17 @@ function xmldb_enrol_ethos_upgrade($oldversion) {
     $profileFieldService->addDefaultCategory();
     $profileFieldService->addDefaultFields();
 
-    if($oldversion < 2022052705) {
+    if($oldversion < 2022060901) {
 
-        $table = new xmldb_table('enrol_ethos_message');
+        $table = new xmldb_table('ethos_report_run');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('published', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
-        $table->add_field('resource_name', XMLDB_TYPE_CHAR, '50', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('resource_id', XMLDB_TYPE_CHAR, '36', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('operation', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('person_id', XMLDB_TYPE_CHAR, '36', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('processed', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
+        $table->add_field('run_time', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $table->add_field('messages_consumed', XMLDB_TYPE_INTEGER, '6', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $table->add_field('messages_processed', XMLDB_TYPE_INTEGER, '6', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $table->add_field('users_created', XMLDB_TYPE_INTEGER, '6', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $table->add_field('users_updated', XMLDB_TYPE_INTEGER, '6', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $table->add_field('elapsed_time', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $table->add_field('last_consumed_id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
 
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
 
@@ -65,17 +64,32 @@ function xmldb_enrol_ethos_upgrade($oldversion) {
             $dbman->create_table($table);
         }
 
-        upgrade_plugin_savepoint(true, 2022052705, 'enrol', 'ethos');
-    }
+        $table = new xmldb_table('ethos_report_action');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('run_id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $table->add_field('action_type', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $table->add_field('resource_name', XMLDB_TYPE_CHAR, '50', null, XMLDB_NOTNULL, null, '');
+        $table->add_field('resource_id', XMLDB_TYPE_CHAR, '36', null, XMLDB_NOTNULL, null, '');
+        $table->add_field('resource_description', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, '');
 
-    if($oldversion < 2022052708) {
-        $table = new xmldb_table('enrol_ethos_message');
-        $field = new xmldb_field('processed', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
+        $table->add_key('id', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('report_id', XMLDB_KEY_FOREIGN, array('run_id'), 'ethos_report_run', array('id'));
 
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
         }
 
-        upgrade_plugin_savepoint(true, 2022052708, 'enrol', 'ethos');
+        upgrade_plugin_savepoint(true, 2022060901, 'enrol', 'ethos');
     }
+
+//    if($oldversion < 2022052708) {
+//        $table = new xmldb_table('enrol_ethos_message');
+//        $field = new xmldb_field('processed', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+//
+//        if (!$dbman->field_exists($table, $field)) {
+//            $dbman->add_field($table, $field);
+//        }
+//
+//        upgrade_plugin_savepoint(true, 2022052708, 'enrol', 'ethos');
+//    }
 }

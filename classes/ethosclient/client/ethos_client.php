@@ -4,6 +4,7 @@ namespace enrol_ethos\ethosclient\client;
 
 require_once(dirname(__FILE__) . '/../vendor/autoload.php');
 
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
@@ -83,13 +84,26 @@ class ethos_client
                                                              'cachable'  => false ));
 
 
-    public function __construct($key)
+    /**
+     * @throws Exception when API key cannot be found
+     */
+    public function __construct()
     {
-        $this->authKey = $key;
+        $this->authKey = $this->getApiKey();
         $this->client = new Client();
     }
 
-    public function consumeMessages($lastProcessedId = 0, $consumeLimit = 200) {
+    private function getApiKey() {
+        $apiKey = get_config('enrol_ethos', 'ethosapikey');
+
+        if (!$apiKey) {
+            throw new Exception('Ethos API key not set');
+        }
+
+        return $apiKey;
+    }
+
+    public function consumeMessages($lastProcessedId = 0, $consumeLimit = 20) {
         $url = self::API_URL . "/consume?limit=". $consumeLimit ."&lastProcessedID=" . $lastProcessedId;
         return $this->getJson($url, null);
     }
@@ -216,7 +230,7 @@ class ethos_client
                     ],
                 ];
 
-                $response = $this->client->get($url, $options);
+                $response = $this->client->getAsync($url, $options)->wait();
 
                 return $response->getBody()->getContents();
 
@@ -256,7 +270,7 @@ class ethos_client
                 ],
             ];
 
-            $response = $this->client->post($url, $options);
+            $response = $this->client->postAsync($url, $options)->wait();
             $this->accessToken = $response->getBody()->getContents();
         } catch (RequestException $e) {
             //TODO: Retry logic
