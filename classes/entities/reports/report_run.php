@@ -17,7 +17,7 @@ class report_run {
     }
 
     public function incrementMessagesConsumed(int $count = 1) {
-        $this->messages_consumed = $this->messagesConsumed + $count;
+        $this->messages_consumed = $this->messages_consumed + $count;
     }
 
     public function incrementMessagesProcessed() {
