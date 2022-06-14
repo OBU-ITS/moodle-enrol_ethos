@@ -1,6 +1,5 @@
 <?php
 
-use enrol_ethos\entities\report_run;
 use enrol_ethos\services\ethos_report_service;
 
 require_once(__DIR__ . '/../../../config.php');
@@ -14,7 +13,7 @@ $PAGE->set_context($context);
 
 require_capability('report/log:view', $context);
 
-$PAGE->set_title('Ethos Notification run report');
+$PAGE->set_title('Ethos Notifications');
 
 require_once($CFG->libdir.'/weblib.php');
 
@@ -24,38 +23,26 @@ if (!is_siteadmin())
     die();
 }
 
-$fromQs = $_GET["from"] ?? date("y-m-d 00:00:00");
-$from = strtotime($fromQs);
-$fromStr = date('Y-m-d h:i:sa', $from);
-
-$toQs = $_GET["to"] ?? date("y-m-d 00:00:00");
-$to = strtotime($toQs . " + 1 day");
-$toStr = date("Y-m-d h:i:sa", $to);
-
 admin_externalpage_setup('reportenrolethos', '', null, '', array('pagelayout' => 'report'));
 
 echo $OUTPUT->header();
-echo "<h2>$fromStr - $toStr</h2>";
+echo "<h2>Last 10 days</h2>";
+echo "<p>The table below shows the ethos notification processing summary of the last 10 days.</p>";
+
 
 $reportService = new ethos_report_service();
-$reports = $reportService->getReports($from, $to);
+$reports = $reportService->getReportSummaries();
 if(count($reports) == 0) {
     echo "<p>No reports to display</p>";
     die();
 }
-
-$totalMessagesConsumed = 0;
-$totalMessagesProcessed = 0;
-$totalUsersCreated = 0;
-$totalUsersUpdated = 0;
-$totalElapsedTime = 0;
 
 ?>
 
 <table class="flexible table table-striped table-hover reportlog generaltable generalbox table-sm">
     <thead>
         <tr>
-            <th class="header" scope="col">Run time</th>
+            <th class="header" scope="col">Date</th>
             <th class="header" scope="col">Messages consumed</th>
             <th class="header" scope="col">Messages processed</th>
             <th class="header" scope="col">Users created</th>
@@ -68,7 +55,7 @@ $totalElapsedTime = 0;
         foreach($reports as $report) {
             if(!isset($report)) continue;
 
-            $run_time = date('H:i:sa', (int)$report->run_time);
+            $run_date = $report->run_date;
             $messagesConsumed = number_format($report->messages_consumed);
             $messagesProcessed = number_format($report->messages_processed);
             $usersCreated = number_format($report->users_created);
@@ -76,32 +63,27 @@ $totalElapsedTime = 0;
             $elapsedTime = gmdate("H:i:s", $report->elapsed_time);
 
             echo "<tr>";
-                echo "<td class='cell'>$run_time</td>";
+                echo "<td class='cell'><a href='{$CFG->wwwroot}/enrol/ethos/reports/detail.php?from=$run_date&to=$run_date'>$run_date</a></td>";
                 echo "<td class='cell'>$messagesConsumed</td>";
                 echo "<td class='cell'>$messagesProcessed</td>";
-                echo "<td class='cell'>$usersCreated</td>";
-                echo "<td class='cell'>$usersUpdated</td>";
+                if($usersCreated > 0) {
+                    echo "<td class='cell'>$usersCreated</td>";
+                }
+                else {
+                    echo "<td class='cell'>-</td>";
+                }
+                if($usersUpdated > 0) {
+                    echo "<td class='cell'>$usersUpdated</td>";
+                }
+                else {
+                    echo "<td class='cell'>-</td>";
+                }
                 echo "<td class='cell'>$elapsedTime</td>";
             echo "</tr>";
 
-            $totalMessagesConsumed += $report->messages_consumed;
-            $totalMessagesProcessed += $report->messages_processed;
-            $totalUsersCreated += $report->users_created;
-            $totalUsersUpdated += $report->users_updated;
-            $totalElapsedTime += $report->elapsed_time;
         }
 ?>
     </tbody>
-    <tfoot style="border-top: solid 2px black">
-        <tr>
-            <td><strong>TOTALS</strong></td>
-            <td><strong><?php echo number_format($totalMessagesConsumed) ?></strong></td>
-            <td><strong><?php echo number_format($totalMessagesProcessed) ?></strong></td>
-            <td><strong><?php echo number_format($totalUsersCreated) ?></strong></td>
-            <td><strong><?php echo number_format($totalUsersUpdated) ?></strong></td>
-            <td><strong><?php echo gmdate("H:i:s", $totalElapsedTime) ?></strong></td>
-        </tr>
-    </tfoot>
 </table>
 
 <?php
