@@ -102,7 +102,6 @@ class processing_service {
 
         $employeeNumberAlternativeCredentialType = $this->alternativeCredentialService->getEmployeeNumberAlternativeCredentialType();
         if(isset($messagesModel->persons) && count($messagesModel->persons) > 0) {
-
             foreach ($messagesModel->persons as $messageModel) {
                 $person = $this->ethosClient->getPersonById($messageModel->personId);
                 if(!$this->alternativeCredentialService->hasAlternativeCredentialOfType($person, $employeeNumberAlternativeCredentialType)) {
@@ -138,8 +137,6 @@ class processing_service {
         }
 
         if(!$bannerGuidsFromEthos) {
-            $this->trace->output("Finished reading messages from ethos queue.");
-            $this->trace->finished();
             return array();
         }
 
@@ -169,6 +166,7 @@ class processing_service {
                 continue;
             }
 
+            // TODO : Confirm name and process
             $bannerFirstName = $bannerPerson->names[0]->firstName ?? "Unknown";
             $bannerLastName = $bannerPerson->names[0]->lastName ?? "Unknown";
             $username = $this->getBannerIdFromEthosPerson($bannerPerson);
