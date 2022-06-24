@@ -23,7 +23,7 @@ if (!is_siteadmin())
     die();
 }
 
-admin_externalpage_setup('reportenrolethos', '', null, '', array('pagelayout' => 'report'));
+admin_externalpage_setup('reportethosnotifications', '', null, '', array('pagelayout' => 'report'));
 
 echo $OUTPUT->header();
 echo "<h2>Last 10 days</h2>";

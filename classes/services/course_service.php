@@ -6,8 +6,8 @@ use enrol_ethos\entities\course;
 
 class course_service {
 
-    private $courseRepository;
-    private $courseCategoryRepository;
+    private course_repository_interface $courseRepository;
+    private course_category_repository_interface $courseCategoryRepository;
 
     public function __construct(course_repository_interface $courseRepository, course_category_repository_interface $courseCategoryRepository) {
         $this->courseRepository = $courseRepository;
@@ -21,7 +21,7 @@ class course_service {
     public function getCourseByShortName($shortName) {
         return $this->courseRepository->findOneByShortName($shortName);
     }
-        
+
     public function updateOrCreateCourse($data) {
         $categories = $data['categories'];
         $parentCategory = get_config('enrol_ethos', 'catselect') ?: 1;
@@ -32,7 +32,7 @@ class course_service {
         for ($i = 0; $i < $numCategories; $i++) {
             if ($categories[$i]) {
                 if ($category = $this->courseCategoryRepository->findOneByNameAndParent($categories[$i], $currentCategory)) {
-                    
+
                     $currentCategory = $category->id;
 
                     //If last category in the array, we'll use this for the course
@@ -53,7 +53,7 @@ class course_service {
         }
 
         if (!$course) {
-            
+
             $course = new course(
                 $data['idnumber'],
                 $data['shortname'],

@@ -16,8 +16,13 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$ADMIN->add('reports', new admin_externalpage('reportenrolethos', get_string('pluginname', 'enrol_ethos'),
+$ADMIN->add('reports', new admin_category('obureports', 'Ethos Notifications'));
+
+$ADMIN->add('obureports', new admin_externalpage('reportethosnotifications', 'Run reports',
     $CFG->wwwroot . "/enrol/ethos/reports/index.php", 'report/log:view'));
+
+$ADMIN->add('obureports', new admin_externalpage('reportethosbackfill', 'Back fill reports',
+    $CFG->wwwroot . "/enrol/ethos/reports/backfill.php", 'report/log:view'));
 
 $hidden = $settings->hidden;
 

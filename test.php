@@ -1,11 +1,6 @@
 <?php
 
-use enrol_ethos\handlers\ethos_notifications_handler;
+use enrol_ethos\ethosclient\service\ethos_academic_credential_service;
 
 require_once('../../config.php');
 require_once($CFG->libdir.'/weblib.php');
-
-$trace = new html_progress_trace();
-
-$handler = new ethos_notifications_handler($trace);
-$handler->handleNotifications();

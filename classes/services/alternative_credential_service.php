@@ -1,19 +1,19 @@
 <?php
 namespace enrol_ethos\services;
 
-use enrol_ethos\ethosclient\client\ethos_client;
+use enrol_ethos\ethosclient\service\ethos_alternative_credential_service;
 
 class alternative_credential_service
 {
-    private ethos_client $ethosClient;
+    private ethos_alternative_credential_service $alternativeCredentialService;
 
     public function __construct()
     {
-        $this->ethosClient = new ethos_client();
+        $this->alternativeCredentialService = ethos_alternative_credential_service::getInstance();
     }
 
-    public function getEmployeeNumberAlternativeCredentialType() {
-        return $this->ethosClient->getEmployeeNumberAlternativeCredentialType();
+    public function getEmployeeNumberAlternativeCredentialType() : ?object {
+        return $this->alternativeCredentialService->getEmployeeNumberAlternativeCredentialType();
     }
 
     public function getAlternativeCredentialOfType($peron, $alternativeCredentialType) : string {

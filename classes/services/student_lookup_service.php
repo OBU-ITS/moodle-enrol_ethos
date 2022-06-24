@@ -1,21 +1,68 @@
 <?php
-namespace enrol_ethos\ethosclient\service;
+namespace enrol_ethos\services;
+
+use enrol_ethos\ethosclient\entities\discipline_info;
+use enrol_ethos\ethosclient\entities\name_info;
+use enrol_ethos\ethosclient\entities\period_info;
+use enrol_ethos\ethosclient\entities\program_info;
+use enrol_ethos\ethosclient\entities\student_info;
+use enrol_ethos\ethosclient\service\ethos_academic_credential_service;
+use enrol_ethos\ethosclient\service\ethos_academic_discipline_service;
+use enrol_ethos\ethosclient\service\ethos_academic_level_service;
+use enrol_ethos\ethosclient\service\ethos_academic_period_service;
+use enrol_ethos\ethosclient\service\ethos_academic_program_service;
+use enrol_ethos\ethosclient\service\ethos_educational_institution_unit_service;
+use enrol_ethos\ethosclient\service\ethos_person_service;
+use enrol_ethos\ethosclient\service\ethos_site_service;
+use enrol_ethos\ethosclient\service\ethos_student_academic_period_service;
+use enrol_ethos\ethosclient\service\ethos_student_academic_period_status_service;
+use enrol_ethos\ethosclient\service\ethos_student_academic_program_service;
+use enrol_ethos\ethosclient\service\ethos_student_service;
+use enrol_ethos\ethosclient\service\ethos_student_status_service;
+use enrol_ethos\ethosclient\service\ethos_student_type_service;
 
 class student_lookup_service {
 
-    var $ethosClient;
+
+    private ethos_person_service $personService;
+    private ethos_student_service $studentService;
+    private ethos_student_type_service $studentTypeService;
+    private ethos_student_status_service $studentStatusService;
+    private ethos_student_academic_program_service $studentAcademicProgramService;
+    private ethos_academic_period_service $academicPeriodService;
+    private ethos_site_service $siteService;
+    private ethos_educational_institution_unit_service $institutionService;
+    private ethos_academic_program_service $academicProgramService;
+    private ethos_academic_level_service $academicLevelService;
+    private ethos_student_academic_period_service $studentAcademicPeriodService;
+    private ethos_academic_credential_service $academicCredentialService;
+    private ethos_student_academic_period_status_service $studentAcademicPeriodStatusService;
+    private ethos_academic_discipline_service $academicDisciplineService;
+
     var $trace;
 
-    var $dateFormat = 'Y-m-d\TH:i:sZ';
+    public function __construct($trace=null) {
+        $this->personService = ethos_person_service::getInstance();
+        $this->studentService = ethos_student_service::getInstance();
+        $this->studentTypeService = ethos_student_type_service::getInstance();
+        $this->studentStatusService = ethos_student_status_service::getInstance();
+        $this->studentAcademicProgramService = ethos_student_academic_program_service::getInstance();
+        $this->academicPeriodService = ethos_academic_period_service::getInstance();
+        $this->siteService = ethos_site_service::getInstance();
+        $this->institutionService = ethos_educational_institution_unit_service::getInstance();
+        $this->academicProgramService = ethos_academic_program_service::getInstance();
+        $this->academicLevelService = ethos_academic_level_service::getInstance();
+        $this->studentAcademicPeriodService = ethos_student_academic_period_service::getInstance();
+        $this->academicCredentialService = ethos_academic_credential_service::getInstance();
+        $this->studentAcademicPeriodStatusService = ethos_student_academic_period_status_service::getInstance();
+        $this->academicDisciplineService = ethos_academic_discipline_service::getInstance();
 
-    public function __construct($ethosClient, $trace=null) {
-        $this->ethosClient = $ethosClient;
         $this->trace = $trace;
     }
 
     private function ArrayToDateTime($dateField) {
-        $datestring = $dateField['year'] . '-' .$dateField['month'] . '-' . $dateField['day'];
-        return \DateTime::createFromFormat('Y-m-d', $datestring);
+        $dateString = $dateField['year'] . '-' .$dateField['month'] . '-' . $dateField['day'];
+        return \DateTime::createFromFormat('Y-m-d', $dateString);
     }
 
     private function log($message){
@@ -26,7 +73,7 @@ class student_lookup_service {
 
     public function lookupStudentFromPersonId($bannerId) {
 
-        $person = $this->ethosClient->getPersonById($bannerId);
+        $person = $this->personService->getPersonById($bannerId);
 
         return $this->lookupStudent($person);
     }
@@ -34,7 +81,7 @@ class student_lookup_service {
     public function lookupStudentFromBannerId($bannerId) {
 
         $start_time = microtime(true);
-        $persons = $this->ethosClient->getPersonsByBannerId($bannerId);
+        $persons = $this->personService->getPersonsByBannerId($bannerId);
         $end_time = microtime(true);
         $time = $end_time-$start_time;
         $this->log("Ethos person lookup took $time seconds");
@@ -48,6 +95,8 @@ class student_lookup_service {
         if ($persons && count($persons) === 1) {
             return $this->lookupStudent($persons[0]);
         }
+
+        return null;
     }
 
     /**
@@ -71,7 +120,7 @@ class student_lookup_service {
         $newStudent = new student_info($person->id);
 
         $start_time = microtime(true);
-        $students = $this->ethosClient->getStudentByPersonId($newStudent->personId);
+        $students = $this->studentService->getStudentByPersonId($newStudent->personId);
         $end_time = microtime(true);
         $time = $end_time-$start_time;
         $this->log("Ethos student lookup took $time seconds");
@@ -81,7 +130,7 @@ class student_lookup_service {
         }
 
         $student = $students[0];
-        $studentAcademicPrograms = $this->ethosClient->getStudentAcademicProgramsByPersonId($newStudent->personId);
+        $studentAcademicPrograms = $this->studentAcademicProgramService->getStudentAcademicProgramsByPersonId($newStudent->personId);
 
         // load in all of the academic programs
         $newStudent->programmes = array(); //studentAcademicPrograms->stream()->map { p -> getProgramInfo(personId, p) }->collect(Collectors->toList())
@@ -112,12 +161,12 @@ class student_lookup_service {
             $newStudent->dateOfBirth = $this->ArrayToDateTime(date_parse($person->dateOfBirth)) ?? null;
         }
 
-        if (isset($student->type) && $attendanceMode = $this->ethosClient->getStudentType($student->type->id)) {
+        if (isset($student->type) && $attendanceMode = $this->studentTypeService->get($student->type->id)) {
             $newStudent->attendanceMode = $attendanceMode->code;
             $newStudent->attendanceModeTitle = $attendanceMode->title;
         }
 
-        if (isset($student->status) && $statusObj = $this->ethosClient->getStudentStatus($student->status->id)) {
+        if (isset($student->status) && $statusObj = $this->studentStatusService->get($student->status->id)) {
             $newStudent->status = $statusObj->code;
             $newStudent->statusTitle = $statusObj->title;
         }
@@ -168,29 +217,29 @@ class student_lookup_service {
     /**
      * Looks up the full academic program info for the StudentAcademicProgram
      */
-    public function getProgramInfo($personId, $studentAcademicProgram) {
+    public function getProgramInfo($personId, $studentAcademicProgram) : program_info{
 
         $programInfo = new program_info();
 
-        $period = $this->ethosClient->getAcademicPeriod($studentAcademicProgram->academicPeriods->starting->id);
+        $period = $this->academicPeriodService->get($studentAcademicProgram->academicPeriods->starting->id);
 
         if ($studentAcademicProgram->site->id != null) {
-            if ($site = $this->ethosClient->getSite($studentAcademicProgram->site->id)) {
+            if ($site = $this->siteService->get($studentAcademicProgram->site->id)) {
                 $programInfo->siteCode = $site->code;
                 $programInfo->siteTitle = $site->title;
             }
         }
 
-        if ($academicProgramLevel = $this->ethosClient->getAcademicLevel($studentAcademicProgram->academicLevel->id)) {
+        if ($academicProgramLevel = $this->academicLevelService->get($studentAcademicProgram->academicLevel->id)) {
             $programInfo->schoolTypeCode = $academicProgramLevel->code;
             $programInfo->schoolTypeTitle = $academicProgramLevel->title;
         }
 
-        if ($academicProgram = $this->ethosClient->getAcademicProgram($studentAcademicProgram->program->id)) {
+        if ($academicProgram = $this->academicProgramService->get($studentAcademicProgram->program->id)) {
             $programInfo->courseCode = $academicProgram->code;
             $programInfo->courseTitle = $academicProgram->title;
 
-            if ($faculty = $this->ethosClient->getInstitution($academicProgram->authorizing->institutionalUnit->id)) {
+            if ($faculty = $this->institutionService->get($academicProgram->authorizing->institutionalUnit->id)) {
                 $programInfo->facultyCode = $faculty->code;
                 $programInfo->facultyTitle = $faculty->title;
             }
@@ -208,14 +257,14 @@ class student_lookup_service {
 
         /** Dig out the period enrollment status stuff */
         $startingPeriodId = $studentAcademicProgram->academicPeriods->starting->id;
-        $periodProfiles = $this->ethosClient->getAcademicPeriodProfiles($personId, $startingPeriodId);
+        $periodProfiles = $this->studentAcademicPeriodService->getAcademicPeriodProfiles($personId, $startingPeriodId);
 
         /** Dig out the student registration eligibility */
         // don't need this yet, but it works->
         //val eligibilities = ethosClient->getStudentRegistrationEligibility(personId, startingPeriodId)
 
         if (count($periodProfiles)) {
-            if ($enrollmentStatus = $this->ethosClient->getEnrollmentStatus($periodProfiles[0]->academicPeriodEnrollmentStatus->id)) {
+            if ($enrollmentStatus = $this->studentAcademicPeriodStatusService->get($periodProfiles[0]->academicPeriodEnrollmentStatus->id)) {
                 $programInfo->periodProfileEnrollmentStatusCode = $enrollmentStatus->code;
                 $programInfo->periodProfileEnrollmentStatusTitle = $enrollmentStatus->title;
             }
@@ -242,7 +291,7 @@ class student_lookup_service {
         $awardCredential = count($studentAcademicProgram->credentials) ? $studentAcademicProgram->credentials[0] : null;
 
         if ($awardCredential!=null) {
-            if ($award = $this->ethosClient->getAcademicCredential($awardCredential->id)) {
+            if ($award = $this->academicCredentialService->get($awardCredential->id)) {
                 $programInfo->awardAbbreviation = $award->abbreviation;
                 $programInfo->awardTitle = $award->title;
                 $programInfo->awardType = $award->type;
@@ -253,7 +302,7 @@ class student_lookup_service {
     }
 
 
-    public function getName($person) {
+    public function getName($person) : name_info {
         $names = $person->names;
 
         // get official name
@@ -273,10 +322,9 @@ class student_lookup_service {
         return $name;
     }
 
-
-    public function getDisciplineInfo($disciplineId) {
+    public function getDisciplineInfo($disciplineId) : ?discipline_info {
         // TODO ethosDisciplineId.administeringInstitutionUnit should contain the department for the subject of study
-        if ($discipline = $this->ethosClient->getAcademicDiscipline($disciplineId)) {
+        if ($discipline = $this->academicDisciplineService->get($disciplineId)) {
             return new discipline_info($discipline->abbreviation, $discipline->type, $discipline->title);
         }
 

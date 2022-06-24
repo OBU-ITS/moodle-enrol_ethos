@@ -1,6 +1,6 @@
 <?php
 
-namespace enrol_ethos\ethosclient\service;
+namespace enrol_ethos\ethosclient\entities;
 
 class program_info {
 
@@ -67,8 +67,8 @@ class program_info {
 
     /** List all of the honours granted to this academic program */
     public $honours;
-    
-    public function toString() {
-        return "ProgramInfo(courseCode=$courseCode, courseTitle=$courseTitle, facultyCode=$facultyCode, facultyTitle=$facultyTitle, schoolTypeCode=$schoolTypeCode, schoolTypeTitle=$schoolTypeTitle, disciplines=$disciplines, startOn=$startOn, endOn=$endOn, graduatedOn=$graduatedOn, creditsEarned=$creditsEarned, periodInfo=$periodInfo, preference=$preference, enrollmentStatus=$enrollmentStatus, periodProfileEnrollmentStatusCode=$periodProfileEnrollmentStatusCode, periodProfileEnrollmentStatusTitle=$periodProfileEnrollmentStatusTitle, siteCode=$siteCode, siteTitle=$siteTitle, awardTitle=$awardTitle, awardAbbreviation=$awardAbbreviation, awardType=$awardType, honours=$honours)";
+
+    public function toString() : string {
+        return "ProgramInfo(courseCode=$this->courseCode, courseTitle=$this->courseTitle, facultyCode=$this->facultyCode, facultyTitle=$this->facultyTitle, schoolTypeCode=$this->schoolTypeCode, schoolTypeTitle=$this->schoolTypeTitle, disciplines=$this->disciplines, startOn=$this->startOn, endOn=$this->endOn, graduatedOn=$this->graduatedOn, creditsEarned=$this->creditsEarned, periodInfo=$this->periodInfo, preference=$this->preference, enrollmentStatus=$this->enrollmentStatus, periodProfileEnrollmentStatusCode=$this->periodProfileEnrollmentStatusCode, periodProfileEnrollmentStatusTitle=$this->periodProfileEnrollmentStatusTitle, siteCode=$this->siteCode, siteTitle=$this->siteTitle, awardTitle=$this->awardTitle, awardAbbreviation=$this->awardAbbreviation, awardType=$this->awardType, honours=$this->honours)";
     }
-} 
+}

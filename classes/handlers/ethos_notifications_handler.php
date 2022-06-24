@@ -20,7 +20,7 @@ class ethos_notifications_handler {
     {
         $this->reportService = new ethos_report_service();
         $this->processingService = new processing_service($trace);
-        $this->ethosClient = new ethos_client();
+        $this->ethosClient = ethos_client::getInstance();
     }
 
     public function handleNotifications() {

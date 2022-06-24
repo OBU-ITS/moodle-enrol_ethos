@@ -4,14 +4,21 @@ namespace enrol_ethos\services;
 
 use enrol_ethos\entities\reports\report_action;
 use enrol_ethos\entities\reports\report_run;
+use enrol_ethos\ethosclient\service\curriculum_lookup_service;
+use enrol_ethos\ethosclient\service\ethos_person_service;
+use enrol_ethos\ethosclient\service\ethos_student_academic_program_service;
 use enrol_ethos\ethosclient\service\messages_model;
+use enrol_ethos\repositories\db_course_category_repository;
+use enrol_ethos\repositories\db_course_repository;
+use enrol_ethos\repositories\db_user_repository;
 
 class processing_service {
 
-    private $ethosClient;
-    private $studentLookupService;
-    private $curriculumLookupService;
+    private student_lookup_service $studentLookupService;
+    private curriculum_lookup_service $curriculumLookupService;
     private alternative_credential_service $alternativeCredentialService;
+    private ethos_person_service $personService;
+    private ethos_student_academic_program_service $studentAcademicProgramService;
 
     private $courseCategoryRepository;
     private $courseRepository;
@@ -24,17 +31,19 @@ class processing_service {
 
     public function __construct($trace)
     {
-        global $DB, $CFG;
+        global $DB;
 
-        $this->ethosClient = new \enrol_ethos\ethosclient\client\ethos_client();
-        $this->alternativeCredentialService = new \enrol_ethos\services\alternative_credential_service();
-        $this->studentLookupService = new \enrol_ethos\ethosclient\service\student_lookup_service($this->ethosClient, $trace);
-        $this->curriculumLookupService = new \enrol_ethos\ethosclient\service\curriculum_lookup_service($this->ethosClient);
-        $this->courseRepository = new \enrol_ethos\repositories\db_course_repository($DB, $CFG);
-        $this->courseCategoryRepository = new \enrol_ethos\repositories\db_course_category_repository($DB);
-        $this->courseService = new \enrol_ethos\services\course_service($this->courseRepository, $this->courseCategoryRepository);
-        $this->userRepository = new \enrol_ethos\repositories\db_user_repository($DB);
-        $this->userService = new \enrol_ethos\services\user_service($this->userRepository, $this->courseService);
+        $this->personService = ethos_person_service::getInstance();
+        $this->studentAcademicProgramService = ethos_student_academic_program_service::getInstance();
+
+        $this->alternativeCredentialService = new alternative_credential_service();
+        $this->studentLookupService = new student_lookup_service($trace);
+        $this->curriculumLookupService = new curriculum_lookup_service();
+        $this->courseRepository = new db_course_repository($DB);
+        $this->courseCategoryRepository = new db_course_category_repository($DB);
+        $this->courseService = new course_service($this->courseRepository, $this->courseCategoryRepository);
+        $this->userRepository = new db_user_repository($DB);
+        $this->userService = new user_service($this->userRepository, $this->courseService);
 
         $this->trace = $trace;
     }
@@ -58,38 +67,77 @@ class processing_service {
         $this->trace->finished();
     }
 
-    public function process_all_users() {
-        $this->trace->output('Caching all reference values...');
-        $time_start = microtime(true);
-        $this->ethosClient->cacheAllReferenceTypes();
-        $time_end = microtime(true);
-        $time = $time_end - $time_start;
-        $this->trace->output("...finished caching values in $time seconds");
+//    public function process_all_users() {
+//        $this->trace->output('Caching all reference values...');
+//        $time_start = microtime(true);
+//        $this->ethosClient->cacheAllReferenceTypes();
+//        $time_end = microtime(true);
+//        $time = $time_end - $time_start;
+//        $this->trace->output("...finished caching values in $time seconds");
+//
+//        $this->trace->output('Caching all person records');
+//        $time_start = microtime(true);
+//        $this->ethosClient->cacheAllPersonRecords();
+//        $time_end = microtime(true);
+//        $time = $time_end - $time_start;
+//        $this->trace->output("...finished caching person records in $time seconds");
+//
+//        $this->trace->output('Processing all users...');
+//        $time_start = microtime(true);
+//        if ($users = $this->userService->getUsersByAuthType('ldap')) {
+//            $time_end = microtime(true);
+//            $time = $time_end - $time_start;
+//            $count = count($users);
+//            $this->trace->output("Found $count users in Moodle to process in $time seconds");
+//
+//            $time_start = microtime(true);
+//            $this->process_users($users);
+//            $time_end = microtime(true);
+//            $time = $time_end - $time_start;
+//            $this->trace->output("...finished processing all users in $time seconds");
+//        }
+//
+//        $this->trace->finished();
+//    }
 
-        $this->trace->output('Caching all person records');
-        $time_start = microtime(true);
-        $this->ethosClient->cacheAllPersonRecords();
-        $time_end = microtime(true);
-        $time = $time_end - $time_start;
-        $this->trace->output("...finished caching person records in $time seconds");
-
-        $this->trace->output('Processing all users...');
-        $time_start = microtime(true);
-        if ($users = $this->userService->getUsersByAuthType('ldap')) {
-            $time_end = microtime(true);
-            $time = $time_end - $time_start;
-            $count = count($users);
-            $this->trace->output("Found $count users in Moodle to process in $time seconds");
-
-            $time_start = microtime(true);
-            $this->process_users($users);
-            $time_end = microtime(true);
-            $time = $time_end - $time_start;
-            $this->trace->output("...finished processing all users in $time seconds");
-        }
-
-        $this->trace->finished();
-    }
+//    /**
+//     * @param report_run $report
+//     * @param message_model[] $persons
+//     * @return report_action[]
+//     */
+//    public function process_person_updates(report_run $report, array $persons) : array {
+//        $reportActions = array();
+//
+//        if(!isset($persons) || count($persons) == 0) {
+//            return $reportActions;
+//        }
+//
+//        $personIds = array_unique(array_column($persons, '$personId'));
+//        $existingPersonIds = array();
+//
+//        $moodleUsersWithMatchingPersonIds = $this->userService->getUserProfilesWithBannerIds($personIds);
+//        foreach ($moodleUsersWithMatchingPersonIds as $user) {
+//            $updatedPersonIds[] = $user->userProfile->bannerGuid;
+//
+//            // Update
+//        }
+//
+//        $personIds = array_diff($personIds, $existingPersonIds);
+//        if(count($personIds) == 0) {
+//            return $reportActions;
+//        }
+//
+//        $employeeNumberAlternativeCredentialType = $this->alternativeCredentialService->getEmployeeNumberAlternativeCredentialType();
+//        foreach ($personIds as $personId) {
+//            $person = $this->personService->getPersonById($personId);
+//
+//            if(!$this->alternativeCredentialService->hasAlternativeCredentialOfType($person, $employeeNumberAlternativeCredentialType)) {
+//                continue;
+//            }
+//
+//            // Create
+//        }
+//    }
 
     /**
      * @param report_run $report
@@ -98,12 +146,11 @@ class processing_service {
      */
     public function process_ethos_updates(report_run $report, messages_model $messagesModel) : array {
         $bannerGuidsFromEthos = array();
-        $reportActions = array();
 
         $employeeNumberAlternativeCredentialType = $this->alternativeCredentialService->getEmployeeNumberAlternativeCredentialType();
         if(isset($messagesModel->persons) && count($messagesModel->persons) > 0) {
             foreach ($messagesModel->persons as $messageModel) {
-                $person = $this->ethosClient->getPersonById($messageModel->personId);
+                $person = $this->personService->getPersonById($messageModel->personId);
                 if(!$this->alternativeCredentialService->hasAlternativeCredentialOfType($person, $employeeNumberAlternativeCredentialType)) {
                     continue;
                 }
@@ -118,7 +165,7 @@ class processing_service {
 
         if(isset($messagesModel->studentAcademicPrograms) && count($messagesModel->studentAcademicPrograms) > 0) {
             foreach ($messagesModel->studentAcademicPrograms as $messageModel) {
-                $studentAcademicProgram = $this->ethosClient->getStudentAcademicProgram($messageModel->resourceId);
+                $studentAcademicProgram = $this->studentAcademicProgramService->getStudentAcademicProgram($messageModel->resourceId);
                 if(!isset($studentAcademicProgram)
                     || !isset($studentAcademicProgram->obu_SorlcurCactCode)
                     || $studentAcademicProgram->obu_SorlcurCactCode !== 'ACTIVE'
@@ -159,9 +206,11 @@ class processing_service {
             return array();
         }
 
+        $reportActions = array();
         $moodleUsersWithoutMatchingBannerGuid = array();
+
         foreach($bannerGuidsNotInMoodle as $bannerGuid) {
-            $bannerPerson = $this->ethosClient->getPersonById($bannerGuid);
+            $bannerPerson = $this->personService->getPersonById($bannerGuid);
             if(!$bannerPerson) {
                 continue;
             }
@@ -237,7 +286,7 @@ class processing_service {
         ini_set('max_execution_time', 600);
 
         //Get list of programmes to work with.
-        $programmes = $this->curriculumLookupService->getActiveProgrammes();
+        $programmes = $this->curriculumLookupService->getAllAcademicPrograms();
 
         $count = count($programmes);
         $this->trace->output("Found $count active programmes");
@@ -255,7 +304,7 @@ class processing_service {
             'categories' => array($programme->facultyCode)
             ];
 
-            $course = $this->courseService->updateOrCreateCourse($data);
+            $this->courseService->updateOrCreateCourse($data);
             $this->trace->output("Processed: $programme->courseCode");
         }
 
@@ -293,19 +342,19 @@ class processing_service {
             $time_start = microtime(true);
             $this->fill_user_profile($student, $user);
             $time_end = microtime(true);
-            $time = $time_end - $time_end;
+            $time = $time_end - $time_start;
             $this->trace->output("Filled user profile in $time seconds");
 
             $time_start = microtime(true);
             $this->userService->addDefaultEnrolments($user);
             $time_end = microtime(true);
-            $time = $time_end - $time_end;
+            $time = $time_end - $time_start;
             $this->trace->output("Added default enrolments in $time seconds");
 
             $time_start = microtime(true);
             $this->userService->updateUserProfile($user);
             $time_end = microtime(true);
-            $time = $time_end - $time_end;
+            $time = $time_end - $time_start;
             $this->trace->output("Updated user profile in $time seconds");
 
         } else {
@@ -317,10 +366,14 @@ class processing_service {
         if (isset($user->userProfile->bannerGuid) && $user->userProfile->bannerGuid) {
             $this->trace->output("Using GUID: '{$user->userProfile->bannerGuid}'");
             return $this->studentLookupService->lookupStudentFromPersonId($user->userProfile->bannerGuid);
-        } elseif (isset($user->username)) {
+        }
+
+        if (isset($user->username)) {
             $this->trace->output("Using Username: '{$user->username}'");
             return $this->studentLookupService->lookupStudentFromBannerId($user->username);
         }
+
+        return null;
     }
 
     private function fill_user_profile($student, $user) {

@@ -2,15 +2,14 @@
 namespace enrol_ethos\services;
 
 use enrol_ethos\interfaces\user_repository_interface;
-use enrol_ethos\services\course_service;
 use enrol_ethos\entities\user;
 use enrol_ethos\entities\user_profile;
 use enrol_ethos\entities\enrolment;
 
 class user_service {
     const BANNER_GUID = 'bannerGuid';
-    private $userRepository;
-    private $courseService;
+    private user_repository_interface $userRepository;
+    private course_service $courseService;
 
     public function __construct(user_repository_interface $userRepository, course_service $courseService) {
         $this->userRepository = $userRepository;

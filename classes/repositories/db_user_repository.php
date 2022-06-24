@@ -177,31 +177,34 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
         //$this->db->remove($user, 'users');
     }
 
-    public function getAllUsersWithProfileFieldData(string $profileFieldShortName) {
-        // Join any user info data present with each user info field for the user object.
-
+    public function getAllUsersWithProfileFieldData(string $profileFieldShortName, string $profileFieldValue = null, string $authType = null) {
         $sql  = 'select u.id AS userid, username, data, uind.id AS hasuserdata ';
         $sql .= 'from {user} u ';
         $sql .= 'join {user_info_data} uind on uind.userid = u.id ';
         $sql .= 'join {user_info_field} uif on uind.fieldid = uif.id ';
         $sql .=  'where uif.shortname = :shortname';
+        if ($profileFieldValue) {
+            $sql .=  'and uind.data = :value';
+        }
+        if ($authType) {
+            $sql .=  'and u.auth = :authtype ';
+        }
 
-        $dbusers = $this->db->get_records_sql($sql, ['shortname' => $profileFieldShortName]);
-
-        return $dbusers;
+        return $this->db->get_records_sql($sql, ['shortname' => $profileFieldShortName, 'value' => $profileFieldValue, 'authtype' => $authType]);
     }
 
-    public function getUsersWithoutProfileFieldData(string $profileFieldShortName) {
+    public function getUsersWithoutProfileFieldData(string $profileFieldShortName, string $authType = null) {
         $sql  = 'select u.id AS userid, username ';
         $sql .= 'from {user} u ';
         $sql .= 'join {user_info_data} uind on uind.userid = u.id ';
         $sql .= 'join {user_info_field} uif on uind.fieldid = uif.id ';
         $sql .= 'where uif.shortname = :shortname ';
         $sql .= 'and (uind.id is null or uind.data is null or uind.data = \'\')';
+        if ($authType) {
+            $sql .=  'and u.auth = :authtype ';
+        }
 
-        $dbusers = $this->db->get_records_sql($sql, ['shortname' => $profileFieldShortName]);
-
-        return $dbusers;
+        return $this->db->get_records_sql($sql, ['shortname' => $profileFieldShortName, 'authtype' => $authType]);
     }
 
     public function getUsersByProfileField(string $profileFieldShortName, array $dataArray) {

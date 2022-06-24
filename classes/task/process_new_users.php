@@ -12,7 +12,7 @@ class process_new_users extends \core\task\scheduled_task {
      *
      * @return string
      */
-    public function get_name() {
+    public function get_name() : string {
         return "Process new users (where SRS fields are empty)";
     }
 
@@ -21,8 +21,7 @@ class process_new_users extends \core\task\scheduled_task {
      */
     public function execute() {
         $trace = new text_progress_trace();
-
-        $processingService= new \enrol_ethos\services\processing_service($trace);
-        $processingService->process_new_users();
+        $handler = new \enrol_ethos\handlers\backfill_handler($trace);
+        $handler->handleBackFill();
     }
 }

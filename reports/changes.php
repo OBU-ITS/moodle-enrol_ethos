@@ -30,7 +30,7 @@ if ($id == 0)
     die();
 }
 
-admin_externalpage_setup('reportenrolethos', '', null, '', array('pagelayout' => 'report'));
+admin_externalpage_setup('reportethosnotifications', '', null, '', array('pagelayout' => 'report'));
 $reportService = new ethos_report_service();
 
 echo $OUTPUT->header();

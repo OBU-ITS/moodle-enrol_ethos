@@ -2,22 +2,25 @@
 
 namespace enrol_ethos\ethosclient\service;
 
+use enrol_ethos\ethosclient\entities\program_info;
+
 class curriculum_lookup_service {
 
-    var $ethosClient;
+    private ethos_academic_program_service $academicProgramService;
+    private ethos_educational_institution_unit_service $institutionService;
+    private ethos_academic_level_service $academicLevelService;
 
-    public function __construct($ethosClient) {
-        $this->ethosClient = $ethosClient;
+    public function __construct() {
+        $this->academicProgramService = ethos_academic_program_service::getInstance();
+        $this->institutionService = ethos_educational_institution_unit_service::getInstance();
+        $this->academicLevelService = ethos_academic_level_service::getInstance();
     }
 
-
-    public function getActiveProgrammes() {
-        return $this->getAllAcademicPrograms();
-    }
-
-
-    public function getAllAcademicPrograms() {
-        $ethosResults = $this->ethosClient->getAcademicPrograms();
+    /**
+     * @return program_info[]
+     */
+    public function getAllAcademicPrograms() : array {
+        $ethosResults = $this->academicProgramService->getAll();
 
         $academicPrograms = array();
 
@@ -29,18 +32,18 @@ class curriculum_lookup_service {
         return $academicPrograms;
     }
 
-    private function convertEthosAcademicProgram($academicProgram) {
+    private function convertEthosAcademicProgram($academicProgram) : program_info {
         $programInfo = new program_info();
 
 
         if (isset($academicProgram->authorizing->institutionalUnit->id)) {
-            $faculty = $this->ethosClient->getInstitution($academicProgram->authorizing->institutionalUnit->id);
+            $faculty = $this->institutionService->get($academicProgram->authorizing->institutionalUnit->id);
             $programInfo->facultyCode = $faculty->code;
-            $programInfo->facultyTitle = $faculty->title;    
-        } 
-        
+            $programInfo->facultyTitle = $faculty->title;
+        }
+
         if (isset($academicProgram->academicLevel->id)) {
-            $academicLevel = $this->ethosClient->getAcademicLevel($academicProgram->academicLevel->id);
+            $academicLevel = $this->academicLevelService->get($academicProgram->academicLevel->id);
             $programInfo->academicLevelCode = $academicLevel->code;
             $programInfo->academicLevelTitle = $academicLevel->title;
         }
@@ -55,7 +58,7 @@ class curriculum_lookup_service {
 
         /** Dig out the student registration eligibility */
         // don't need this yet, but it works->
-        //val eligibilities = ethosClient->getStudentRegistrationEligibility(personId, startingPeriodId)
+        //val eligibility = ethosClient->getStudentRegistrationEligibility(personId, startingPeriodId)
 
 
         /*

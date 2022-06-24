@@ -32,7 +32,7 @@ $toQs = $_GET["to"] ?? date("y-m-d 00:00:00");
 $to = strtotime($toQs . " + 1 day");
 $toStr = date("Y-m-d h:i:sa", $to);
 
-admin_externalpage_setup('reportenrolethos', '', null, '', array('pagelayout' => 'report'));
+admin_externalpage_setup('reportethosnotifications', '', null, '', array('pagelayout' => 'report'));
 
 echo $OUTPUT->header();
 echo "<h2>$fromStr - $toStr</h2>";

@@ -1,6 +1,6 @@
 <?php
 
-namespace enrol_ethos\ethosclient\service;
+namespace enrol_ethos\ethosclient\entities;
 
 class student_info {
 
@@ -102,8 +102,8 @@ class student_info {
     /** Does the person have the dyslexia service applied */
     public $dyslexic;
 
-    public function toString() {
-        return "StudentInfo(studentNumber=$studentNumber, title=$title, forename=$forename, surname=$surname, middleName=$middleName, nickName=$nickName, dateOfBirth=$dateOfBirth, personId=$personId, studentId=$studentId, courseCode=$courseCode, courseTitle=$courseTitle, establishmentCode=$establishmentCode, establishmentTitle=$establishmentTitle, facultyCode=$facultyCode, facultyTitle=$facultyTitle, departmentCode=$departmentCode, departmentTitle=$departmentTitle, schoolTypeCode=$schoolTypeCode, schoolTypeTitle=$schoolTypeTitle, attendanceMode=$attendanceMode, attendanceModeTitle=$attendanceModeTitle, subjectCode=$subjectCode, subjectTitle=$subjectTitle, awardCode=$awardCode, awardTitle=$awardTitle, startDate=$startDate, endDate=$endDate, status=$status, statusTitle=$statusTitle, graduatedOn=$graduatedOn, recognitions=$recognitions, creditsEarned=$creditsEarned, academicLevel=$academicLevel, programmes=$programmes, leadProgramOfStudy=$leadProgramOfStudy, dyslexic=$dyslexic)";
+    public function toString() : string {
+        return "StudentInfo(studentNumber=$this->studentNumber, title=$this->title, forename=$this->forename, surname=$this->surname, middleName=$this->middleName, nickName=$this->nickName, dateOfBirth=$this->dateOfBirth, personId=$this->personId, studentId=$this->studentId, courseCode=$this->courseCode, courseTitle=$this->courseTitle, establishmentCode=$this->establishmentCode, establishmentTitle=$this->establishmentTitle, facultyCode=$this->facultyCode, facultyTitle=$this->facultyTitle, departmentCode=$this->departmentCode, departmentTitle=$this->departmentTitle, schoolTypeCode=$this->schoolTypeCode, schoolTypeTitle=$this->schoolTypeTitle, attendanceMode=$this->attendanceMode, attendanceModeTitle=$this->attendanceModeTitle, subjectCode=$this->subjectCode, subjectTitle=$this->subjectTitle, awardCode=$this->awardCode, awardTitle=$this->awardTitle, startDate=$this->startDate, endDate=$this->endDate, status=$this->status, statusTitle=$this->statusTitle, graduatedOn=$this->graduatedOn, recognitions=$this->recognitions, creditsEarned=$this->creditsEarned, academicLevel=$this->academicLevel, programmes=$this->programmes, leadProgramOfStudy=$this->leadProgramOfStudy, dyslexic=$this->dyslexic)";
     }
 
     public function __construct($personId) {

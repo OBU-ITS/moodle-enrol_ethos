@@ -7,17 +7,17 @@ use enrol_ethos\entities\profile_field;
 
 class profile_field_service {
 
-    private $profileFieldRepository;
-    private $profileCategoryRepository;
+    private profile_field_repository_interface $profileFieldRepository;
+    private profile_category_repository_interface $profileCategoryRepository;
 
-    private $defaultCategory;
+    private profile_category $defaultCategory;
 
     public function __construct(profile_field_repository_interface $profileFieldRepository, profile_category_repository_interface $profileCategoryRepository) {
         $this->profileFieldRepository = $profileFieldRepository;
         $this->profileCategoryRepository = $profileCategoryRepository;
     }
 
-    private function getDefaultFields() {
+    private function getDefaultFields() : array {
         $fieldArray = array();
 
         $defaultCategory = $this->getDefaultCategory();
@@ -53,8 +53,8 @@ class profile_field_service {
         $fieldArray[] = new profile_field('dyslexic', 'Dyslexic', 'Dyslexic', $defaultCategory->id,'checkbox');
         return $fieldArray;
     }
-    
-    private function getDefaultCategoryTemplate() {
+
+    private function getDefaultCategoryTemplate() : profile_category {
         return new profile_category('SRS',1);
     }
 
@@ -84,26 +84,24 @@ class profile_field_service {
         $defaultFields = $this->getDefaultFields();
 
         foreach($defaultFields as $profileField) {
-            
+
             if ($dbProfileField = $this->profileFieldRepository->findOne($profileField->shortname)){
                 $profileField->id = $dbProfileField->id;
             }
-            
+
             $this->profileFieldRepository->save($profileField);
         }
     }
 
     public function addDefaultCategory() {
-        
+
         $defaultCategory = $this->getDefaultCategory();
 
         if (!$defaultCategory) {
             $defaultCategory = $this->getDefaultCategoryTemplate();
             $defaultCategory->id = $this->profileCategoryRepository->save($defaultCategory);
-        } 
-        
-        $this->defaultCategory = $defaultCategory;
+        }
 
-        return true;
+        $this->defaultCategory = $defaultCategory;
     }
 }
