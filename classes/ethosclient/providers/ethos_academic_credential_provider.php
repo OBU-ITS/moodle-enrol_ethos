@@ -1,16 +1,18 @@
 <?php
-namespace enrol_ethos\ethosclient\service;
+namespace enrol_ethos\ethosclient\providers;
 
-class ethos_academic_credential_service extends ethos_service
+use enrol_ethos\ethosclient\providers\base\ethos_provider;
+
+class ethos_academic_credential_provider extends ethos_provider
 {
     private function __construct()
     {
         parent::__construct();
-        $this->prepareService('academic-credentials', 'v6');
+        $this->prepareProvider('academic-credentials', 'v6');
     }
 
-    private static ?ethos_academic_credential_service $instance = null;
-    public static function getInstance() : ethos_academic_credential_service
+    private static ?ethos_academic_credential_provider $instance = null;
+    public static function getInstance() : ethos_academic_credential_provider
     {
         if (self::$instance == null)
         {

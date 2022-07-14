@@ -22,8 +22,12 @@ class program_info {
     public $academicLevelCode;
     public $academicLevelTitle;
 
-    /** Disciplines for the program of study */
-    public $disciplines;
+    /**
+     * Disciplines for the program of study
+     *
+     * @var discipline_info[]
+     */
+    public array $disciplines;
 
     /** The date on which an academic program begins **/
     public $startOn;
@@ -36,7 +40,7 @@ class program_info {
     /** The number of credits earned at the home institution during the course of study for the program **/
     public $creditsEarned;
 
-    public $periodInfo;
+    public period_info $periodInfo;
 
     /** Sets the preference of the course from Banner */
     public $preference;

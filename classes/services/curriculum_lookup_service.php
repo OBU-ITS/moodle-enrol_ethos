@@ -6,14 +6,14 @@ use enrol_ethos\ethosclient\entities\program_info;
 
 class curriculum_lookup_service {
 
-    private ethos_academic_program_service $academicProgramService;
-    private ethos_educational_institution_unit_service $institutionService;
-    private ethos_academic_level_service $academicLevelService;
+    private ethos_academic_program_provider $academicProgramService;
+    private ethos_educational_institution_unit_provider $institutionUnitService;
+    private ethos_academic_level_provider $academicLevelService;
 
     public function __construct() {
-        $this->academicProgramService = ethos_academic_program_service::getInstance();
-        $this->institutionService = ethos_educational_institution_unit_service::getInstance();
-        $this->academicLevelService = ethos_academic_level_service::getInstance();
+        $this->academicProgramService = ethos_academic_program_provider::getInstance();
+        $this->institutionUnitService = ethos_educational_institution_unit_provider::getInstance();
+        $this->academicLevelService = ethos_academic_level_provider::getInstance();
     }
 
     /**
@@ -36,8 +36,8 @@ class curriculum_lookup_service {
         $programInfo = new program_info();
 
 
-        if (isset($academicProgram->authorizing->institutionalUnit->id)) {
-            $faculty = $this->institutionService->get($academicProgram->authorizing->institutionalUnit->id);
+        if (isset($academicProgram->programOwners[0]->id)) {
+            $faculty = $this->institutionUnitService->get($academicProgram->programOwners[0]->id);
             $programInfo->facultyCode = $faculty->code;
             $programInfo->facultyTitle = $faculty->title;
         }

@@ -81,4 +81,10 @@ function xmldb_enrol_ethos_upgrade($oldversion) {
 
         upgrade_plugin_savepoint(true, 2022060901, 'enrol', 'ethos');
     }
+
+    if($oldversion < 2022060902) {
+        upgrade_plugin_savepoint(true, 2022060902, 'enrol', 'ethos');
+    }
+
+    return true;
 }

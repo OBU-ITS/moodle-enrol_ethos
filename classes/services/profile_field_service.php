@@ -10,7 +10,7 @@ class profile_field_service {
     private profile_field_repository_interface $profileFieldRepository;
     private profile_category_repository_interface $profileCategoryRepository;
 
-    private profile_category $defaultCategory;
+    private $defaultCategory;
 
     public function __construct(profile_field_repository_interface $profileFieldRepository, profile_category_repository_interface $profileCategoryRepository) {
         $this->profileFieldRepository = $profileFieldRepository;

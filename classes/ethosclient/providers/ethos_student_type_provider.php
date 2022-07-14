@@ -1,16 +1,18 @@
 <?php
-namespace enrol_ethos\ethosclient\service;
+namespace enrol_ethos\ethosclient\providers;
 
-class ethos_student_academic_period_status_service extends ethos_service
+use enrol_ethos\ethosclient\providers\base\ethos_provider;
+
+class ethos_student_type_provider extends ethos_provider
 {
     private function __construct()
     {
         parent::__construct();
-        $this->prepareService('student-academic-period-statuses', 'v1');
+        $this->prepareProvider('student-types', 'v7');
     }
 
-    private static ?ethos_student_academic_period_status_service $instance = null;
-    public static function getInstance() : ethos_student_academic_period_status_service
+    private static ?ethos_student_type_provider $instance = null;
+    public static function getInstance() : ethos_student_type_provider
     {
         if (self::$instance == null)
         {

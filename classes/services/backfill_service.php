@@ -3,7 +3,7 @@ namespace enrol_ethos\services;
 
 use enrol_ethos\entities\user;
 use enrol_ethos\ethosclient\client\ethos_client;
-use enrol_ethos\ethosclient\service\ethos_person_service;
+use enrol_ethos\ethosclient\service\ethos_person_provider;
 use enrol_ethos\repositories\db_user_repository;
 
 class backfill_service
@@ -12,7 +12,7 @@ class backfill_service
 
     private db_user_repository $userRepository;
     private progress_trace $trace;
-    private ethos_person_service $personService;
+    private ethos_person_provider $personService;
 
     public function __construct($trace)
     {
@@ -20,7 +20,7 @@ class backfill_service
 
         $this->userRepository = new db_user_repository($DB);
 
-        $this->personService = ethos_person_service::getInstance();
+        $this->personService = ethos_person_provider::getInstance();
 
         $this->trace = $trace;
     }

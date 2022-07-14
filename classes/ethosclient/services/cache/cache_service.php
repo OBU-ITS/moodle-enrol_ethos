@@ -1,5 +1,5 @@
 <?php
-namespace enrol_ethos\ethosclient\service\cache;
+namespace enrol_ethos\ethosclient\services\cache;
 
 use enrol_ethos\ethosclient\entities\cache\cache_data;
 use enrol_ethos\ethosclient\entities\cache\cache_settings;
@@ -8,15 +8,16 @@ class cache_service {
     const DEFAULT_COLLECTION = "default";
 
     private static array $cache;
-    private static cache_service $instance;
 
     private float $clearDownTime;
 
     private function __construct()
     {
-       self::$cache = $_SESSION['ethos_service_cache'] ?? array();
-       $this->clearDownTime = microtime(true);
-       self::$cache = array_filter(self::$cache, 'removeExpiredData');
+        self::$cache = array();
+        //self::$cache = $_SESSION['ethos_service_cache'] ?? array();
+
+        $this->clearDownTime = microtime(true);
+        //self::$cache = array_filter(self::$cache, 'removeExpiredData');
     }
 
     /**
@@ -24,6 +25,7 @@ class cache_service {
      *
      * @return cache_service
      */
+    private static ?cache_service $instance = null;
     public static function getInstance() : cache_service
     {
         if (self::$instance == null)

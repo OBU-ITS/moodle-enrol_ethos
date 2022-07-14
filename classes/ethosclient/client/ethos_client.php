@@ -15,7 +15,7 @@ class ethos_client
 
     private ?Client $client = null;
     private string $authKey;
-    private string $accessToken;
+    private ?string $accessToken = null;
 
     /**
      * @throws Exception when API key cannot be found
@@ -45,7 +45,7 @@ class ethos_client
      * @return array|mixed Repsonse contents
      * @throws Exception
      */
-    public function getJson(string $url, string $accept, int $maxResults = 0, int $resultsPerPage = 0) {
+    public function getJson(string $url, string $accept, int $maxResults = 0, int $resultsPerPage = 0) : array {
         if ((!$resultsPerPage) || ($maxResults && ($maxResults <= $resultsPerPage))) {
             return json_decode($this->get($url, $accept));
         }

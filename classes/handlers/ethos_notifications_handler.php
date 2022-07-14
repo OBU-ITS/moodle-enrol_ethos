@@ -49,7 +49,7 @@ class ethos_notifications_handler {
     {
         $messagesModel = new messages_model();
 
-        $lastConsumedID = $this->reportService->getLastConsumedId();
+        $lastConsumedID = $this->reportService->getLastConsumedId(Id);
         $processedCount = 0;
 
         do {

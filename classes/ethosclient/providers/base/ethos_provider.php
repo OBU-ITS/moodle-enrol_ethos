@@ -1,11 +1,11 @@
 <?php
-namespace enrol_ethos\ethosclient\service;
+namespace enrol_ethos\ethosclient\providers\base;
 
 use enrol_ethos\ethosclient\client\ethos_client;
 use enrol_ethos\ethosclient\entities\cache\cache_settings;
-use enrol_ethos\ethosclient\service\cache\cache_service;
+use enrol_ethos\ethosclient\services\cache\cache_service;
 
-abstract class ethos_service
+abstract class ethos_provider
 {
     private string $path;
     private string $acceptHeader;
@@ -21,14 +21,12 @@ abstract class ethos_service
         $this->cacheService = cache_service::getInstance();
     }
 
-    protected array $cache = array();
-
     /**
      * @param string $path ethos api path
      * @param string $version ethos api path version
      * @param int|null $cacheDuration cache duration in seconds
      */
-    protected function prepareService(string $path, string $version, ?int $cacheDuration = null) {
+    protected function prepareProvider(string $path, string $version, ?int $cacheDuration = null) {
         $this->path = $path;
         $this->acceptHeader = $this->buildAcceptHeader($version);
 

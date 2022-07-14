@@ -5,8 +5,8 @@ namespace enrol_ethos\services;
 use enrol_ethos\entities\reports\report_action;
 use enrol_ethos\entities\reports\report_run;
 use enrol_ethos\ethosclient\service\curriculum_lookup_service;
-use enrol_ethos\ethosclient\service\ethos_person_service;
-use enrol_ethos\ethosclient\service\ethos_student_academic_program_service;
+use enrol_ethos\ethosclient\service\ethos_person_provider;
+use enrol_ethos\ethosclient\service\ethos_student_academic_program_provider;
 use enrol_ethos\ethosclient\service\messages_model;
 use enrol_ethos\repositories\db_course_category_repository;
 use enrol_ethos\repositories\db_course_repository;
@@ -17,8 +17,8 @@ class processing_service {
     private student_lookup_service $studentLookupService;
     private curriculum_lookup_service $curriculumLookupService;
     private alternative_credential_service $alternativeCredentialService;
-    private ethos_person_service $personService;
-    private ethos_student_academic_program_service $studentAcademicProgramService;
+    private ethos_person_provider $personService;
+    private ethos_student_academic_program_provider $studentAcademicProgramService;
 
     private $courseCategoryRepository;
     private $courseRepository;
@@ -33,8 +33,8 @@ class processing_service {
     {
         global $DB;
 
-        $this->personService = ethos_person_service::getInstance();
-        $this->studentAcademicProgramService = ethos_student_academic_program_service::getInstance();
+        $this->personService = ethos_person_provider::getInstance();
+        $this->studentAcademicProgramService = ethos_student_academic_program_provider::getInstance();
 
         $this->alternativeCredentialService = new alternative_credential_service();
         $this->studentLookupService = new student_lookup_service($trace);

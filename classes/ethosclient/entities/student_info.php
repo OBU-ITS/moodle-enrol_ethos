@@ -99,7 +99,7 @@ class student_info {
     /** The primary active program of study for the student */
     public $leadProgramOfStudy;
 
-    /** Does the person have the dyslexia service applied */
+    /** Does the person have the dyslexia services applied */
     public $dyslexic;
 
     public function toString() : string {

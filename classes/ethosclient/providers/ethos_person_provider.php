@@ -1,19 +1,21 @@
 <?php
-namespace enrol_ethos\ethosclient\service;
+namespace enrol_ethos\ethosclient\providers;
 
-class ethos_person_service extends ethos_service
+use enrol_ethos\ethosclient\providers\base\ethos_provider;
+
+class ethos_person_provider extends ethos_provider
 {
-    private ethos_alternative_credential_service $alternativeCredentialService;
+    private ethos_alternative_credential_provider $alternativeCredentialService;
 
-    public function __construct()
+    private function __construct()
     {
         parent::__construct();
-        $this->prepareService('persons', 'v12');
-        $this->alternativeCredentialService = ethos_alternative_credential_service::getInstance();
+        $this->prepareProvider('persons', 'v12');
+        $this->alternativeCredentialService = ethos_alternative_credential_provider::getInstance();
     }
 
-    private static ?ethos_person_service $instance = null;
-    public static function getInstance() : ethos_person_service
+    private static ?ethos_person_provider $instance = null;
+    public static function getInstance() : ethos_person_provider
     {
         if (self::$instance == null)
         {

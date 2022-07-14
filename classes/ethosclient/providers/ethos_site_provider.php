@@ -1,16 +1,18 @@
 <?php
-namespace enrol_ethos\ethosclient\service;
+namespace enrol_ethos\ethosclient\providers;
 
-class ethos_educational_institution_unit_service extends ethos_service
+use enrol_ethos\ethosclient\providers\base\ethos_provider;
+
+class ethos_site_provider extends ethos_provider
 {
     private function __construct()
     {
         parent::__construct();
-        $this->prepareService('educational-institution-units', 'v7');
+        $this->prepareProvider('sites', 'v6');
     }
 
-    private static ?ethos_educational_institution_unit_service $instance = null;
-    public static function getInstance() : ethos_educational_institution_unit_service
+    private static ?ethos_site_provider $instance = null;
+    public static function getInstance() : ethos_site_provider
     {
         if (self::$instance == null)
         {

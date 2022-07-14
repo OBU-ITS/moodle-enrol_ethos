@@ -1,68 +1,67 @@
 <?php
 namespace enrol_ethos\services;
 
+use DateTime;
 use enrol_ethos\ethosclient\entities\discipline_info;
 use enrol_ethos\ethosclient\entities\name_info;
 use enrol_ethos\ethosclient\entities\period_info;
 use enrol_ethos\ethosclient\entities\program_info;
 use enrol_ethos\ethosclient\entities\student_info;
-use enrol_ethos\ethosclient\service\ethos_academic_credential_service;
-use enrol_ethos\ethosclient\service\ethos_academic_discipline_service;
-use enrol_ethos\ethosclient\service\ethos_academic_level_service;
-use enrol_ethos\ethosclient\service\ethos_academic_period_service;
-use enrol_ethos\ethosclient\service\ethos_academic_program_service;
-use enrol_ethos\ethosclient\service\ethos_educational_institution_unit_service;
-use enrol_ethos\ethosclient\service\ethos_person_service;
-use enrol_ethos\ethosclient\service\ethos_site_service;
-use enrol_ethos\ethosclient\service\ethos_student_academic_period_service;
-use enrol_ethos\ethosclient\service\ethos_student_academic_period_status_service;
-use enrol_ethos\ethosclient\service\ethos_student_academic_program_service;
+use enrol_ethos\ethosclient\service\ethos_academic_credential_provider;
+use enrol_ethos\ethosclient\service\ethos_academic_discipline_provider;
+use enrol_ethos\ethosclient\service\ethos_academic_level_provider;
+use enrol_ethos\ethosclient\service\ethos_academic_period_provider;
+use enrol_ethos\ethosclient\service\ethos_academic_program_provider;
+use enrol_ethos\ethosclient\service\ethos_educational_institution_unit_provider;
+use enrol_ethos\ethosclient\service\ethos_person_provider;
+use enrol_ethos\ethosclient\service\ethos_site_provider;
+use enrol_ethos\ethosclient\service\ethos_student_academic_period_provider;
+use enrol_ethos\ethosclient\service\ethos_student_academic_period_status_provider;
+use enrol_ethos\ethosclient\service\ethos_student_academic_program_provider;
 use enrol_ethos\ethosclient\service\ethos_student_service;
-use enrol_ethos\ethosclient\service\ethos_student_status_service;
-use enrol_ethos\ethosclient\service\ethos_student_type_service;
+use enrol_ethos\ethosclient\service\ethos_student_status_provider;
+use enrol_ethos\ethosclient\service\ethos_student_type_provider;
 
 class student_lookup_service {
-
-
-    private ethos_person_service $personService;
+    private ethos_person_provider $personService;
     private ethos_student_service $studentService;
-    private ethos_student_type_service $studentTypeService;
-    private ethos_student_status_service $studentStatusService;
-    private ethos_student_academic_program_service $studentAcademicProgramService;
-    private ethos_academic_period_service $academicPeriodService;
-    private ethos_site_service $siteService;
-    private ethos_educational_institution_unit_service $institutionService;
-    private ethos_academic_program_service $academicProgramService;
-    private ethos_academic_level_service $academicLevelService;
-    private ethos_student_academic_period_service $studentAcademicPeriodService;
-    private ethos_academic_credential_service $academicCredentialService;
-    private ethos_student_academic_period_status_service $studentAcademicPeriodStatusService;
-    private ethos_academic_discipline_service $academicDisciplineService;
+    private ethos_student_type_provider $studentTypeService;
+    private ethos_student_status_provider $studentStatusService;
+    private ethos_student_academic_program_provider $studentAcademicProgramService;
+    private ethos_academic_period_provider $academicPeriodService;
+    private ethos_site_provider $siteService;
+    private ethos_educational_institution_unit_provider $institutionService;
+    private ethos_academic_program_provider $academicProgramService;
+    private ethos_academic_level_provider $academicLevelService;
+    private ethos_student_academic_period_provider $studentAcademicPeriodService;
+    private ethos_academic_credential_provider $academicCredentialService;
+    private ethos_student_academic_period_status_provider $studentAcademicPeriodStatusService;
+    private ethos_academic_discipline_provider $academicDisciplineService;
 
     var $trace;
 
     public function __construct($trace=null) {
-        $this->personService = ethos_person_service::getInstance();
+        $this->personService = ethos_person_provider::getInstance();
         $this->studentService = ethos_student_service::getInstance();
-        $this->studentTypeService = ethos_student_type_service::getInstance();
-        $this->studentStatusService = ethos_student_status_service::getInstance();
-        $this->studentAcademicProgramService = ethos_student_academic_program_service::getInstance();
-        $this->academicPeriodService = ethos_academic_period_service::getInstance();
-        $this->siteService = ethos_site_service::getInstance();
-        $this->institutionService = ethos_educational_institution_unit_service::getInstance();
-        $this->academicProgramService = ethos_academic_program_service::getInstance();
-        $this->academicLevelService = ethos_academic_level_service::getInstance();
-        $this->studentAcademicPeriodService = ethos_student_academic_period_service::getInstance();
-        $this->academicCredentialService = ethos_academic_credential_service::getInstance();
-        $this->studentAcademicPeriodStatusService = ethos_student_academic_period_status_service::getInstance();
-        $this->academicDisciplineService = ethos_academic_discipline_service::getInstance();
+        $this->studentTypeService = ethos_student_type_provider::getInstance();
+        $this->studentStatusService = ethos_student_status_provider::getInstance();
+        $this->studentAcademicProgramService = ethos_student_academic_program_provider::getInstance();
+        $this->academicPeriodService = ethos_academic_period_provider::getInstance();
+        $this->siteService = ethos_site_provider::getInstance();
+        $this->institutionService = ethos_educational_institution_unit_provider::getInstance();
+        $this->academicProgramService = ethos_academic_program_provider::getInstance();
+        $this->academicLevelService = ethos_academic_level_provider::getInstance();
+        $this->studentAcademicPeriodService = ethos_student_academic_period_provider::getInstance();
+        $this->academicCredentialService = ethos_academic_credential_provider::getInstance();
+        $this->studentAcademicPeriodStatusService = ethos_student_academic_period_status_provider::getInstance();
+        $this->academicDisciplineService = ethos_academic_discipline_provider::getInstance();
 
         $this->trace = $trace;
     }
 
     private function ArrayToDateTime($dateField) {
         $dateString = $dateField['year'] . '-' .$dateField['month'] . '-' . $dateField['day'];
-        return \DateTime::createFromFormat('Y-m-d', $dateString);
+        return DateTime::createFromFormat('Y-m-d', $dateString);
     }
 
     private function log($message){
@@ -313,10 +312,10 @@ class student_lookup_service {
 
         $name = new name_info();
         //$name->prefix = $officialName->title;
-        $name->firstName = isset($officialName->firstName) ? $officialName->firstName : null;
-        $name->lastName = isset($officialName->lastName) ? $officialName->lastName : null;
-        $name->middleName = isset($officialName->middleName) ? $officialName->middleName : null;
-        $name->fullName = isset($officialName->fullName) ? $officialName->fullName : null;
+        $name->firstName = $officialName->firstName ?? null;
+        $name->lastName = $officialName->lastName ?? null;
+        $name->middleName = $officialName->middleName ?? null;
+        $name->fullName = $officialName->fullName ?? null;
         $name->nickName = count($preferredNameArray) ? $preferredNameArray[0]->firstName : null;
 
         return $name;

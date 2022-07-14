@@ -52,5 +52,13 @@ $tasks = [
         'month' => '1,7',
         'dayofweek' => '0',
     ],
-
+    [
+        'classname' => 'enrol_ethos\task\test_scheduled_task',
+        'blocking' => 0,
+        'minute' => '45',
+        'hour' => '17',
+        'day' => '*',
+        'month' => '1,7',
+        'dayofweek' => '0',
+    ]
 ];

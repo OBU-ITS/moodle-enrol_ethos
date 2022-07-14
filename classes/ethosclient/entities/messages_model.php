@@ -2,7 +2,14 @@
 namespace enrol_ethos\ethosclient\service;
 
 class messages_model {
+    /**
+     * @var message_model[]
+     */
     public array $persons;
+
+    /**
+     * @var message_model[]
+     */
     public array $studentAcademicPrograms;
 
     public function __construct()
@@ -23,7 +30,7 @@ class messages_model {
         return !($this->hasPersons() || $this->hasStudentAcademicPrograms());
     }
 
-    public function addPerson($messageModel) : bool {
+    public function addPerson(message_model $messageModel) : bool {
         if (!isset($messageModel->personId)) {
             return false;
         }
@@ -37,7 +44,7 @@ class messages_model {
         return false;
     }
 
-    public function addStudentAcademicPrograms($messageModel) : bool {
+    public function addStudentAcademicPrograms(message_model $messageModel) : bool {
         if (!isset($messageModel->resourceId)) {
             return false;
         }

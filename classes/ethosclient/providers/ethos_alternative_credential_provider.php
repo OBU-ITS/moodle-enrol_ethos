@@ -1,9 +1,10 @@
 <?php
-namespace enrol_ethos\ethosclient\service;
+namespace enrol_ethos\ethosclient\providers;
 
-use enrol_ethos\ethosclient\service\cache\cache_service;
+use enrol_ethos\ethosclient\providers\base\ethos_provider;
+use enrol_ethos\ethosclient\services\cache\cache_service;
 
-class ethos_alternative_credential_service extends ethos_service
+class ethos_alternative_credential_provider extends ethos_provider
 {
     const EMPLOYEE_CRED_CACHE_KEY = "EmployeeNumberAlternativeCredentialType";
     const EMPLOYEE_CRED_BANNER_CODE = "EMPN";
@@ -11,11 +12,11 @@ class ethos_alternative_credential_service extends ethos_service
     private function __construct()
     {
         parent::__construct();
-        $this->prepareService('alternative-credential-types', 'v1');
+        $this->prepareProvider('alternative-credential-types', 'v1');
     }
 
-    private static ?ethos_alternative_credential_service $instance = null;
-    public static function getInstance() : ethos_alternative_credential_service
+    private static ?ethos_alternative_credential_provider $instance = null;
+    public static function getInstance() : ethos_alternative_credential_provider
     {
         if (self::$instance == null)
         {

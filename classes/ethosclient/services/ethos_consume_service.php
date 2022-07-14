@@ -1,5 +1,5 @@
 <?php
-namespace enrol_ethos\ethosclient\service;
+namespace enrol_ethos\ethosclient\services;
 
 use enrol_ethos\ethosclient\client\ethos_client;
 
