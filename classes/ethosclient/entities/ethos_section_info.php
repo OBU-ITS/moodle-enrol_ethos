@@ -82,26 +82,6 @@ class ethos_section_info
         return $this->academicPeriod;
     }
 
-
-    private string $statusId;
-    private ?ethos_section_status_info $status = null;
-    public function getStatusId() : string {
-        return $this->statusId;
-    }
-    public function setStatusId(string $id) {
-        $this->statusId = $id;
-        $this->status = null;
-    }
-    public function getStatus() : ethos_section_status_info
-    {
-        if(!$this->status) {
-            $provider = ethos_section_status_provider::getInstance();
-            $this->status = $provider->get($this->statusId);
-        }
-
-        return $this->status;
-    }
-
     // Multiple references
     private array $academicLevelIds = array();
     private ?array $academicLevels = null;
@@ -167,10 +147,7 @@ class ethos_section_info
         $this->endOn = $data->endOn;
         $this->instructionalDeliveryMethod = $data->instructionalDeliveryMethod; // TODO : Check
 
-        if(isset($data->status)) {
-            $this->setStatusId($data->status->detail->id);
-        }
-        if(isset($data->course)) {
+       if(isset($data->course)) {
             $this->setCourseId($data->course->id);
         }
         if(isset($data->site)) {
