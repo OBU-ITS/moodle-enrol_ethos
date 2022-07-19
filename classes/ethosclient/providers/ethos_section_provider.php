@@ -26,16 +26,16 @@ class ethos_section_provider extends ethos_provider
     public function get($id) : ?ethos_section_info {
         $item = $this->getFromEthosById($id);
 
-        return $this->convertToSection($item);
+        return $this->convert($item);
     }
 
     public function getAll() : array {
         $items = $this->getFromEthos();
 
-        return array_map('convertToSection', $items);
+        return array_map('convert', $items);
     }
 
-    private function convertToSection(object $item) : ?ethos_section_info {
-        return new ethos_section_info();
+    private function convert(object $item) : ?ethos_section_info {
+        return new ethos_section_info($item);
     }
 }
