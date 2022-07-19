@@ -26,16 +26,16 @@ class ethos_subject_provider extends ethos_provider
     public function get($id) : ?ethos_subject_info {
         $item = $this->getFromEthosById($id);
 
-        return $this->convertToSubject($item);
+        return $this->convert($item);
     }
 
     public function getAll() : array {
         $items = $this->getFromEthos();
 
-        return array_map('convertToSubject', $items);
+        return array_map('convert', $items);
     }
 
-    private function convertToSubject(object $item) : ?ethos_subject_info {
+    private function convert(object $item) : ?ethos_subject_info {
         return new ethos_subject_info($item);
     }
 
