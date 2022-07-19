@@ -1,13 +1,15 @@
 <?php
 namespace enrol_ethos\ethosclient\providers;
 
+use enrol_ethos\ethosclient\entities\ethos_subject_info;
 use enrol_ethos\ethosclient\providers\base\ethos_provider;
 
 class ethos_subject_provider extends ethos_provider
 {
     private function __construct()
     {
-        // TODO
+        parent::__construct();
+        $this->prepareProvider('subjects', 'v6');
     }
 
     private static ?ethos_subject_provider $instance = null;
@@ -21,5 +23,20 @@ class ethos_subject_provider extends ethos_provider
         return self::$instance;
     }
 
-    // TODO : - functions
+    public function get($id) : ?ethos_subject_info {
+        $item = $this->getFromEthosById($id);
+
+        return $this->convertToSubject($item);
+    }
+
+    public function getAll() : array {
+        $items = $this->getFromEthos();
+
+        return array_map('convertToSubject', $items);
+    }
+
+    private function convertToSubject(object $item) : ?ethos_subject_info {
+        return new ethos_subject_info($item);
+    }
+
 }
