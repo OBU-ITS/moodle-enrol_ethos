@@ -26,17 +26,17 @@ class ethos_course_provider extends ethos_provider
     public function get($id) : ?ethos_course_info {
         $item = $this->getFromEthosById($id);
 
-        return $this->convertToCourse($item);
+        return $this->convert($item);
     }
 
     public function getAll() : array {
         $items = $this->getFromEthos();
 
-        return array_map('convertToCourse', $items);
+        return array_map('convert', $items);
     }
 
-    private function convertToCourse(object $item) : ?ethos_course_info {
-        return new ethos_course_info();
+    private function convert(object $item) : ?ethos_course_info {
+        return new ethos_course_info($item);
     }
 
 
