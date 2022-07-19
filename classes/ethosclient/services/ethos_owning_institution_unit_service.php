@@ -1,9 +1,10 @@
 <?php
 namespace enrol_ethos\ethosclient\services;
 
-use enrol_ethos\ethosclient\client\ethos_client;
+use enrol_ethos\ethosclient\entities\ethos_owning_institution_unit_info;
 
 class ethos_owning_institution_unit_service {
+
     private function __construct()
     {
     }
@@ -17,5 +18,10 @@ class ethos_owning_institution_unit_service {
         }
 
         return self::$instance;
+    }
+
+    public function get($obj) : ethos_owning_institution_unit_info {
+
+        return new ethos_owning_institution_unit_info($obj);
     }
 }

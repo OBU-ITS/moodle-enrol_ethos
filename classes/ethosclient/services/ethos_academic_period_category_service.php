@@ -19,9 +19,8 @@ class ethos_academic_period_category_service {
         return self::$instance;
     }
 
-    public function get($obj) : ?ethos_academic_period_category_info {
+    public function get($obj) : ethos_academic_period_category_info {
 
         return new ethos_academic_period_category_info($obj);
     }
-
 }

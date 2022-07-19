@@ -6,9 +6,9 @@ use enrol_ethos\ethosclient\providers\ethos_educational_institution_unit_provide
 
 class ethos_owning_institution_unit_info
 {
-    public function __construct($id, $ownershipPercentage)
+    public function __construct($data)
     {
-        $this->populateObject($id, $ownershipPercentage);
+        $this->populateObject($data);
     }
 
     public int $ownershipPercentage;
@@ -32,11 +32,15 @@ class ethos_owning_institution_unit_info
         return $this->institutionUnit;
     }
 
-    public function populateObject($id, $ownershipPercentage) {
+    public function populateObject($data) {
+        if (!isset($data)) {
+            return;
+        }
 
-        $this->ownershipPercentage = $ownershipPercentage;
-        $this->setInstitutionUnitId($id);
+        $this->ownershipPercentage = $data->ownershipPercentage;
+
+        if (isset($data->institutionUnit)) {
+            $this->setInstitutionUnitId($data->institutionUnit->id);
+        }
     }
-
-
 }

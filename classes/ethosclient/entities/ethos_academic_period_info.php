@@ -17,15 +17,12 @@ class ethos_academic_period_info
     public string $endOn;
     public string $title;
 
+    public ethos_academic_period_category_info $category;
 
-    private ethos_academic_period_category_info $category;
-
-    private function getCategory($categoryObj) : ethos_academic_period_category_info
+    private function setCategory($categoryObj)
     {
         $service = ethos_academic_period_category_service::getInstance();
         $this->category = $service->get($categoryObj);
-
-        return $this->category;
     }
 
     private function populateObject($data){
@@ -34,6 +31,6 @@ class ethos_academic_period_info
         $this->startOn = $data->startOn;
         $this->endOn = $data->endOn;
         $this->title = $data->title;
-        $this->category = $this->getCategory($data->category);
+        $this->setCategory($data->category);
     }
 }

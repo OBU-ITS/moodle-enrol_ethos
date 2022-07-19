@@ -7,6 +7,7 @@ use enrol_ethos\ethosclient\providers\ethos_academic_period_provider;
 use enrol_ethos\ethosclient\providers\ethos_course_provider;
 use enrol_ethos\ethosclient\providers\ethos_educational_institution_unit_provider;
 use enrol_ethos\ethosclient\providers\ethos_site_provider;
+use enrol_ethos\ethosclient\services\ethos_academic_period_category_service;
 use enrol_ethos\ethosclient\services\ethos_owning_institution_unit_service;
 
 class ethos_section_info
@@ -105,30 +106,22 @@ class ethos_section_info
         return $this->academicLevels;
     }
 
-    private array $owningInstitutionUnitObjs = array();
-    private ?array $owningInstitutionUnits = null;
-    public function getOwningInstitutionUnitObjs() : array {
-        return $this->owningInstitutionUnitObjs;
-    }
-    public function setOwningInstitutionUnitObjs(array $ids) {
-        $this->owningInstitutionUnitObjs = $ids;
-        $this->owningInstitutionUnits = null;
-    }
-    public function getOwningInstitutionUnit() : array
+    /**
+     * @var ethos_owning_institution_unit_info[]
+     */
+    public array $owningInstitutionUnits;
+
+    /**
+     * @param object[] $owningInstitutionUnitObjs
+     */
+    private function setOwningInstitutionUnits(array $owningInstitutionUnitObjs)
     {
-        if(!$this->owningInstitutionUnits) {
-            $service = ethos_owning_institution_unit_service::getInstance();
-            $this->owningInstitutionUnits = array();
-            foreach($this->owningInstitutionUnitObjs as $owningInstitutionUnitObj) {
-                if(!isset($owningInstitutionUnitObj->institutionUnit)) {
-                    continue;
-                }
+        $service = ethos_owning_institution_unit_service::getInstance();
 
-                $this->owningInstitutionUnits[] = $service->get($owningInstitutionUnitObj->institutionUnit->id, $owningInstitutionUnitObj->ownershipPercentage);
-            }
+        $this->owningInstitutionUnits[] = array();
+        foreach($owningInstitutionUnitObjs as $owningInstitutionUnitObj) {
+            $this->owningInstitutionUnits[] = $service->get($owningInstitutionUnitObj);
         }
-
-        return $this->owningInstitutionUnits;
     }
 
     // TODO : Joe
@@ -145,8 +138,9 @@ class ethos_section_info
         $this->startOn = $data->startOn;
         $this->endOn = $data->endOn;
         $this->instructionalDeliveryMethod = $data->instructionalDeliveryMethod; // TODO : Check
+        $this->setOwningInstitutionUnits($data->owningInstitutionUnits);
 
-       if(isset($data->course)) {
+        if(isset($data->course)) {
             $this->setCourseId($data->course->id);
         }
         if(isset($data->site)) {
@@ -155,7 +149,5 @@ class ethos_section_info
         if(isset($data->academicPeriod)) {
             $this->setAcademicPeriodId($data->academicPeriod->id);
         }
-
-
     }
 }
