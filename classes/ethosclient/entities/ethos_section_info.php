@@ -133,7 +133,6 @@ class ethos_section_info
 
     // TODO : Joe
     public array $titleIds;
-    public array $descriptionIds;
 
     public function populateObject(object $data) {
         if(!isset($data)) {
