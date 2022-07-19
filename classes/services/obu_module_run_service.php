@@ -21,6 +21,7 @@ class obu_module_run_service
      */
     public function getModuleById(string $id) : ethos_section_info {
         $module = $this->sectionProvider->get($id);
+
     }
 
     /**

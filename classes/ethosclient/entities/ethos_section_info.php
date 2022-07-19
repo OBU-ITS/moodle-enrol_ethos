@@ -2,15 +2,18 @@
 
 namespace enrol_ethos\ethosclient\entities;
 
+use enrol_ethos\ethosclient\providers\ethos_academic_level_provider;
 use enrol_ethos\ethosclient\providers\ethos_academic_period_provider;
 use enrol_ethos\ethosclient\providers\ethos_course_provider;
+use enrol_ethos\ethosclient\providers\ethos_educational_institution_unit_provider;
 use enrol_ethos\ethosclient\providers\ethos_site_provider;
+use enrol_ethos\ethosclient\services\ethos_owning_institution_unit_service;
 
 class ethos_section_info
 {
     public function __construct(object $data)
     {
-        // TODO : Joe
+        $this->populateObject($data);
     }
 
     // Attributes
@@ -19,12 +22,18 @@ class ethos_section_info
     public string $number;
     public string $startOn; // required
     public string $endOn;
-    public string $status;
     public string $instructionalDeliveryMethod;
 
     // Single references
-    public string $courseId;  // required
+    private string $courseId;  // required
     private ?ethos_course_info $course = null;
+    public function getCourseId() : string {
+        return $this->courseId;
+    }
+    public function setCourseId(string $id) {
+        $this->courseId = $id;
+        $this->course = null;
+    }
     public function getCourse() : ethos_course_info
     {
         if(!$this->course) {
@@ -35,8 +44,15 @@ class ethos_section_info
         return $this->course;
     }
 
-    public string $siteId;
+    private string $siteId;
     private ?ethos_site_info $site = null;
+    public function getSiteId() : string {
+        return $this->siteId;
+    }
+    public function setSiteId(string $id) {
+        $this->siteId = $id;
+        $this->site = null;
+    }
     public function getSite() : ethos_site_info
     {
         if(!$this->site) {
@@ -47,22 +63,123 @@ class ethos_section_info
         return $this->site;
     }
 
-    public string $academicPeriodId;
+    private string $academicPeriodId;
     private ?ethos_academic_period_info $academicPeriod = null;
+    public function getAcademicPeriodId() : string {
+        return $this->academicPeriodId;
+    }
+    public function setAcademicPeriodId(string $id) {
+        $this->academicPeriodId = $id;
+        $this->academicPeriod = null;
+    }
     public function getAcademicPeriod() : ethos_academic_period_info
     {
         if(!$this->academicPeriod) {
             $provider = ethos_academic_period_provider::getInstance();
-            $this->academicPeriod = $provider->get($this->courseId);
+            $this->academicPeriod = $provider->get($this->academicPeriodId);
         }
 
         return $this->academicPeriod;
     }
 
+
+    private string $statusId;
+    private ?ethos_section_status_info $status = null;
+    public function getStatusId() : string {
+        return $this->statusId;
+    }
+    public function setStatusId(string $id) {
+        $this->statusId = $id;
+        $this->status = null;
+    }
+    public function getStatus() : ethos_section_status_info
+    {
+        if(!$this->status) {
+            $provider = ethos_section_status_provider::getInstance();
+            $this->status = $provider->get($this->statusId);
+        }
+
+        return $this->status;
+    }
+
     // Multiple references
+    private array $academicLevelIds = array();
+    private ?array $academicLevels = null;
+    public function getAcademicLevelIds() : array {
+        return $this->academicLevelIds;
+    }
+    public function setAcademicLevelIds(array $ids) {
+        $this->academicLevelIds = $ids;
+        $this->academicLevels = null;
+    }
+    public function getAcademicLevels() : array
+    {
+        if(!$this->academicLevels) {
+            $provider = ethos_academic_level_provider::getInstance();
+            $this->academicLevels = array();
+            foreach($this->academicLevelIds as $academicLevelId) {
+                $this->academicLevels[] = $provider->get($academicLevelId);
+            }
+        }
+
+        return $this->academicLevels;
+    }
+
+    private array $owningInstitutionUnitObjs = array();
+    private ?array $owningInstitutionUnits = null;
+    public function getOwningInstitutionUnitObjs() : array {
+        return $this->owningInstitutionUnitObjs;
+    }
+    public function setOwningInstitutionUnitObjs(array $ids) {
+        $this->owningInstitutionUnitObjs = $ids;
+        $this->owningInstitutionUnits = null;
+    }
+    public function getOwningInstitutionUnit() : array
+    {
+        if(!$this->owningInstitutionUnits) {
+            $service = ethos_owning_institution_unit_service::getInstance();
+            $this->owningInstitutionUnits = array();
+            foreach($this->owningInstitutionUnitObjs as $owningInstitutionUnitObj) {
+                if(!isset($owningInstitutionUnitObj->institutionUnit)) {
+                    continue;
+                }
+
+                $this->owningInstitutionUnits[] = $service->get($owningInstitutionUnitObj->institutionUnit->id, $owningInstitutionUnitObj->ownershipPercentage);
+            }
+        }
+
+        return $this->owningInstitutionUnits;
+    }
+
     // TODO : Joe
-    public array $academicLevels;
-    public array $owningInstitutionUnits;
-    public array $titles;
-    public array $descriptions;
+    public array $titleIds;
+    public array $descriptionIds;
+
+    public function populateObject(object $data) {
+        if(!isset($data)) {
+            return;
+        }
+
+        $this->id = $data->id;
+        $this->code = $data->code;
+        $this->number = $data->number;
+        $this->startOn = $data->startOn;
+        $this->endOn = $data->endOn;
+        $this->instructionalDeliveryMethod = $data->instructionalDeliveryMethod; // TODO : Check
+
+        if(isset($data->status)) {
+            $this->setStatusId($data->status->detail->id);
+        }
+        if(isset($data->course)) {
+            $this->setCourseId($data->course->id);
+        }
+        if(isset($data->site)) {
+            $this->setSiteId($data->site->id);
+        }
+        if(isset($data->academicPeriod)) {
+            $this->setAcademicPeriodId($data->academicPeriod->id);
+        }
+
+
+    }
 }
