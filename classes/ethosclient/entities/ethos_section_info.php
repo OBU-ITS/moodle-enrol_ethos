@@ -5,9 +5,7 @@ namespace enrol_ethos\ethosclient\entities;
 use enrol_ethos\ethosclient\providers\ethos_academic_level_provider;
 use enrol_ethos\ethosclient\providers\ethos_academic_period_provider;
 use enrol_ethos\ethosclient\providers\ethos_course_provider;
-use enrol_ethos\ethosclient\providers\ethos_educational_institution_unit_provider;
 use enrol_ethos\ethosclient\providers\ethos_site_provider;
-use enrol_ethos\ethosclient\services\ethos_academic_period_category_service;
 use enrol_ethos\ethosclient\services\ethos_owning_institution_unit_service;
 
 class ethos_section_info
