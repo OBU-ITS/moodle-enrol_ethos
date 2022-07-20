@@ -10,6 +10,7 @@ class ethos_educational_institution_unit_info
     }
 
     public string $id;
+    public string $code
     public string $title;
     public string $type;
 
@@ -19,6 +20,7 @@ class ethos_educational_institution_unit_info
         }
 
         $this->id = $data->id;
+        $this->code = $data->code;
         $this->type = $data->type;
         $this->title = $data->title;
     }

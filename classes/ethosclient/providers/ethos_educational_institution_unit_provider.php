@@ -8,7 +8,7 @@ class ethos_educational_institution_unit_provider extends ethos_provider
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider('educational-institution-units', 'v6');
+        $this->prepareProvider('educational-institution-units', 'v7');
     }
 
     private static ?ethos_educational_institution_unit_provider $instance = null;
