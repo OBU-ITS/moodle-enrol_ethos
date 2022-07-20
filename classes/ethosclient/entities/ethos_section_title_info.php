@@ -2,8 +2,6 @@
 
 namespace enrol_ethos\ethosclient\entities;
 
-//TODO confirm if this is set up properly.
-
 use enrol_ethos\ethosclient\providers\ethos_section_title_type_provider;
 
 class ethos_section_title_info
@@ -24,12 +22,8 @@ class ethos_section_title_info
         $this->typeId = $id;
         $this->type = null;
     }
-    public function getType() : ?ethos_section_title_type_info
+    public function getType() : ethos_section_title_type_info
     {
-        if(!isset($this->typeId)){
-            return null;
-        }
-
         if(!$this->type) {
             $provider = ethos_section_title_type_provider::getInstance();
             $this->type = $provider->get($this->typeId);
@@ -37,7 +31,6 @@ class ethos_section_title_info
 
         return $this->type;
     }
-
 
     public function populateObject($data) {
         if (!isset($data)) {
