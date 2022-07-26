@@ -48,6 +48,14 @@ class obu_module_run_service
         $hierarchy = obu_course_hierarchy_info::getTopCategory();
 
         foreach($moduleRuns as $moduleRun) {
+            
+            if(true) { // TODO : implement skip functionality
+//                sect.SSBSECT_SUBJ_CODE != 'FEE'
+//                AND sect.SSBSECT_SUBJ_CODE != 'EXCH'
+//                AND sect.SSBSECT_SEQ_NUMB != '0'
+                continue;
+            }
+
             $idNumber = $this->getIdNumber($moduleRun);
             $shortName = $this->getShortName($moduleRun);
             $fullName = $this->getFullName($moduleRun);
