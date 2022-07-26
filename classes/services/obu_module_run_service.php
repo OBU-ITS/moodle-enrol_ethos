@@ -82,9 +82,9 @@ class obu_module_run_service
             $sectionNumber = $moduleRun->number;
             $longTitle = $this->titleService->getLongTitle($moduleRun->titles);
 
-            $idNumber = $this->getIdNumber();
-            $shortName = $this->getShortName();
-            $fullName = $this->getFullName();
+            $idNumber = $this->getIdNumber($yearCode, $subjectCode, $courseNumber,$subTermCode, $sectionNumber);
+            $shortName = $this->getShortName($subjectCode, $courseNumber, $termCode, $sectionNumber);
+            $fullName = $this->getFullName($subjectCode, $courseNumber, $longTitle, $subTermDescription, $yearDescription, $sectionNumber, $campusCode);
 
             $course = new mdl_course($idNumber, $shortName, $fullName);
             $course->startdate = 0; // TODO
@@ -103,30 +103,27 @@ class obu_module_run_service
      * @param ethos_section_info $info
      * @return string
      */
-    private function getIdNumber() : string {
-        // TODO
+    private function getIdNumber($yearCode, $subjectCode, $courseNumber,$subTermCode, $sectionNumber) : string {
 
-        return '';
+        return $yearCode . "." . $subjectCode . $courseNumber . "_" . $subTermCode . "_" . $sectionNumber;
     }
 
     /**
      * @param ethos_section_info $info
      * @return string
      */
-    private function getShortName() : string {
-        // TODO
+    private function getShortName($subjectCode, $courseNumber, $termCode, $sectionNumber) : string {
 
-        return '';
+        return $subjectCode . $courseNumber . " (" . $termCode . ":" . $sectionNumber . ")";
     }
 
     /**
      * @param ethos_section_info $info
      * @return string
      */
-    private function getFullName() : string {
-        // TODO
+    private function getFullName($subjectCode, $courseNumber, $longTitle, $subTermDescription, $yearDescription, $sectionNumber, $campusCode) : string {
 
-        return '';
+        return $subjectCode . $courseNumber .": " . $longTitle . " (" . $subTermDescription . " " . $yearDescription . ":" . $sectionNumber . "[" . $campusCode . "]";
     }
 
     /**
