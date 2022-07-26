@@ -12,12 +12,26 @@ class obu_module_run_service
     private ethos_section_provider $sectionProvider;
     private obu_academic_period_service $academicPeriodService;
     private obu_module_run_title_service $titleService;
+    private obu_college_service $collegeService;
+    private obu_department_service $departmentService;
 
-    public function __construct()
+    private function __construct()
     {
         $this->sectionProvider = ethos_section_provider::getInstance();
         $this->academicPeriodService = obu_academic_period_service::getInstance();
         $this->titleService = obu_module_run_title_service::getInstance();
+        $this->collegeService = obu_college_service::getInstance();
+        $this->departmentService = obu_department_service::getInstance();
+    }
+
+    private static ?obu_module_run_service $instance = null;
+    public static function getInstance(): obu_module_run_service
+    {
+        if (self::$instance == null) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
     }
 
     /**
@@ -52,14 +66,22 @@ class obu_module_run_service
         $hierarchy = obu_course_hierarchy_info::getTopCategory();
 
         foreach($moduleRuns as $moduleRun) {
+            if($moduleRun->number == "0") {
+                continue;
+            }
 
-// TODO : implement skip functionality
-//         if(true) {
-//                sect.SSBSECT_SUBJ_CODE == 'FEE'
-//                AND sect.SSBSECT_SUBJ_CODE == 'EXCH'
-//                AND sect.SSBSECT_SEQ_NUMB == '0'
-//             continue;
-//      }
+            $course = $moduleRun->getCourse();
+            $courseNumber = $course->number;
+
+            $subject = $course->getSubject();
+            $subjectCode = $subject->abbreviation;
+
+            if($subjectCode == "FEE" || $subjectCode == "EXCH") {
+                continue;
+            }
+
+            $bannerSectionGuid = $moduleRun->id;
+            $crn = $moduleRun->code;
 
             $subTerm = $moduleRun->getAcademicPeriod();
             $subTermCode = $subTerm->code;
@@ -70,19 +92,14 @@ class obu_module_run_service
             $yearCode = $year->code;
             $yearDescription = $year->title;
 
-            $course = $moduleRun->getCourse();
-            $courseNumber = $course->number;
-
-            $subject = $course->getSubject();
-            $subjectCode = $subject->abbreviation;
-
             $site = $moduleRun->getSite();
             $campusCode = $site->code;
 
             $sectionNumber = $moduleRun->number;
             $longTitle = $this->titleService->getLongTitle($moduleRun->titles);
 
-            $idNumber = $this->getIdNumber($yearCode, $subjectCode, $courseNumber,$subTermCode, $sectionNumber);
+
+            $idNumber = $this->getIdNumber($yearCode, $subjectCode, $courseNumber, $subTermCode, $sectionNumber);
             $shortName = $this->getShortName($subjectCode, $courseNumber, $termCode, $sectionNumber);
             $fullName = $this->getFullName($subjectCode, $courseNumber, $longTitle, $subTermDescription, $yearDescription, $sectionNumber, $campusCode);
 
@@ -90,6 +107,7 @@ class obu_module_run_service
             $course->startdate = 0; // TODO
             $course->enddate = 0; // TODO
 
+            //$department = $dep
 
             $categories = $this->getCategories($moduleRun);
 
@@ -100,16 +118,23 @@ class obu_module_run_service
     }
 
     /**
-     * @param ethos_section_info $info
+     * @param $yearCode
+     * @param $subjectCode
+     * @param $courseNumber
+     * @param $subTermCode
+     * @param $sectionNumber
      * @return string
      */
-    private function getIdNumber($yearCode, $subjectCode, $courseNumber,$subTermCode, $sectionNumber) : string {
+    private function getIdNumber($yearCode, $subjectCode, $courseNumber, $subTermCode, $sectionNumber) : string {
 
         return $yearCode . "." . $subjectCode . $courseNumber . "_" . $subTermCode . "_" . $sectionNumber;
     }
 
     /**
-     * @param ethos_section_info $info
+     * @param $subjectCode
+     * @param $courseNumber
+     * @param $termCode
+     * @param $sectionNumber
      * @return string
      */
     private function getShortName($subjectCode, $courseNumber, $termCode, $sectionNumber) : string {
@@ -118,7 +143,13 @@ class obu_module_run_service
     }
 
     /**
-     * @param ethos_section_info $info
+     * @param $subjectCode
+     * @param $courseNumber
+     * @param $longTitle
+     * @param $subTermDescription
+     * @param $yearDescription
+     * @param $sectionNumber
+     * @param $campusCode
      * @return string
      */
     private function getFullName($subjectCode, $courseNumber, $longTitle, $subTermDescription, $yearDescription, $sectionNumber, $campusCode) : string {
@@ -131,13 +162,23 @@ class obu_module_run_service
      * @return obu_course_category_info[]
      */
     private function getCategories(ethos_section_info $info) : array {
-        // TODO
+         // TODO
 
-        return array(
+         $temp=  array(
             new obu_course_category_info("SRS-Linked", "SRS", "SRS~~"),
-            new obu_course_category_info("OBBS", "BU"),
-            new obu_course_category_info("Business and Management", "BMGT")
-        );
+            new obu_course_category_info("Faculty of TDE", "TD"),
+            new obu_course_category_info("Built Environment", "BENV"),
+            new obu_course_category_info("ARCHITECTURE", "ARCH"),
+         ); // TODO SRS~~~TD~BENV~ARCH
+
+         $temp= array(
+             new obu_course_category_info("SRS-Linked", "SRS"),
+             new obu_course_category_info("Associated Colleges", "Assoc"),
+             new obu_course_category_info("Some Campus", "AW"),
+             new obu_course_category_info("Faculty of TDE", "TD", "TD~"),
+             new obu_course_category_info("ARCHITECTURE", "ARCH"),
+         ); // TODO SRS~ARCH~AW~TD~~ARCH
     }
+
 
 }
