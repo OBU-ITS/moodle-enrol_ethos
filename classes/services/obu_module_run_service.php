@@ -10,10 +10,14 @@ use enrol_ethos\ethosclient\providers\ethos_section_provider;
 class obu_module_run_service
 {
     private ethos_section_provider $sectionProvider;
+    private obu_academic_period_service $academicPeriodService;
+    private obu_module_run_title_service $titleService;
 
     public function __construct()
     {
         $this->sectionProvider = ethos_section_provider::getInstance();
+        $this->academicPeriodService = obu_academic_period_service::getInstance();
+        $this->titleService = obu_module_run_title_service::getInstance();
     }
 
     /**
@@ -48,21 +52,44 @@ class obu_module_run_service
         $hierarchy = obu_course_hierarchy_info::getTopCategory();
 
         foreach($moduleRuns as $moduleRun) {
-            
-            if(true) { // TODO : implement skip functionality
-//                sect.SSBSECT_SUBJ_CODE != 'FEE'
-//                AND sect.SSBSECT_SUBJ_CODE != 'EXCH'
-//                AND sect.SSBSECT_SEQ_NUMB != '0'
-                continue;
-            }
 
-            $idNumber = $this->getIdNumber($moduleRun);
-            $shortName = $this->getShortName($moduleRun);
-            $fullName = $this->getFullName($moduleRun);
+// TODO : implement skip functionality
+//         if(true) {
+//                sect.SSBSECT_SUBJ_CODE == 'FEE'
+//                AND sect.SSBSECT_SUBJ_CODE == 'EXCH'
+//                AND sect.SSBSECT_SEQ_NUMB == '0'
+//             continue;
+//      }
+
+            $subTerm = $moduleRun->getAcademicPeriod();
+            $subTermCode = $subTerm->code;
+            $subTermDescription = $subTerm->title;
+            $term = $this->academicPeriodService->getTerm($subTerm);
+            $termCode = $term->code;
+            $year =  $this->academicPeriodService->getYear($term);
+            $yearCode = $year->code;
+            $yearDescription = $year->title;
+
+            $course = $moduleRun->getCourse();
+            $courseNumber = $course->number;
+
+            $subject = $course->getSubject();
+            $subjectCode = $subject->abbreviation;
+
+            $site = $moduleRun->getSite();
+            $campusCode = $site->code;
+
+            $sectionNumber = $moduleRun->number;
+            $longTitle = $this->titleService->getLongTitle($moduleRun->titles);
+
+            $idNumber = $this->getIdNumber();
+            $shortName = $this->getShortName();
+            $fullName = $this->getFullName();
 
             $course = new mdl_course($idNumber, $shortName, $fullName);
             $course->startdate = 0; // TODO
             $course->enddate = 0; // TODO
+
 
             $categories = $this->getCategories($moduleRun);
 
@@ -76,7 +103,7 @@ class obu_module_run_service
      * @param ethos_section_info $info
      * @return string
      */
-    private function getIdNumber(ethos_section_info $info) : string {
+    private function getIdNumber() : string {
         // TODO
 
         return '';
@@ -86,7 +113,7 @@ class obu_module_run_service
      * @param ethos_section_info $info
      * @return string
      */
-    private function getShortName(ethos_section_info $info) : string {
+    private function getShortName() : string {
         // TODO
 
         return '';
@@ -96,7 +123,7 @@ class obu_module_run_service
      * @param ethos_section_info $info
      * @return string
      */
-    private function getFullName(ethos_section_info $info) : string {
+    private function getFullName() : string {
         // TODO
 
         return '';
