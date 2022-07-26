@@ -76,7 +76,7 @@ class obu_module_run_service
             $subject = $course->getSubject();
             $subjectCode = $subject->abbreviation;
 
-            if($subjectCode == "FEE" || $subjectCode == "EXCH") {
+            if($subjectCode == "FEE" || $subjectCode == "EXCH" || $subjectCode == "ACAD") {
                 continue;
             }
 
