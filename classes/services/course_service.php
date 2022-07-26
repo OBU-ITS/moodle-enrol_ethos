@@ -2,7 +2,7 @@
 namespace enrol_ethos\services;
 use enrol_ethos\interfaces\course_repository_interface;
 use enrol_ethos\interfaces\course_category_repository_interface;
-use enrol_ethos\entities\course;
+use enrol_ethos\entities\mdl_course;
 
 class course_service {
 
@@ -54,7 +54,7 @@ class course_service {
 
         if (!$course) {
 
-            $course = new course(
+            $course = new mdl_course(
                 $data['idnumber'],
                 $data['shortname'],
                 $data['name'],
