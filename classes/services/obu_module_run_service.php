@@ -2,7 +2,7 @@
 namespace enrol_ethos\services;
 
 use enrol_ethos\entities\mdl_course;
-use enrol_ethos\entities\obu_course_category_info;
+use enrol_ethos\entities\obu_course_categories_info;
 use enrol_ethos\entities\obu_course_hierarchy_info;
 use enrol_ethos\ethosclient\entities\ethos_section_info;
 use enrol_ethos\ethosclient\providers\ethos_section_provider;
@@ -14,6 +14,7 @@ class obu_module_run_service
     private obu_module_run_title_service $titleService;
     private obu_college_service $collegeService;
     private obu_department_service $departmentService;
+    private obu_subject_group_service $subjectGroupService;
 
     private function __construct()
     {
@@ -22,6 +23,7 @@ class obu_module_run_service
         $this->titleService = obu_module_run_title_service::getInstance();
         $this->collegeService = obu_college_service::getInstance();
         $this->departmentService = obu_department_service::getInstance();
+        $this->subjectGroupService = obu_subject_group_service::getInstance();
     }
 
     private static ?obu_module_run_service $instance = null;
@@ -66,55 +68,67 @@ class obu_module_run_service
         $hierarchy = obu_course_hierarchy_info::getTopCategory();
 
         foreach($moduleRuns as $moduleRun) {
-            if($moduleRun->number == "0") {
-                continue;
-            }
-
-            $course = $moduleRun->getCourse();
-            $courseNumber = $course->number;
-
-            $subject = $course->getSubject();
-            $subjectCode = $subject->abbreviation;
-
-            if($subjectCode == "FEE" || $subjectCode == "EXCH" || $subjectCode == "ACAD") {
-                continue;
-            }
-
-            $bannerSectionGuid = $moduleRun->id;
-            $crn = $moduleRun->code;
-
-            $subTerm = $moduleRun->getAcademicPeriod();
-            $subTermCode = $subTerm->code;
-            $subTermDescription = $subTerm->title;
-            $term = $this->academicPeriodService->getTerm($subTerm);
-            $termCode = $term->code;
-            $year =  $this->academicPeriodService->getYear($term);
-            $yearCode = $year->code;
-            $yearDescription = $year->title;
-
-            $site = $moduleRun->getSite();
-            $campusCode = $site->code;
-
-            $sectionNumber = $moduleRun->number;
-            $longTitle = $this->titleService->getLongTitle($moduleRun->titles);
-
-
-            $idNumber = $this->getIdNumber($yearCode, $subjectCode, $courseNumber, $subTermCode, $sectionNumber);
-            $shortName = $this->getShortName($subjectCode, $courseNumber, $termCode, $sectionNumber);
-            $fullName = $this->getFullName($subjectCode, $courseNumber, $longTitle, $subTermDescription, $yearDescription, $sectionNumber, $campusCode);
-
-            $course = new mdl_course($idNumber, $shortName, $fullName);
-            $course->startdate = 0; // TODO
-            $course->enddate = 0; // TODO
-
-            //$department = $dep
-
-            $categories = $this->getCategories($moduleRun);
-
-            $hierarchy->addCourse($course, $categories);
+            $this->addModuleRunToHierarchy($moduleRun, $hierarchy);
+            $this->subjectGroupService->addSubjectGroupToHierarchy($moduleRun, $hierarchy);
         }
 
         return $hierarchy;
+    }
+
+    /**
+     * @param ethos_section_info $moduleRun
+     * @param obu_course_hierarchy_info $hierarchy
+     */
+    private function addModuleRunToHierarchy(ethos_section_info $moduleRun, obu_course_hierarchy_info $hierarchy) {
+        if($moduleRun->number == "0") {
+            return;
+        }
+
+        $course = $moduleRun->getCourse();
+        $courseNumber = $course->number;
+
+        $subject = $course->getSubject();
+        $subjectCode = $subject->abbreviation;
+
+        if($subjectCode == "FEE" || $subjectCode == "EXCH" || $subjectCode == "ACAD") {
+            return;
+        }
+
+        $bannerSectionGuid = $moduleRun->id;
+        $crn = $moduleRun->code;
+
+        $subTerm = $moduleRun->getAcademicPeriod();
+        $subTermCode = $subTerm->code;
+        $subTermDescription = $subTerm->title;
+
+        $term = $this->academicPeriodService->getTerm($subTerm);
+        $termCode = $term->code;
+
+        $year =  $this->academicPeriodService->getYear($term);
+        $yearCode = $year->code;
+        $yearDescription = $year->title;
+
+        $site = $moduleRun->getSite();
+        $campusCode = $site->code;
+
+        $sectionNumber = $moduleRun->number;
+
+        $longTitle = $this->titleService->getLongTitle($moduleRun->titles);
+
+        $college = $this->collegeService->getCollege($moduleRun->owningInstitutionUnits);
+        $department = $this->departmentService->getDepartment($moduleRun->owningInstitutionUnits);
+
+        $idNumber = $this->getIdNumber($yearCode, $subjectCode, $courseNumber, $subTermCode, $sectionNumber);
+        $shortName = $this->getShortName($subjectCode, $courseNumber, $termCode, $sectionNumber);
+        $fullName = $this->getFullName($subjectCode, $courseNumber, $longTitle, $subTermDescription, $yearDescription, $sectionNumber, $campusCode);
+
+        $course = new mdl_course($idNumber, $shortName, $fullName);
+        $course->startdate = 0; // TODO
+        $course->enddate = 0; // TODO
+
+        $categories = new obu_course_categories_info($site, $college, $department, $subject);
+
+        $hierarchy->addCourse($course, $categories);
     }
 
     /**
@@ -156,29 +170,4 @@ class obu_module_run_service
 
         return $subjectCode . $courseNumber .": " . $longTitle . " (" . $subTermDescription . " " . $yearDescription . ":" . $sectionNumber . "[" . $campusCode . "]";
     }
-
-    /**
-     * @param ethos_section_info $info
-     * @return obu_course_category_info[]
-     */
-    private function getCategories(ethos_section_info $info) : array {
-         // TODO
-
-         $temp=  array(
-            new obu_course_category_info("SRS-Linked", "SRS", "SRS~~"),
-            new obu_course_category_info("Faculty of TDE", "TD"),
-            new obu_course_category_info("Built Environment", "BENV"),
-            new obu_course_category_info("ARCHITECTURE", "ARCH"),
-         ); // TODO SRS~~~TD~BENV~ARCH
-
-         $temp= array(
-             new obu_course_category_info("SRS-Linked", "SRS"),
-             new obu_course_category_info("Associated Colleges", "Assoc"),
-             new obu_course_category_info("Some Campus", "AW"),
-             new obu_course_category_info("Faculty of TDE", "TD", "TD~"),
-             new obu_course_category_info("ARCHITECTURE", "ARCH"),
-         ); // TODO SRS~ARCH~AW~TD~~ARCH
-    }
-
-
 }

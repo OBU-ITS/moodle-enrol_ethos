@@ -92,6 +92,10 @@ class ethos_section_info
         $this->academicLevelIds = $ids;
         $this->academicLevels = null;
     }
+
+    /**
+     * @return ethos_academic_level_info[]
+     */
     public function getAcademicLevels() : array
     {
         if(!$this->academicLevels) {
