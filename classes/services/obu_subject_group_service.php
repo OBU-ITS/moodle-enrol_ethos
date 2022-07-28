@@ -35,28 +35,20 @@ class obu_subject_group_service
 
         $course = $moduleRun->getCourse();
         $subject = $course->getSubject();
-        $subjectCode = $subject->abbreviation;
-        $subjectDescription = $subject->title;
 
-        if($subjectCode == "FEE" || $subjectCode == "EXCH" || $subjectCode == "ACAD") {
+        if($subject->abbreviation == "FEE" || $subject->abbreviation == "EXCH" || $subject->abbreviation == "ACAD") {
             return;
         }
 
         $site = $moduleRun->getSite();
-        $campusCode = $site->code;
-        $campusDescription = $site->title;
-
         $college = $this->collegeService->getCollege($moduleRun->owningInstitutionUnits);
         $department = $this->departmentService->getDepartment($moduleRun->owningInstitutionUnits);
 
         $levels = $moduleRun->getAcademicLevels();
         foreach ($levels as $level) {
-            $levelCode = $level->code;
-            $levelDescription = $level->title;
-
-            $idNumber = $this->getIdNumber($campusCode, $levelCode, $subjectCode);
-            $shortName = $this->getShortName($subjectCode, $campusCode, $levelCode);
-            $fullName = $this->getFullName($subjectCode, $levelDescription, $subjectDescription, $campusDescription);
+            $idNumber = $this->getIdNumber($site->code, $level->code, $subject->abbreviation);
+            $shortName = $this->getShortName($subject->abbreviation, $site->code, $level->code);
+            $fullName = $this->getFullName($subject->abbreviation, $level->title, $subject->title, $site->title);
 
             $course = new mdl_course($idNumber, $shortName, $fullName);
             $course->startdate = obu_datetime_helper::convertStringToTimeStamp('01-JAN-2019');

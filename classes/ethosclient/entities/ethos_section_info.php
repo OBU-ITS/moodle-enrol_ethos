@@ -87,8 +87,11 @@ class ethos_section_info
     public function getAcademicLevelIds() : array {
         return $this->academicLevelIds;
     }
-    public function setAcademicLevelIds(array $ids) {
-        $this->academicLevelIds = $ids;
+    public function setAcademicLevelIds(array $objs) {
+        $this->academicLevelIds = array();
+        foreach($objs as $obj) {
+            $this->academicLevelIds[] = $obj->id;
+        }
         $this->academicLevels = null;
     }
 
@@ -154,6 +157,7 @@ class ethos_section_info
         $this->number = $data->number;
         $this->startOn = $data->startOn;
         $this->endOn = $data->endOn;
+        $this->setAcademicLevelIds($data->academicLevels);
         $this->setOwningInstitutionUnits($data->owningInstitutionUnits);
         $this->setTitles($data->titles);
 

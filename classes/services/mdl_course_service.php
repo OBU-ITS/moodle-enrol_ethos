@@ -43,12 +43,15 @@ class mdl_course_service
     }
 
     private function handleCourseCreation(obu_course_hierarchy_info $courseHierarchy, string $keyPrefix = '') {
-        $categoryId = $this->getCategoryId($keyPrefix, $courseHierarchy->currentCategory->codeName, $courseHierarchy->currentCategory->alternateCodeName);
+        $categoryId = $this->courseCategoryService->getCategoryId($keyPrefix, $courseHierarchy->currentCategory->codeName);
         $this->courseCategoryService->ensureCourseCategory($courseHierarchy->currentCategory, $categoryId);
 
-        $childrenCategories = $courseHierarchy->getSubCategories();
-        foreach($childrenCategories as $childCategory) {
-            $this->handleCourseCreation($childCategory, $categoryId);
+        if($courseHierarchy->hasSubCategories()) {
+            $childrenCategories = $courseHierarchy->getSubCategories();
+            $childKeyPrefix = $this->courseCategoryService->getCategoryPrefix($keyPrefix, $courseHierarchy->currentCategory->codeName, $courseHierarchy->currentCategory->alternateCodeName);
+            foreach ($childrenCategories as $childCategory) {
+                $this->handleCourseCreation($childCategory, $childKeyPrefix);
+            }
         }
 
         $childrenCourses = $courseHierarchy->getCourses();
@@ -66,19 +69,5 @@ class mdl_course_service
         echo "Cat Id : " . $course->catid . " <br/>";
     }
 
-    private function getCategoryId(string $keyPrefix, string $codeName, string $alternateCodeName) : string {
-        if($codeName == '0') {
-            return '';
-        }
 
-        if($keyPrefix == '') {
-            return $alternateCodeName == ""
-                ? $codeName
-                : $alternateCodeName;
-        }
-
-        return $alternateCodeName == ""
-            ? $keyPrefix . '~' . $codeName
-            : $keyPrefix . '~' . $alternateCodeName;
-    }
 }
