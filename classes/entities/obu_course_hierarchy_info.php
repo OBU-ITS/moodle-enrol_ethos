@@ -1,6 +1,8 @@
 <?php
 namespace enrol_ethos\entities;
 
+use core_course_category;
+
 class obu_course_hierarchy_info {
     public obu_course_category_info $currentCategory;
 
@@ -55,9 +57,25 @@ class obu_course_hierarchy_info {
 
     /**
      * @param mdl_course $course
-     * @param obu_course_categories_info $categories
+     * @param obu_course_category_info[] $courseCategories
      */
-    public function addCourse(mdl_course $course, obu_course_categories_info $categories) {
-        // TODO :
+    public function addCourse(mdl_course $course, array $courseCategories) {
+        $category = array_shift($courseCategories);
+
+        if(isset($category)) {
+            if(array_key_exists($category->codeName, $this->subCategories)) {
+                $subCategory = $this->subCategories[$category->codeName];
+            }
+            else {
+
+                $subCategory = new obu_course_hierarchy_info($category);
+                $this->subCategories[$category->codeName] = $subCategory;
+            }
+
+            $subCategory->addCourse($course, $courseCategories);
+        }
+        else {
+            $this->courses[] = $course;
+        }
     }
 }

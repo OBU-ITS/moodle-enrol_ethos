@@ -45,7 +45,7 @@ class ethos_client
      * @return array|mixed Repsonse contents
      * @throws Exception
      */
-    public function getJson(string $url, string $accept, int $maxResults = 0, int $resultsPerPage = 0) : array {
+    public function getJson(string $url, string $accept, int $maxResults = 0, int $resultsPerPage = 0) {
         if ((!$resultsPerPage) || ($maxResults && ($maxResults <= $resultsPerPage))) {
             return json_decode($this->get($url, $accept));
         }

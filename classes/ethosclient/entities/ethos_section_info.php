@@ -22,7 +22,6 @@ class ethos_section_info
     public string $number;
     public string $startOn; // required
     public string $endOn;
-    public string $instructionalDeliveryMethod;
 
     // Single references
     private string $courseId;  // required
@@ -155,7 +154,6 @@ class ethos_section_info
         $this->number = $data->number;
         $this->startOn = $data->startOn;
         $this->endOn = $data->endOn;
-        $this->instructionalDeliveryMethod = $data->instructionalDeliveryMethod; // TODO : Check
         $this->setOwningInstitutionUnits($data->owningInstitutionUnits);
         $this->setTitles($data->titles);
 

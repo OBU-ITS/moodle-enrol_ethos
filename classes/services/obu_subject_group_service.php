@@ -5,6 +5,7 @@ use enrol_ethos\entities\mdl_course;
 use enrol_ethos\entities\obu_course_categories_info;
 use enrol_ethos\entities\obu_course_hierarchy_info;
 use enrol_ethos\ethosclient\entities\ethos_section_info;
+use enrol_ethos\helpers\obu_datetime_helper;
 
 class obu_subject_group_service
 {
@@ -27,7 +28,7 @@ class obu_subject_group_service
         return self::$instance;
     }
 
-    public function addSubjectGroupToHierarchy(ethos_section_info $moduleRun, obu_course_hierarchy_info $hierarchy) {
+    public function addSubjectGroupToHierarchy(obu_course_hierarchy_info $hierarchy, ethos_section_info $moduleRun) {
         if($moduleRun->number == "0") {
             return;
         }
@@ -58,12 +59,12 @@ class obu_subject_group_service
             $fullName = $this->getFullName($subjectCode, $levelDescription, $subjectDescription, $campusDescription);
 
             $course = new mdl_course($idNumber, $shortName, $fullName);
-            $course->startdate = 0; // TODO
-            $course->enddate = 0; // TODO
+            $course->startdate = obu_datetime_helper::convertStringToTimeStamp('01-JAN-2019');
+            $course->enddate = null;
 
             $categories = new obu_course_categories_info($site, $college, $department, $subject);
 
-            $hierarchy->addCourse($course, $categories);
+            $hierarchy->addCourse($course, $categories->getCategories());
         }
     }
 

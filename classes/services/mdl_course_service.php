@@ -25,16 +25,21 @@ class mdl_course_service
         return self::$instance;
     }
 
-    public function reSyncCourse($id) {
-        $courseHierarchy = $this->moduleRunService->get($id);
+    public function reSyncModuleRun($id) {
+        $hierarchy = obu_course_hierarchy_info::getTopCategory();
 
-        $this->handleCourseCreation($courseHierarchy);
+        echo "Start resync module run for id:" . $id . "<br />";
+        $this->moduleRunService->get($hierarchy, $id);
+
+        $this->handleCourseCreation($hierarchy);
     }
 
-    public function reSyncAllCourses() {
-        $courseHierarchy = $this->moduleRunService->getAll();
+    public function reSyncAllModuleRuns() {
+        $hierarchy = obu_course_hierarchy_info::getTopCategory();
 
-        $this->handleCourseCreation($courseHierarchy);
+        $this->moduleRunService->getAll($hierarchy);
+
+        $this->handleCourseCreation($hierarchy);
     }
 
     private function handleCourseCreation(obu_course_hierarchy_info $courseHierarchy, string $keyPrefix = '') {
@@ -48,15 +53,24 @@ class mdl_course_service
 
         $childrenCourses = $courseHierarchy->getCourses();
         foreach($childrenCourses as $childCourse) {
+            $childCourse->catid = $categoryId;
             $this->upsertCourse($childCourse);
         }
     }
 
     private function upsertCourse(mdl_course $course) {
-        // TODO
+        echo "<br/>Upsert course <br/>";
+        echo "Id Number : " . $course->idnumber . " <br/>";
+        echo "Shortname : " . $course->shortname . " <br/>";
+        echo "Full Name : " . $course->name . " <br/>";
+        echo "Cat Id : " . $course->catid . " <br/>";
     }
 
     private function getCategoryId(string $keyPrefix, string $codeName, string $alternateCodeName) : string {
+        if($codeName == '0') {
+            return '';
+        }
+
         if($keyPrefix == '') {
             return $alternateCodeName == ""
                 ? $codeName
