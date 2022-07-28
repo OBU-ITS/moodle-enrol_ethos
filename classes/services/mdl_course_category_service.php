@@ -24,6 +24,7 @@ class mdl_course_category_service
             return;
         }
 
+        // TODO
         echo "<br/>Upsert category <br/>";
         echo "Id Number : " . $categoryId . " <br/>";
         echo "Name : " . $category->name . " <br/>";

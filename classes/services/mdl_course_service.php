@@ -62,6 +62,7 @@ class mdl_course_service
     }
 
     private function upsertCourse(mdl_course $course) {
+        // TODO
         echo "<br/>Upsert course <br/>";
         echo "Id Number : " . $course->idnumber . " <br/>";
         echo "Shortname : " . $course->shortname . " <br/>";
