@@ -3,7 +3,7 @@ namespace enrol_ethos\entities;
 
 class mdl_course {
     public $idnumber;
-    public $id;
+    public ?int $id;
     public $name;
     public $shortname;
     public $catid;

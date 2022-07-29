@@ -43,7 +43,8 @@ class obu_course_hierarchy_info {
 
     public static function getTopCategory() : obu_course_hierarchy_info {
         $top = core_course_category::top();
-        $topCategoryInfo = new obu_course_category_info('', $top->id);
+        $topCategoryInfo = new obu_course_category_info('', '');
+        $topCategoryInfo->id = $top->id;
         return new self($topCategoryInfo);
     }
 

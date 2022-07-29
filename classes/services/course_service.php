@@ -1,15 +1,15 @@
 <?php
 namespace enrol_ethos\services;
-use enrol_ethos\interfaces\course_repository_interface;
-use enrol_ethos\interfaces\course_category_repository_interface;
 use enrol_ethos\entities\mdl_course;
+use enrol_ethos\repositories\db_course_category_repository;
+use enrol_ethos\repositories\db_course_repository;
 
 class course_service {
 
-    private course_repository_interface $courseRepository;
-    private course_category_repository_interface $courseCategoryRepository;
+    private db_course_repository $courseRepository;
+    private db_course_category_repository $courseCategoryRepository;
 
-    public function __construct(course_repository_interface $courseRepository, course_category_repository_interface $courseCategoryRepository) {
+    public function __construct(db_course_repository $courseRepository, db_course_category_repository $courseCategoryRepository) {
         $this->courseRepository = $courseRepository;
         $this->courseCategoryRepository = $courseCategoryRepository;
     }
@@ -31,7 +31,7 @@ class course_service {
 
         for ($i = 0; $i < $numCategories; $i++) {
             if ($categories[$i]) {
-                if ($category = $this->courseCategoryRepository->findOneByNameAndParent($categories[$i], $currentCategory)) {
+                if ($category = $this->courseCategoryRepository->getByNameAndParent($categories[$i], $currentCategory)) {
 
                     $currentCategory = $category->id;
 
