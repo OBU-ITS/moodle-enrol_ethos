@@ -1,7 +1,7 @@
 <?php
 namespace enrol_ethos\services;
 
-use enrol_ethos\ethosclient\entities\ethos_section_title_info;
+use enrol_ethos\ethosclient\entities\ethos_section_info_title;
 
 class obu_module_run_title_service
 {
@@ -21,7 +21,7 @@ class obu_module_run_title_service
     }
 
     /**
-     * @param ethos_section_title_info[] $titles
+     * @param ethos_section_info_title[] $titles
      * @return string
      */
     public function getShortTitle(array $titles) : string {
@@ -35,7 +35,7 @@ class obu_module_run_title_service
     }
 
     /**
-     * @param ethos_section_title_info[] $titles
+     * @param ethos_section_info_title[] $titles
      * @return string
      */
     public function getLongTitle(array $titles) : string {

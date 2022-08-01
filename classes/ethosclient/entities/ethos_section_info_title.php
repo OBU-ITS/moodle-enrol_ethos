@@ -4,7 +4,7 @@ namespace enrol_ethos\ethosclient\entities;
 
 use enrol_ethos\ethosclient\providers\ethos_section_title_type_provider;
 
-class ethos_section_title_info
+class ethos_section_info_title
 {
     public function __construct($data)
     {

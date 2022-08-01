@@ -2,7 +2,7 @@
 
 namespace enrol_ethos\ethosclient\services;
 
-use enrol_ethos\ethosclient\entities\ethos_section_title_info;
+use enrol_ethos\ethosclient\entities\ethos_section_info_title;
 
 class ethos_section_title_service
 {
@@ -21,9 +21,9 @@ class ethos_section_title_service
         return self::$instance;
     }
 
-    public function get($obj) : ethos_section_title_info {
+    public function get($obj) : ethos_section_info_title {
 
-        return new ethos_section_title_info($obj);
+        return new ethos_section_info_title($obj);
     }
 
 }

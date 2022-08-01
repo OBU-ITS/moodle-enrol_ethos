@@ -111,8 +111,10 @@ class ethos_section_info
         return $this->academicLevels;
     }
 
+    //multiple objects
+
     /**
-     * @var ethos_owning_institution_unit_info[]
+     * @var ethos_section_info_owning_institution_unit[]
      */
     public array $owningInstitutionUnits;
 
@@ -130,7 +132,7 @@ class ethos_section_info
     }
 
     /**
-     * @var ethos_section_title_info[]
+     * @var ethos_section_info_title[]
      */
     public array $titles;
 
