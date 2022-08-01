@@ -10,7 +10,9 @@ class ethos_academic_discipline_info
     }
 
     public string $id;
-    // TODO
+    public string $abbreviation;
+    public string $title;
+    public string $type;
 
     public function populateObject(object $data) {
         if(!isset($data)) {
@@ -18,6 +20,8 @@ class ethos_academic_discipline_info
         }
 
         $this->id = $data->id;
-        // TODO
+        $this->abbreviation = $data->abbreviation;
+        $this->title = $data->title;
+        $this->type = $data->type;
     }
 }
