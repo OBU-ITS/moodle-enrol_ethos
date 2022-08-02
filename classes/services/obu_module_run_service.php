@@ -54,6 +54,22 @@ class obu_module_run_service
      * Get all modules from Ethos
      *
      * @param obu_course_hierarchy_info $hierarchy course hierarchy
+     * @param $limit
+     * @param $offset
+     * @return int total results
+     */
+    public function getBatch(obu_course_hierarchy_info $hierarchy, $limit, $offset) : int {
+        $moduleRuns = $this->sectionProvider->getBatch($limit, $offset);
+
+        $this->addToCourseHierarchy($hierarchy, $moduleRuns);
+
+        return count($moduleRuns);
+    }
+
+    /**
+     * Get all modules from Ethos
+     *
+     * @param obu_course_hierarchy_info $hierarchy course hierarchy
      */
     public function getAll(obu_course_hierarchy_info $hierarchy) {
         $moduleRuns = $this->sectionProvider->getAll();

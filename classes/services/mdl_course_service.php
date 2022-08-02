@@ -8,6 +8,8 @@ use stdClass;
 
 class mdl_course_service
 {
+    private const RUN_LIMIT = 10;
+
     private obu_module_run_service $moduleRunService;
     private mdl_course_category_service $courseCategoryService;
     private db_course_repository $courseRepo;
@@ -40,12 +42,20 @@ class mdl_course_service
         $this->handleCourseCreation($hierarchy);
     }
 
-    public function reSyncAllModuleRuns() {
-        $hierarchy = obu_course_hierarchy_info::getTopCategory();
+    public function reSyncAllModuleRuns(int $max = 0) {
+        $offset = 0;
+        $totalResults = 0;
+        do {
+            $hierarchy = obu_course_hierarchy_info::getTopCategory();
 
-        $this->moduleRunService->getAll($hierarchy);
+            $resultsCount = $this->moduleRunService->getBatch($hierarchy, self::RUN_LIMIT, $offset);
 
-        $this->handleCourseCreation($hierarchy);
+            $this->handleCourseCreation($hierarchy);
+
+            $offset += self::RUN_LIMIT;
+            $totalResults += $resultsCount;
+        }
+        while($max == 0 || ($max > $totalResults));
     }
 
     private function handleCourseCreation(obu_course_hierarchy_info $courseHierarchy, string $keyPrefix = '', ?int $parentId = null) {

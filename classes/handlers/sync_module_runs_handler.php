@@ -18,7 +18,8 @@ class sync_module_runs_handler
         $this->courseService->reSyncModuleRun($id);
     }
 
-    public function handleSyncAll()
+    public function handleSyncAll(int $max = 0)
     {
+        $this->courseService->reSyncAllModuleRuns($max);
     }
 }

@@ -29,6 +29,14 @@ class ethos_section_provider extends ethos_provider
         return $this->convert($item);
     }
 
+    public function getBatch($limit, $offset) : array {
+        $items = $this->getFromEthos(null, true, $limit, $offset);
+
+        return array_map(array($this, 'convert'), $items);
+
+        return $response;
+    }
+
     public function getAll() : array {
         $items = $this->getFromEthos();
 

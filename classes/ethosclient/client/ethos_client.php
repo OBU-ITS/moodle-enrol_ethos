@@ -42,21 +42,27 @@ class ethos_client
      * @param string $accept Request Accept header
      * @param int $maxResults maximum results returned by API
      * @param int $resultsPerPage results per page
-     * @return array|mixed Repsonse contents
+     * @return array|mixed Response contents
      * @throws Exception
      */
-    public function getJson(string $url, string $accept, int $maxResults = 0, int $resultsPerPage = 0) {
+    public function getJson(string $url, string $accept, int $maxResults = 0, int $resultsPerPage = 0, int $initialOffset = 0) {
         if ((!$resultsPerPage) || ($maxResults && ($maxResults <= $resultsPerPage))) {
-            return json_decode($this->get($url, $accept));
+            $limit = ($maxResults && ($maxResults <= $resultsPerPage)) ? $maxResults : $resultsPerPage;
+            $url1 = $url;
+            if($limit > 0) {
+                $qJoin = strpos($url,'?') ? '&' : '?';
+                $url1 = "{$url}{$qJoin}limit=$limit";
+            }
+            return json_decode($this->get($url1, $accept));
         }
 
-        $maxResults = $maxResults ? $maxResults : 100000;
+        $maxResults = $maxResults ?: 100000;
 
         $results = array();
 
-        for ($offset = 0; $offset < $maxResults; $offset+=$resultsPerPage) {
-            $qjoin = strpos($url,'?') ? '&' : '?';
-            $url1 = "{$url}{$qjoin}limit=$resultsPerPage&offset=$offset";
+        for ($offset = $initialOffset; $offset < ($initialOffset + $maxResults); $offset+=$resultsPerPage) {
+            $qJoin = strpos($url,'?') ? '&' : '?';
+            $url1 = "{$url}{$qJoin}limit=$resultsPerPage&offset=$offset";
             $jsonResult = json_decode($this->get($url1, $accept));
             $results = array_merge($jsonResult,$results);
 
@@ -64,6 +70,8 @@ class ethos_client
                 break;
             }
         }
+
+        var_dump($results);
 
         return $results;
     }
@@ -85,10 +93,10 @@ class ethos_client
     /**
      * @param string $url API endpoint
      * @param string $accept Request accept Header
-     * @return string response contents
+     * @return response_info response contents
      * @throws Exception|RequestException if max retries are reached
      */
-    private function get(string $url, string $accept) : string {
+    private function get(string $url, string $accept) {
 
         $maxTries = 3;
         $tries = 0;
@@ -107,7 +115,6 @@ class ethos_client
                 ];
 
                 $response = $this->client->getAsync($url, $options)->wait();
-
                 return $response->getBody()->getContents();
 
             } catch (RequestException $e) {
@@ -131,6 +138,8 @@ class ethos_client
                 }
             }
         }
+
+        return null;
     }
 
     /**
