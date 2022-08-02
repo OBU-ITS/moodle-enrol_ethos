@@ -61,8 +61,8 @@ abstract class ethos_provider
         return $result;
     }
 
-    protected function getFromEthos(string $urlOverride=null, bool $paged=null, int $maxResults=0) : ?array {
-        $result = $this->getFromEthosClient(null, $urlOverride, $paged, $maxResults);
+    protected function getFromEthos(string $urlOverride=null, bool $paged=null, int $maxResults=0, int $offset=0) : ?array {
+        $result = $this->getFromEthosClient(null, $urlOverride, $paged, $maxResults, $offset);
 
         if ($this->cacheable) {
             foreach ($result as $res) {
@@ -73,7 +73,7 @@ abstract class ethos_provider
         return $result;
     }
 
-    private function getFromEthosClient(string $id=null, string $urlOverride=null, bool $paged=null, int $maxResults=0)
+    private function getFromEthosClient(string $id=null, string $urlOverride=null, bool $paged=null, int $maxResults=0, int $offset=0)
     {
         $url = $urlOverride ?: ethos_client::API_URL . "/api/" . $this->path;
 
@@ -88,6 +88,6 @@ abstract class ethos_provider
 
         return !$paged
             ? $this->ethosClient->getJson($url, $this->acceptHeader)
-            : $this->ethosClient->getJson($url, $this->acceptHeader,$maxResults,500);
+            : $this->ethosClient->getJson($url, $this->acceptHeader,$maxResults,500, $offset);
     }
 }
