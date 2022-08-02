@@ -32,7 +32,7 @@ class ethos_student_status_provider extends ethos_provider
     public function getAll() : array {
         $items = $this->getFromEthos();
 
-        return array_map('convert', $items);
+        return array_map(array($this, 'convert'), $items);
     }
     private function convert(object $item) : ?ethos_student_status_info {
         return new ethos_student_status_info($item);

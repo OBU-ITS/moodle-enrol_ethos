@@ -32,7 +32,7 @@ class ethos_academic_credential_provider extends ethos_provider
     public function getAll() : array {
         $items = $this->getFromEthos();
 
-        return array_map('convert', $items);
+        return array_map(array($this, 'convert'), $items);
     }
 
     private function convert(object $item) : ?ethos_academic_credential_info {

@@ -33,7 +33,7 @@ class ethos_student_academic_period_status_provider extends ethos_provider
     public function getAll() : array {
         $items = $this->getFromEthos();
 
-        return array_map('convert', $items);
+        return array_map(array($this, 'convert'), $items);
     }
 
     private function convert(object $item) : ?ethos_student_academic_period_status_info {
