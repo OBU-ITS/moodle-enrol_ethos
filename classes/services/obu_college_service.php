@@ -2,7 +2,7 @@
 namespace enrol_ethos\services;
 
 use enrol_ethos\ethosclient\entities\ethos_educational_institution_unit_info;
-use enrol_ethos\ethosclient\entities\ethos_owning_institution_unit_info;
+use enrol_ethos\ethosclient\entities\ethos_section_info_owning_institution_unit;
 
 class obu_college_service
 {
@@ -22,7 +22,7 @@ class obu_college_service
     }
 
     /**
-     * @param ethos_owning_institution_unit_info[] $owningInstitutionUnits
+     * @param ethos_section_info_owning_institution_unit[] $owningInstitutionUnits
      * @return ethos_educational_institution_unit_info|null
      */
     public function getCollege(array $owningInstitutionUnits) : ?ethos_educational_institution_unit_info {
