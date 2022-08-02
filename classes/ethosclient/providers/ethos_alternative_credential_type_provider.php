@@ -1,6 +1,7 @@
 <?php
 namespace enrol_ethos\ethosclient\providers;
 
+use enrol_ethos\ethosclient\entities\ethos_alternative_credential_info;
 use enrol_ethos\ethosclient\providers\base\ethos_provider;
 use enrol_ethos\ethosclient\services\cache\cache_service;
 
@@ -26,25 +27,40 @@ class ethos_alternative_credential_provider extends ethos_provider
         return self::$instance;
     }
 
-    public function getEmployeeNumberAlternativeCredentialType() : ?object {
+    public function get($id) : ?ethos_alternative_credential_info {
+        $item = $this->getFromEthosById($id);
+
+        return $this->convert($item);
+    }
+
+    public function getEmployeeNumberAlternativeCredentialType() : ?ethos_alternative_credential_info {
 
         if ($cacheValue = $this->cacheService->getFromCache(self::EMPLOYEE_CRED_CACHE_KEY, cache_service::DEFAULT_COLLECTION)) {
-            return $cacheValue;
+            return $this->convert($cacheValue);
         }
 
-        $alternativeCredentialTypes = $this->getAlternativeCredentialTypes();
+        $alternativeCredentialTypes = $this->getAll();
 
         foreach ($alternativeCredentialTypes as $alternativeCredentialType ) {
             if ($alternativeCredentialType->code == self::EMPLOYEE_CRED_BANNER_CODE) {
                 $this->cacheService->addToCacheExpanded(self::EMPLOYEE_CRED_CACHE_KEY, $alternativeCredentialType, cache_service::DEFAULT_COLLECTION, 3600);
-                return $alternativeCredentialType;
+                return $this->convert($alternativeCredentialType);
             }
         }
 
         return null;
     }
 
-    public function getAlternativeCredentialTypes() : array {
-        return $this->getFromEthos();
+    /**
+     * @return ethos_alternative_credential_info[]
+     */
+    public function getAll() : array {
+        $items = $this->getFromEthos();
+
+        return array_map(array($this, 'convert'), $items);
+    }
+
+    private function convert(object $item) : ?ethos_alternative_credential_info {
+        return new ethos_alternative_credential_info($item);
     }
 }
