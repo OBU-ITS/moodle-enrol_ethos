@@ -31,7 +31,9 @@ class obu_course_categories_info {
             $this->categories[] = new obu_course_category_info("SRS-Linked", "SRS", "SRS~~");
             $this->categories[] = new obu_course_category_info($college->title, $college->code);
             if(isset($subject)) {
-                $this->categories[] = new obu_course_category_info($department->title, $department->code);
+                if(isset($department)) {
+                    $this->categories[] = new obu_course_category_info($department->title, $department->code);
+                }
                 $this->categories[] = new obu_course_category_info($subject->title, $subject->abbreviation);
             }
         }

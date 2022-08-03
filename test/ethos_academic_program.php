@@ -1,6 +1,6 @@
 <?php
 
-use enrol_ethos\handlers\sync_module_runs_handler;
+use enrol_ethos\handlers\sync_programs_handler;
 
 require_once('../../../config.php');
 require_once($CFG->libdir . '/weblib.php');

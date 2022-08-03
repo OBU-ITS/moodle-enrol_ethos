@@ -113,7 +113,12 @@ class mdl_course_service
     }
 
     private function upsertCourse(progress_trace $trace, mdl_course $data) {
-        if($course = $this->courseRepo->findOne($data->idnumber))
+        $course = $this->courseRepo->findOne($data->idnumber);
+        if(!$course) {
+            $course = $this->courseRepo->findOneByShortName($data->shortname);
+        }
+
+        if($course)
         {
             if($updatedCourse = $this->getUpdatedCourse($trace, $course, $data))
             {
