@@ -131,6 +131,7 @@ class ethos_section_info
         }
     }
 
+    //multiple objects
     /**
      * @var ethos_section_info_title[]
      */
