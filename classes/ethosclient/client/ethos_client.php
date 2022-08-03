@@ -49,10 +49,17 @@ class ethos_client
         if ((!$resultsPerPage) || ($maxResults && ($maxResults <= $resultsPerPage))) {
             $limit = ($maxResults && ($maxResults <= $resultsPerPage)) ? $maxResults : $resultsPerPage;
             $url1 = $url;
-            if($limit > 0) {
-                $qJoin = strpos($url,'?') ? '&' : '?';
-                $url1 = "{$url}{$qJoin}limit=$limit";
+            if($limit > 0 || $initialOffset > 0) {
+                if ($limit > 0) {
+                    $qJoin = strpos($url, '?') ? '&' : '?';
+                    $url1 = "{$url}{$qJoin}limit=$limit";
+                }
+                if ($initialOffset > 0) {
+                    $qJoin = strpos($url1, '?') ? '&' : '?';
+                    $url1 = "{$url1}{$qJoin}offset=$initialOffset";
+                }
             }
+
             return json_decode($this->get($url1, $accept));
         }
 
@@ -93,7 +100,6 @@ class ethos_client
     /**
      * @param string $url API endpoint
      * @param string $accept Request accept Header
-     * @return response_info response contents
      * @throws Exception|RequestException if max retries are reached
      */
     private function get(string $url, string $accept) {

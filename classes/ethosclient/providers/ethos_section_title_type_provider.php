@@ -12,7 +12,7 @@ class ethos_section_title_type_provider extends ethos_provider
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider(self::PATH, self::VERSION);
+        $this->prepareProvider(self::PATH, self::VERSION, 3600);
     }
 
     private static ?ethos_section_title_type_provider $instance = null;

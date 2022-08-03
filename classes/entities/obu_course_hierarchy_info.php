@@ -64,13 +64,15 @@ class obu_course_hierarchy_info {
         $category = array_shift($courseCategories);
 
         if(isset($category)) {
-            if(array_key_exists($category->codeName, $this->subCategories)) {
-                $subCategory = $this->subCategories[$category->codeName];
+            $key = $category->alternateCodeName == "" ? $category->codeName : $category->alternateCodeName;
+
+            if(array_key_exists($key, $this->subCategories)) {
+                $subCategory = $this->subCategories[$key];
             }
             else {
 
                 $subCategory = new obu_course_hierarchy_info($category);
-                $this->subCategories[$category->codeName] = $subCategory;
+                $this->subCategories[$key] = $subCategory;
             }
 
             $subCategory->addCourse($course, $courseCategories);

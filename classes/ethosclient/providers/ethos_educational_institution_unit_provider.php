@@ -12,7 +12,7 @@ class ethos_educational_institution_unit_provider extends ethos_provider
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider(self::PATH, self::VERSION);
+        $this->prepareProvider(self::PATH, self::VERSION, 3600);
     }
 
     private static ?ethos_educational_institution_unit_provider $instance = null;

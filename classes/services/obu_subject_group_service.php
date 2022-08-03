@@ -42,27 +42,26 @@ class obu_subject_group_service
 
         $site = $moduleRun->getSite();
         $college = $this->collegeService->getCollege($moduleRun->owningInstitutionUnits);
-        $department = $this->departmentService->getDepartment($moduleRun->owningInstitutionUnits);
 
         $levels = $moduleRun->getAcademicLevels();
         foreach ($levels as $level) {
-            $idNumber = $this->getIdNumber($site->code, $level->code, $subject->abbreviation);
+            $idNumber = $this->getIdNumber($site->code, $college->code, $level->code, $subject->abbreviation);
             $shortName = $this->getShortName($subject->abbreviation, $site->code, $level->code);
             $fullName = $this->getFullName($subject->abbreviation, $level->title, $subject->title, $site->title);
 
             $course = new mdl_course($idNumber, $shortName, $fullName);
             $course->startdate = obu_datetime_helper::convertStringToTimeStamp('01-JAN-2019');
             $course->enddate = 0;
+            $course->bannerId = $moduleRun->id;
 
-            $categories = new obu_course_categories_info($site, $college, $department, $subject);
+            $categories = new obu_course_categories_info($site, $college, null, $subject);
 
             $hierarchy->addCourse($course, $categories->getCategories());
         }
     }
 
-
-    private function getIdNumber($campusCode, $levelCode, $subjectCode) : string {
-        return '$' . $campusCode . '~' . $levelCode . '~' . $subjectCode;
+    private function getIdNumber($campusCode, $collegeCode, $levelCode, $subjectCode) : string {
+        return '$' . $campusCode . '~' . $collegeCode . '~' . $levelCode . '~' . $subjectCode;
     }
 
     private function getShortName($subjectCode, $campusCode, $levelCode) : string {

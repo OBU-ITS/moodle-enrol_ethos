@@ -1,23 +1,21 @@
 <?php
 namespace enrol_ethos\ethosclient\services\cache;
 
+use cache;
+use cache_store;
 use enrol_ethos\ethosclient\entities\cache\cache_data;
 use enrol_ethos\ethosclient\entities\cache\cache_settings;
 
 class cache_service {
     const DEFAULT_COLLECTION = "default";
 
-    private static array $cache;
+    private static cache $cache;
 
     private float $clearDownTime;
 
     private function __construct()
     {
-        self::$cache = array();
-        //self::$cache = $_SESSION['ethos_service_cache'] ?? array();
-
-        $this->clearDownTime = microtime(true);
-        //self::$cache = array_filter(self::$cache, 'removeExpiredData');
+        self::$cache = cache::make_from_params(cache_store::MODE_APPLICATION,'enrol_ethos', 'ethos_client');
     }
 
     /**
@@ -46,7 +44,8 @@ class cache_service {
      */
     public function addToCacheExpanded(string $key, object $data, string $collection, string $duration) {
         $cacheKey = $this->getCacheKey($key, $collection);
-        self::$cache[$cacheKey] = new cache_data($data, $duration);
+
+        self::$cache->set($cacheKey, new cache_data($data, $duration));
     }
 
     /**
@@ -66,11 +65,19 @@ class cache_service {
      * @return object|null cached data or null if not in cache
      */
     public function getFromCache(string $key, string $collection) : ?object {
+
         $cacheKey = $this->getCacheKey($key, $collection);
 
-        return array_key_exists($cacheKey, self::$cache)
-            ? self::$cache[$cacheKey]
-            : null;
+        if($data = self::$cache->get($cacheKey)) {
+            if ($data->expires >= microtime(true)) {
+                return $data->data;
+            }
+            else{
+                self::$cache->delete($cacheKey);
+            }
+        }
+
+        return null;
     }
 
     /**

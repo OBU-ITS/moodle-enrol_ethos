@@ -26,6 +26,7 @@ class ethos_student_provider extends ethos_provider
         return self::$instance;
     }
 
+
     public function get($id) : ethos_student_info {
         $item = $this->getFromEthosById($id);
 

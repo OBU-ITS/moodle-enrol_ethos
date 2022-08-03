@@ -5,7 +5,7 @@ namespace enrol_ethos\handlers;
 use enrol_ethos\services\mdl_course_service;
 use progress_trace;
 
-class sync_module_runs_handler
+class sync_programs_handler
 {
     private mdl_course_service $courseService;
 
@@ -16,11 +16,11 @@ class sync_module_runs_handler
 
     public function handleSync(progress_trace $trace, string $id)
     {
-        $this->courseService->reSyncModuleRun($trace, $id);
+        $this->courseService->reSyncProgram($trace, $id);
     }
 
     public function handleSyncAll(progress_trace $trace, int $max = 0)
     {
-        $this->courseService->reSyncAllModuleRuns($trace, $max);
+        $this->courseService->reSyncAllPrograms($trace, $max);
     }
 }
