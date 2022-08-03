@@ -30,6 +30,9 @@ class ethos_academic_discipline_provider extends ethos_provider
         return $this->convert($item);
     }
 
+    /**
+     * @return ethos_academic_discipline_info[]
+     */
     public function getAll() : array {
         $items = $this->getFromEthos();
 

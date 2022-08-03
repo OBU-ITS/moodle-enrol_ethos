@@ -29,6 +29,9 @@ class ethos_academic_level_provider extends ethos_provider
         return $this->convert($item);
     }
 
+    /**
+     * @return ethos_academic_level_info[]
+     */
     public function getAll() : array {
         $items = $this->getFromEthos();
 
