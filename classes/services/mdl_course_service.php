@@ -11,6 +11,7 @@ class mdl_course_service
     private const RUN_LIMIT = 100;
 
     private obu_module_run_service $moduleRunService;
+    private obu_program_service $programService;
     private mdl_course_category_service $courseCategoryService;
     private db_course_repository $courseRepo;
 
@@ -19,6 +20,7 @@ class mdl_course_service
         global $DB;
 
         $this->moduleRunService = obu_module_run_service::getInstance();
+        $this->programService = obu_program_service::getInstance();
         $this->courseCategoryService = mdl_course_category_service::getInstance();
         $this->courseRepo = new db_course_repository($DB);
     }
@@ -43,11 +45,19 @@ class mdl_course_service
         $this->handleCourseCreation($trace, $hierarchy);
     }
 
+    public function reSyncProgram(progress_trace $trace, $id) {
+        $hierarchy = obu_course_hierarchy_info::getTopCategory();
+
+        $trace->output("Start re-sync program for id:" . $id);
+
+        $this->programService->get($hierarchy, $id);
+
+        $this->handleCourseCreation($trace, $hierarchy);
+    }
+
     public function reSyncAllModuleRuns(progress_trace $trace, int $max = 0) {
         $offset = 0;
         $totalResults = 0;
-        $memStart = memory_get_usage();
-        $memPrevious = $memStart;
 
         do {
             $hierarchy = obu_course_hierarchy_info::getTopCategory();
@@ -57,10 +67,24 @@ class mdl_course_service
 
             $this->handleCourseCreation($trace, $hierarchy);
 
-            $mem = memory_get_usage();
-            $trace->output("Mem change start " . number_format(round(($mem - $memStart) / 1024)) . "KB");
-            $trace->output("Mem change previous " . number_format(round(($mem - $memPrevious) / 1024)) . "KB");
-            $memPrevious = $mem;
+            $offset += self::RUN_LIMIT;
+            $totalResults += $resultsCount;
+        }
+        while($max == 0 || ($max > $totalResults));
+    }
+
+
+    public function reSyncAllPrograms(progress_trace $trace, int $max = 0) {
+        $offset = 0;
+        $totalResults = 0;
+
+        do {
+            $hierarchy = obu_course_hierarchy_info::getTopCategory();
+
+            $limit = ($max && ($max < ($totalResults + self::RUN_LIMIT))) ? ($max - $totalResults) : self::RUN_LIMIT;
+            $resultsCount = $this->programService->getBatch($hierarchy, $limit, $offset);
+
+            $this->handleCourseCreation($trace, $hierarchy);
 
             $offset += self::RUN_LIMIT;
             $totalResults += $resultsCount;

@@ -40,9 +40,6 @@ class mdl_course_category_service
                 $courseCategory->update($updatedCourseCategory);
                 $trace->output("Course category updated : $categoryIdNumber");
             }
-            else {
-                $trace->output("Course category retrieved : $categoryIdNumber ($courseCategory->id)");
-            }
         }
         else {
             $courseCategory = $this->courseCategoryRepo->create($category, $categoryIdNumber, $parentCategoryId);
