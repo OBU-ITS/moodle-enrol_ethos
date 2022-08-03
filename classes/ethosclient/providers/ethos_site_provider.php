@@ -29,6 +29,9 @@ class ethos_site_provider extends ethos_provider
         return $this->convert($item);
     }
 
+    /**
+     * @return ethos_site_info[]
+     */
     public function getAll() : array {
         $items = $this->getFromEthos();
 

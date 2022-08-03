@@ -1,11 +1,11 @@
 <?php
 namespace enrol_ethos\ethosclient\providers;
 
-use enrol_ethos\ethosclient\entities\ethos_alternative_credential_info;
+use enrol_ethos\ethosclient\entities\ethos_alternative_credential_type_info;
 use enrol_ethos\ethosclient\providers\base\ethos_provider;
 use enrol_ethos\ethosclient\services\cache\cache_service;
 
-class ethos_alternative_credential_provider extends ethos_provider
+class ethos_alternative_credential_type_provider extends ethos_provider
 {
     const EMPLOYEE_CRED_CACHE_KEY = "EmployeeNumberAlternativeCredentialType";
     const EMPLOYEE_CRED_BANNER_CODE = "EMPN";
@@ -16,8 +16,8 @@ class ethos_alternative_credential_provider extends ethos_provider
         $this->prepareProvider('alternative-credential-types', 'v1');
     }
 
-    private static ?ethos_alternative_credential_provider $instance = null;
-    public static function getInstance() : ethos_alternative_credential_provider
+    private static ?ethos_alternative_credential_type_provider $instance = null;
+    public static function getInstance() : ethos_alternative_credential_type_provider
     {
         if (self::$instance == null)
         {
@@ -27,13 +27,13 @@ class ethos_alternative_credential_provider extends ethos_provider
         return self::$instance;
     }
 
-    public function get($id) : ?ethos_alternative_credential_info {
+    public function get($id) : ?ethos_alternative_credential_type_info {
         $item = $this->getFromEthosById($id);
 
         return $this->convert($item);
     }
 
-    public function getEmployeeNumberAlternativeCredentialType() : ?ethos_alternative_credential_info {
+    public function getEmployeeNumberAlternativeCredentialType() : ?ethos_alternative_credential_type_info {
 
         if ($cacheValue = $this->cacheService->getFromCache(self::EMPLOYEE_CRED_CACHE_KEY, cache_service::DEFAULT_COLLECTION)) {
             return $this->convert($cacheValue);
@@ -52,7 +52,7 @@ class ethos_alternative_credential_provider extends ethos_provider
     }
 
     /**
-     * @return ethos_alternative_credential_info[]
+     * @return ethos_alternative_credential_type_info[]
      */
     public function getAll() : array {
         $items = $this->getFromEthos();
@@ -60,7 +60,7 @@ class ethos_alternative_credential_provider extends ethos_provider
         return array_map(array($this, 'convert'), $items);
     }
 
-    private function convert(object $item) : ?ethos_alternative_credential_info {
-        return new ethos_alternative_credential_info($item);
+    private function convert(object $item) : ?ethos_alternative_credential_type_info {
+        return new ethos_alternative_credential_type_info($item);
     }
 }

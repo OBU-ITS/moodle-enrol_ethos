@@ -1,17 +1,18 @@
 <?php
 namespace enrol_ethos\ethosclient\providers;
 
+use enrol_ethos\ethosclient\entities\ethos_person_info;
 use enrol_ethos\ethosclient\providers\base\ethos_provider;
 
 class ethos_person_provider extends ethos_provider
 {
-    private ethos_alternative_credential_provider $alternativeCredentialService;
+    private ethos_alternative_credential_type_provider $alternativeCredentialService;
 
     private function __construct()
     {
         parent::__construct();
         $this->prepareProvider('persons', 'v12');
-        $this->alternativeCredentialService = ethos_alternative_credential_provider::getInstance();
+        $this->alternativeCredentialService = ethos_alternative_credential_type_provider::getInstance();
     }
 
     private static ?ethos_person_provider $instance = null;
@@ -25,33 +26,58 @@ class ethos_person_provider extends ethos_provider
         return self::$instance;
     }
 
-    public function getPersonById($id) : ?object {
+    public function get($id) : ?ethos_person_info {
         $person = $this->getFromEthosById($id);
 
         if(!$person || isset($person->errors)) {
             return null;
         }
 
-        return $person;
+        return $this->convert($person);
     }
 
+    /**
+     * @param $bannerId
+     * @return ethos_person_info[]
+     */
     public function getPersonsByBannerId($bannerId) : array {
         $url = $this->buildUrlWithCriteria('{"credentials":[{"type":"bannerId","value":"' . $bannerId . '}]}');
-
-        return $this->getFromEthos($url);
+        $items = $this->getFromEthos($url);
+        return array_map(array($this, 'convert'), $items);
     }
 
+    /**
+     * @param $credential
+     * @return ethos_person_info[]
+     */
     public function getPersonByEmployeeAlternativeCredential($credential) : array{
         $credentialType = $this->alternativeCredentialService->getEmployeeNumberAlternativeCredentialType();
 
         $url = $this->buildUrlWithCriteria('{"alternativeCredentials":[{"type":{"id":"' . $credentialType->id . '"},"value":"' . $credential . '"}]}');
 
-        return $this->getFromEthos($url);
+        $items = $this->getFromEthos($url);
+        return array_map(array($this, 'convert'), $items);
     }
 
+    /**
+     * @return ethos_person_info[]
+     */
     public function getPersonsWithStudentRole() : array {
         $url = $this->buildUrlWithCriteria('{"roles":[{"role":"student"}]}');
+        $items = $this->getFromEthos($url, true);
+        return array_map(array($this, 'convert'), $items);
+    }
 
-        return $this->getFromEthos($url, true);
+    /**
+     * @return ethos_person_info[]
+     */
+    public function getAll() : array {
+        $items = $this->getFromEthos();
+
+        return array_map(array($this, 'convert'), $items);
+    }
+
+    private function convert(object $item) : ?ethos_person_info {
+        return new ethos_person_info($item);
     }
 }
