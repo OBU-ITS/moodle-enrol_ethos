@@ -72,7 +72,7 @@ class student_lookup_service {
 
     public function lookupStudentFromPersonId($bannerId) {
 
-        $person = $this->personService->getPersonById($bannerId);
+        $person = $this->personService->get($bannerId);
 
         return $this->lookupStudent($person);
     }

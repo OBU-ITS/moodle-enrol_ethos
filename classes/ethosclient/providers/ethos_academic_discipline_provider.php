@@ -7,10 +7,13 @@ use enrol_ethos\ethosclient\providers\base\ethos_provider;
 
 class ethos_academic_discipline_provider extends ethos_provider
 {
+    const VERSION = 'v15';
+    const PATH = 'academic-disciplines';
+
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider('academic-disciplines', 'v15');
+        $this->prepareProvider(self::PATH, self::VERSION);
     }
 
     private static ?ethos_academic_discipline_provider $instance = null;
@@ -30,10 +33,13 @@ class ethos_academic_discipline_provider extends ethos_provider
         return $this->convert($item);
     }
 
+    /**
+     * @return ethos_academic_discipline_info[]
+     */
     public function getAll() : array {
         $items = $this->getFromEthos();
 
-        return array_map('convert', $items);
+        return array_map(array($this, 'convert'), $items);
     }
 
     private function convert(object $item) : ?ethos_academic_discipline_info {

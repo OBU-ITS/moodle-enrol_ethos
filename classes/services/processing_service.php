@@ -129,7 +129,7 @@ class processing_service {
 //
 //        $employeeNumberAlternativeCredentialType = $this->alternativeCredentialService->getEmployeeNumberAlternativeCredentialType();
 //        foreach ($personIds as $personId) {
-//            $person = $this->personService->getPersonById($personId);
+//            $person = $this->personService->get($personId);
 //
 //            if(!$this->alternativeCredentialService->hasAlternativeCredentialOfType($person, $employeeNumberAlternativeCredentialType)) {
 //                continue;
@@ -150,7 +150,7 @@ class processing_service {
         $employeeNumberAlternativeCredentialType = $this->alternativeCredentialService->getEmployeeNumberAlternativeCredentialType();
         if(isset($messagesModel->persons) && count($messagesModel->persons) > 0) {
             foreach ($messagesModel->persons as $messageModel) {
-                $person = $this->personService->getPersonById($messageModel->personId);
+                $person = $this->personService->get($messageModel->personId);
                 if(!$this->alternativeCredentialService->hasAlternativeCredentialOfType($person, $employeeNumberAlternativeCredentialType)) {
                     continue;
                 }
@@ -165,7 +165,7 @@ class processing_service {
 
         if(isset($messagesModel->studentAcademicPrograms) && count($messagesModel->studentAcademicPrograms) > 0) {
             foreach ($messagesModel->studentAcademicPrograms as $messageModel) {
-                $studentAcademicProgram = $this->studentAcademicProgramService->getStudentAcademicProgram($messageModel->resourceId);
+                $studentAcademicProgram = $this->studentAcademicProgramService->get($messageModel->resourceId);
                 if(!isset($studentAcademicProgram)
                     || !isset($studentAcademicProgram->obu_SorlcurCactCode)
                     || $studentAcademicProgram->obu_SorlcurCactCode !== 'ACTIVE'
@@ -210,7 +210,7 @@ class processing_service {
         $moodleUsersWithoutMatchingBannerGuid = array();
 
         foreach($bannerGuidsNotInMoodle as $bannerGuid) {
-            $bannerPerson = $this->personService->getPersonById($bannerGuid);
+            $bannerPerson = $this->personService->get($bannerGuid);
             if(!$bannerPerson) {
                 continue;
             }

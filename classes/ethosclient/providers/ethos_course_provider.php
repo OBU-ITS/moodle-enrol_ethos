@@ -6,10 +6,13 @@ use enrol_ethos\ethosclient\providers\base\ethos_provider;
 
 class ethos_course_provider extends ethos_provider
 {
+    const VERSION = 'v16';
+    const PATH = 'courses';
+
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider('courses', 'v16', 300);
+        $this->prepareProvider(self::PATH, self::VERSION, 300);
     }
 
     private static ?ethos_course_provider $instance = null;
@@ -29,10 +32,13 @@ class ethos_course_provider extends ethos_provider
         return $this->convert($item);
     }
 
+    /**
+     * @return ethos_course_info[]
+     */
     public function getAll() : array {
         $items = $this->getFromEthos();
 
-        return array_map('convert', $items);
+        return array_map(array($this, 'convert'), $items);
     }
 
     private function convert(object $item) : ?ethos_course_info {

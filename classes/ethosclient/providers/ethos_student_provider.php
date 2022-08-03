@@ -1,14 +1,18 @@
 <?php
 namespace enrol_ethos\ethosclient\providers;
 
+use enrol_ethos\ethosclient\entities\ethos_student_info;
 use enrol_ethos\ethosclient\providers\base\ethos_provider;
 
 class ethos_student_provider extends ethos_provider
 {
+    const VERSION = 'v16';
+    const PATH = 'students';
+
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider('students', 'v16');
+        $this->prepareProvider(self::PATH, self::VERSION);
     }
 
     private static ?ethos_student_provider $instance = null;
@@ -22,8 +26,11 @@ class ethos_student_provider extends ethos_provider
         return self::$instance;
     }
 
-    public function getStudentById($id) : ethos_student_info {
-        return $this->getFromEthosById($id);
+
+    public function get($id) : ethos_student_info {
+        $item = $this->getFromEthosById($id);
+
+        return $this->convert($item);
     }
 
     /**
@@ -32,11 +39,29 @@ class ethos_student_provider extends ethos_provider
      */
     public function getStudentByPersonId($personId) : array {
         $url = $this->buildUrlWithCriteria('{"person": {"id": "'. $personId . '"}}');
-
-        return $this->getFromEthos($url);
+        $items = $this->getFromEthos($url);
+        return array_map(array($this, 'convert'), $items);
     }
 
+    /**
+     * @return ethos_student_info[]
+     */
     public function getStudents() : array {
-        return $this->getFromEthos();
+        $items = $this->getFromEthos();
+
+        return array_map(array($this, 'convert'), $items);
+    }
+
+    /**
+     * @return ethos_student_info[]
+     */
+    public function getAll() : array {
+        $items = $this->getFromEthos();
+
+        return array_map(array($this, 'convert'), $items);
+    }
+
+    private function convert(object $item) : ?ethos_student_info {
+        return new ethos_student_info($item);
     }
 }
