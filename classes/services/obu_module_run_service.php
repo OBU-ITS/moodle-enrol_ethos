@@ -60,7 +60,6 @@ class obu_module_run_service
      */
     public function getBatch(obu_course_hierarchy_info $hierarchy, $limit, $offset) : int {
         $moduleRuns = $this->sectionProvider->getBatch($limit, $offset);
-
         $this->addToCourseHierarchy($hierarchy, $moduleRuns);
 
         return count($moduleRuns);
@@ -93,6 +92,7 @@ class obu_module_run_service
      * @param ethos_section_info $moduleRun
      */
     private function addModuleRunToHierarchy(obu_course_hierarchy_info $hierarchy, ethos_section_info $moduleRun) {
+
         if($moduleRun->number == "0") {
             return;
         }
@@ -122,6 +122,7 @@ class obu_module_run_service
         $course = new mdl_course($idNumber, $shortName, $fullName);
         $course->startdate = obu_datetime_helper::convertStringToTimeStamp($subTerm->startOn);
         $course->enddate = obu_datetime_helper::convertStringToTimeStamp($subTerm->endOn);
+        $course->bannerId = $bannerSectionGuid;
 
         $categories = new obu_course_categories_info($site, $college, $department, $subject);
 

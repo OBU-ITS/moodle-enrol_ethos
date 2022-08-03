@@ -4,11 +4,11 @@ namespace enrol_ethos\services;
 use enrol_ethos\entities\mdl_course;
 use enrol_ethos\entities\obu_course_hierarchy_info;
 use enrol_ethos\repositories\db_course_repository;
-use stdClass;
+use progress_trace;
 
 class mdl_course_service
 {
-    private const RUN_LIMIT = 10;
+    private const RUN_LIMIT = 100;
 
     private obu_module_run_service $moduleRunService;
     private mdl_course_category_service $courseCategoryService;
@@ -33,24 +33,34 @@ class mdl_course_service
         return self::$instance;
     }
 
-    public function reSyncModuleRun($id) {
+    public function reSyncModuleRun(progress_trace $trace, $id) {
         $hierarchy = obu_course_hierarchy_info::getTopCategory();
 
-        echo "Start resync module run for id:" . $id . "<br />";
+        $trace->output("Start re-sync module run for id:" . $id);
+
         $this->moduleRunService->get($hierarchy, $id);
 
-        $this->handleCourseCreation($hierarchy);
+        $this->handleCourseCreation($trace, $hierarchy);
     }
 
-    public function reSyncAllModuleRuns(int $max = 0) {
+    public function reSyncAllModuleRuns(progress_trace $trace, int $max = 0) {
         $offset = 0;
         $totalResults = 0;
+        $memStart = memory_get_usage();
+        $memPrevious = $memStart;
+
         do {
             $hierarchy = obu_course_hierarchy_info::getTopCategory();
 
-            $resultsCount = $this->moduleRunService->getBatch($hierarchy, self::RUN_LIMIT, $offset);
+            $limit = ($max && ($max < ($totalResults + self::RUN_LIMIT))) ? ($max - $totalResults) : self::RUN_LIMIT;
+            $resultsCount = $this->moduleRunService->getBatch($hierarchy, $limit, $offset);
 
-            $this->handleCourseCreation($hierarchy);
+            $this->handleCourseCreation($trace, $hierarchy);
+
+            $mem = memory_get_usage();
+            $trace->output("Mem change start " . number_format(round(($mem - $memStart) / 1024)) . "KB");
+            $trace->output("Mem change previous " . number_format(round(($mem - $memPrevious) / 1024)) . "KB");
+            $memPrevious = $mem;
 
             $offset += self::RUN_LIMIT;
             $totalResults += $resultsCount;
@@ -58,45 +68,42 @@ class mdl_course_service
         while($max == 0 || ($max > $totalResults));
     }
 
-    private function handleCourseCreation(obu_course_hierarchy_info $courseHierarchy, string $keyPrefix = '', ?int $parentId = null) {
+    private function handleCourseCreation(progress_trace $trace, obu_course_hierarchy_info $courseHierarchy, string $keyPrefix = '', ?int $parentId = null) {
         $categoryIdNumber = $this->courseCategoryService->getCategoryId($keyPrefix, $courseHierarchy->currentCategory->codeName);
-        $categoryId = $this->courseCategoryService->upsertCourseCategory($courseHierarchy->currentCategory, $categoryIdNumber, $parentId);
+        $categoryId = $this->courseCategoryService->upsertCourseCategory($trace, $courseHierarchy->currentCategory, $categoryIdNumber, $parentId);
 
         if($courseHierarchy->hasSubCategories()) {
-            $childrenCategories = $courseHierarchy->getSubCategories();
             $childKeyPrefix = $this->courseCategoryService->getCategoryPrefix($keyPrefix, $courseHierarchy->currentCategory->codeName, $courseHierarchy->currentCategory->alternateCodeName);
+
+            $childrenCategories = $courseHierarchy->getSubCategories();
             foreach ($childrenCategories as $childCategory) {
-                $this->handleCourseCreation($childCategory, $childKeyPrefix, $categoryId);
+                $this->handleCourseCreation($trace, $childCategory, $childKeyPrefix, $categoryId);
             }
         }
 
         $childrenCourses = $courseHierarchy->getCourses();
         foreach($childrenCourses as $childCourse) {
             $childCourse->catid = $categoryId;
-            $this->upsertCourse($childCourse);
+            $this->upsertCourse($trace, $childCourse);
         }
     }
 
-    private function upsertCourse(mdl_course $data) {
+    private function upsertCourse(progress_trace $trace, mdl_course $data) {
         if($course = $this->courseRepo->findOne($data->idnumber))
         {
-            if($updatedCourse = $this->getUpdatedCourse($course, $data))
+            if($updatedCourse = $this->getUpdatedCourse($trace, $course, $data))
             {
                 $this->courseRepo->update($updatedCourse);
-                echo "Course updated : $data->name <br/>";
-            }
-            else
-            {
-                echo "Course found : $data->name <br/>";
+                $trace->output("Course updated : $data->name ($data->idnumber) ($data->bannerId)");
             }
         }
         else {
-            echo "Course created : $data->name <br/>";
             $this->courseRepo->create($data);
+            $trace->output("Course created : $data->name ($data->id)");
         }
     }
 
-    private function getUpdatedCourse(mdl_course $currentCourse, mdl_course $newCourse) {
+    private function getUpdatedCourse(progress_trace $trace, mdl_course $currentCourse, mdl_course $newCourse) {
         $hasChanges = false;
 
         if(strval($currentCourse->idnumber) !== $newCourse->idnumber) {
@@ -115,6 +122,7 @@ class mdl_course_service
         }
 
         if(strval($currentCourse->catid) !== strval($newCourse->catid)) {
+            $trace->output("$currentCourse->catid ! = $newCourse->catid");
             $currentCourse->catid = $newCourse->catid;
             $hasChanges = true;
         }

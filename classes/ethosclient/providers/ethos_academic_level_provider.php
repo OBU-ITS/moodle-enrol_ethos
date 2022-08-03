@@ -9,7 +9,7 @@ class ethos_academic_level_provider extends ethos_provider
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider('academic-levels', 'v6');
+        $this->prepareProvider('academic-levels', 'v6', 3600);
     }
 
     private static ?ethos_academic_level_provider $instance = null;

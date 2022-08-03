@@ -9,7 +9,7 @@ class ethos_academic_period_provider extends ethos_provider
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider('academic-periods', 'v16');
+        $this->prepareProvider('academic-periods', 'v16', 3600);
     }
 
     private static ?ethos_academic_period_provider $instance = null;

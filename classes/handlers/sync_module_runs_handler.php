@@ -3,6 +3,7 @@
 namespace enrol_ethos\handlers;
 
 use enrol_ethos\services\mdl_course_service;
+use progress_trace;
 
 class sync_module_runs_handler
 {
@@ -13,13 +14,13 @@ class sync_module_runs_handler
         $this->courseService = mdl_course_service::getInstance();
     }
 
-    public function handleSync(string $id)
+    public function handleSync(progress_trace $trace, string $id)
     {
-        $this->courseService->reSyncModuleRun($id);
+        $this->courseService->reSyncModuleRun($trace, $id);
     }
 
-    public function handleSyncAll(int $max = 0)
+    public function handleSyncAll(progress_trace $trace, int $max = 0)
     {
-        $this->courseService->reSyncAllModuleRuns($max);
+        $this->courseService->reSyncAllModuleRuns($trace, $max);
     }
 }

@@ -9,7 +9,7 @@ class ethos_site_provider extends ethos_provider
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider('sites', 'v6');
+        $this->prepareProvider('sites', 'v6', 3600);
     }
 
     private static ?ethos_site_provider $instance = null;

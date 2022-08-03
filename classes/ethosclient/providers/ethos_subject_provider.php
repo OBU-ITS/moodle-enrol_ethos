@@ -9,7 +9,7 @@ class ethos_subject_provider extends ethos_provider
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider('subjects', 'v6');
+        $this->prepareProvider('subjects', 'v6', 600);
     }
 
     private static ?ethos_subject_provider $instance = null;

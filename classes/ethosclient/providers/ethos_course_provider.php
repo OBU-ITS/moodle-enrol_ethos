@@ -9,7 +9,7 @@ class ethos_course_provider extends ethos_provider
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider('courses', 'v16');
+        $this->prepareProvider('courses', 'v16', 300);
     }
 
     private static ?ethos_course_provider $instance = null;

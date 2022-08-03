@@ -53,6 +53,7 @@ class obu_subject_group_service
             $course = new mdl_course($idNumber, $shortName, $fullName);
             $course->startdate = obu_datetime_helper::convertStringToTimeStamp('01-JAN-2019');
             $course->enddate = 0;
+            $course->bannerId = $moduleRun->id;
 
             $categories = new obu_course_categories_info($site, $college, $department, $subject);
 

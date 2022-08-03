@@ -33,14 +33,12 @@ class ethos_section_provider extends ethos_provider
         $items = $this->getFromEthos(null, true, $limit, $offset);
 
         return array_map(array($this, 'convert'), $items);
-
-        return $response;
     }
 
     public function getAll() : array {
         $items = $this->getFromEthos();
 
-        return array_map('convert', $items);
+        return array_map(array($this, 'convert'), $items);
     }
 
     private function convert(object $item) : ?ethos_section_info {

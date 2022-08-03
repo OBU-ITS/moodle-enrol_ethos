@@ -4,6 +4,7 @@ namespace enrol_ethos\services;
 use core_course_category;
 use enrol_ethos\entities\obu_course_category_info;
 use enrol_ethos\repositories\db_course_category_repository;
+use progress_trace;
 use stdClass;
 
 class mdl_course_category_service
@@ -27,26 +28,25 @@ class mdl_course_category_service
         return self::$instance;
     }
 
-    public function upsertCourseCategory(obu_course_category_info $category, string $categoryIdNumber, ?int $parentCategoryId) : int {
+    public function upsertCourseCategory(progress_trace $trace, obu_course_category_info $category, string $categoryIdNumber, ?int $parentCategoryId) : int {
         if($category->id == 0) {
-            return $category->id;
+            return 0;
         }
 
         if($courseCategory = $this->courseCategoryRepo->get($categoryIdNumber))
         {
             if($updatedCourseCategory = $this->getUpdatedCategory($courseCategory, $category, $categoryIdNumber, $parentCategoryId))
             {
-                echo "Course category updated : $categoryIdNumber <br/>";
                 $courseCategory->update($updatedCourseCategory);
+                $trace->output("Course category updated : $categoryIdNumber");
             }
-            else
-            {
-                echo "Course category found : $categoryIdNumber <br/>";
+            else {
+                $trace->output("Course category retrieved : $categoryIdNumber ($courseCategory->id)");
             }
         }
         else {
-            echo "Course category created : $categoryIdNumber <br/>";
             $courseCategory = $this->courseCategoryRepo->create($category, $categoryIdNumber, $parentCategoryId);
+            $trace->output("Course category created : $categoryIdNumber");
         }
 
         return $courseCategory->id;
