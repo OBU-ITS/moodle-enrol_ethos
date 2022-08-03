@@ -9,11 +9,13 @@ class ethos_alternative_credential_type_provider extends ethos_provider
 {
     const EMPLOYEE_CRED_CACHE_KEY = "EmployeeNumberAlternativeCredentialType";
     const EMPLOYEE_CRED_BANNER_CODE = "EMPN";
+    const VERSION = 'v1';
+    const PATH = 'alternative-credential-types';
 
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider('alternative-credential-types', 'v1');
+        $this->prepareProvider(self::PATH, self::VERSION);
     }
 
     private static ?ethos_alternative_credential_type_provider $instance = null;

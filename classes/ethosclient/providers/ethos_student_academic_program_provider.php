@@ -6,10 +6,13 @@ use enrol_ethos\ethosclient\providers\base\ethos_provider;
 
 class ethos_student_academic_program_provider extends ethos_provider
 {
+    const VERSION = 'v17';
+    const PATH = 'student-academic-programs';
+
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider('student-academic-programs', 'v17');
+        $this->prepareProvider(self::PATH, self::VERSION);
     }
 
     private static ?ethos_student_academic_program_provider $instance = null;

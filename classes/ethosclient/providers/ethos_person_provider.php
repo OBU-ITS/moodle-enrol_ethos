@@ -7,11 +7,13 @@ use enrol_ethos\ethosclient\providers\base\ethos_provider;
 class ethos_person_provider extends ethos_provider
 {
     private ethos_alternative_credential_type_provider $alternativeCredentialService;
+    const VERSION = 'v12';
+    const PATH = 'persons';
 
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider('persons', 'v12');
+        $this->prepareProvider(self::PATH, self::VERSION);
         $this->alternativeCredentialService = ethos_alternative_credential_type_provider::getInstance();
     }
 

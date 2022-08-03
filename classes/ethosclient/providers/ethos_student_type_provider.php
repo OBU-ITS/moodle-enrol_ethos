@@ -6,10 +6,13 @@ use enrol_ethos\ethosclient\providers\base\ethos_provider;
 
 class ethos_student_type_provider extends ethos_provider
 {
+    const VERSION = 'v7';
+    const PATH = 'student-types';
+
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider('student-types', 'v7');
+        $this->prepareProvider(self::PATH, self::VERSION);
     }
 
     private static ?ethos_student_type_provider $instance = null;
@@ -29,6 +32,9 @@ class ethos_student_type_provider extends ethos_provider
         return $this->convert($item);
     }
 
+    /**
+     * @return ethos_student_type_info[]
+     */
     public function getAll() : array {
         $items = $this->getFromEthos();
 

@@ -6,10 +6,13 @@ use enrol_ethos\ethosclient\providers\base\ethos_provider;
 
 class ethos_subject_provider extends ethos_provider
 {
+    const VERSION = 'v6';
+    const PATH = 'subjects';
+
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider('subjects', 'v6');
+        $this->prepareProvider(self::PATH, self::VERSION);
     }
 
     private static ?ethos_subject_provider $instance = null;
@@ -29,6 +32,9 @@ class ethos_subject_provider extends ethos_provider
         return $this->convert($item);
     }
 
+    /**
+     * @return ethos_subject_info[]
+     */
     public function getAll() : array {
         $items = $this->getFromEthos();
 

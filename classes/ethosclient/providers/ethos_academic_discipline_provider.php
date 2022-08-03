@@ -7,10 +7,13 @@ use enrol_ethos\ethosclient\providers\base\ethos_provider;
 
 class ethos_academic_discipline_provider extends ethos_provider
 {
+    const VERSION = 'v15';
+    const PATH = 'academic-disciplines';
+
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider('academic-disciplines', 'v15');
+        $this->prepareProvider(self::PATH, self::VERSION);
     }
 
     private static ?ethos_academic_discipline_provider $instance = null;

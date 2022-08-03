@@ -7,10 +7,13 @@ use enrol_ethos\ethosclient\providers\base\ethos_provider;
 
 class ethos_student_academic_period_status_provider extends ethos_provider
 {
+    const VERSION = 'v1';
+    const PATH = 'student-academic-period-statuses';
+
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider('student-academic-period-statuses', 'v1');
+        $this->prepareProvider(self::PATH, self::VERSION);
     }
 
     private static ?ethos_student_academic_period_status_provider $instance = null;
@@ -30,6 +33,9 @@ class ethos_student_academic_period_status_provider extends ethos_provider
         return $this->convert($item);
     }
 
+    /**
+     * @return ethos_student_academic_period_status_info[]
+     */
     public function getAll() : array {
         $items = $this->getFromEthos();
 

@@ -6,10 +6,13 @@ use enrol_ethos\ethosclient\providers\base\ethos_provider;
 
 class ethos_section_title_type_provider extends ethos_provider
 {
+    const VERSION = 'v1';
+    const PATH = 'section-title-types';
+
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider('section-title-types', 'v1');
+        $this->prepareProvider(self::PATH, self::VERSION);
     }
 
     private static ?ethos_section_title_type_provider $instance = null;
@@ -29,6 +32,9 @@ class ethos_section_title_type_provider extends ethos_provider
         return $this->convert($item);
     }
 
+    /**
+     * @return ethos_section_title_type_info[]
+     */
     public function getAll() : array {
         $items = $this->getFromEthos();
 

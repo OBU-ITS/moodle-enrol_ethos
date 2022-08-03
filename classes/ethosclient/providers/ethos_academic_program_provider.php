@@ -8,11 +8,12 @@ use enrol_ethos\ethosclient\providers\base\ethos_provider;
 class ethos_academic_program_provider extends ethos_provider
 {
     const VERSION = 'v15';
+    const PATH = 'academic-programs';
 
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider('academic-programs', self::VERSION);
+        $this->prepareProvider(self::PATH, self::VERSION);
     }
 
     private static ?ethos_academic_program_provider $instance = null;
@@ -32,6 +33,9 @@ class ethos_academic_program_provider extends ethos_provider
         return $this->convert($item);
     }
 
+    /**
+     * @return ethos_academic_program_info[]
+     */
     public function getAll() : array {
         $items = $this->getFromEthos();
 

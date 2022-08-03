@@ -6,10 +6,13 @@ use enrol_ethos\ethosclient\providers\base\ethos_provider;
 
 class ethos_academic_period_provider extends ethos_provider
 {
+    const VERSION = 'v16';
+    const PATH = 'academic-periods';
+
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider('academic-periods', 'v16');
+        $this->prepareProvider(self::PATH, self::VERSION);
     }
 
     private static ?ethos_academic_period_provider $instance = null;
@@ -29,6 +32,9 @@ class ethos_academic_period_provider extends ethos_provider
         return $this->convert($item);
     }
 
+    /**
+     * @return ethos_academic_period_info[]
+     */
     public function getAll() : array {
         $items = $this->getFromEthos();
 
