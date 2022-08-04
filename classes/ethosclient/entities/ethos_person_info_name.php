@@ -20,12 +20,14 @@ class ethos_person_info_name
         if(!isset($data)) {
             return;
         }
+        if(isset($data->type)) {
+            $this->category = $data->type->category;
+        }
 
         $this->id = $data->id;
         $this->firstName = $data->firstName;
         $this->lastName = $data->lastName;
         $this->fullName = $data->fullName;
         $this->preference = $data->preference;
-        $this->category = $data->type->category;
     }
 }
