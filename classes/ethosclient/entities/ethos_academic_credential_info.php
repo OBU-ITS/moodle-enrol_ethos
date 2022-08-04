@@ -14,7 +14,6 @@ class ethos_academic_credential_info
     public string $title;
     public string $type;
 
-
     public function populateObject(object $data) {
         if(!isset($data)) {
             return;

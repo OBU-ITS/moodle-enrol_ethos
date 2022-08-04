@@ -162,7 +162,6 @@ class ethos_academic_program_info
         $this->setProgramOwnerIds($data->programOwners);
         $this->setSiteIds($data->sites);
 
-
         if(isset($data->academicLevel)) {
             $this->setAcademicLevelId($data->academicLevel->id);
         }
