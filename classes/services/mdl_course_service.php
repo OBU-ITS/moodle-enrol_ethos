@@ -70,7 +70,7 @@ class mdl_course_service
             $offset += self::RUN_LIMIT;
             $totalResults += $resultsCount;
         }
-        while($max == 0 || ($max > $totalResults));
+        while($resultsCount > 0 && ($max == 0 || ($max > $totalResults)));
     }
 
 
@@ -89,7 +89,7 @@ class mdl_course_service
             $offset += self::RUN_LIMIT;
             $totalResults += $resultsCount;
         }
-        while($max == 0 || ($max > $totalResults));
+        while($resultsCount > 0 && ($max == 0 || ($max > $totalResults)));
     }
 
     private function handleCourseCreation(progress_trace $trace, obu_course_hierarchy_info $courseHierarchy, string $keyPrefix = '', ?int $parentId = null) {
