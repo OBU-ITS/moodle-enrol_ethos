@@ -3,11 +3,15 @@ namespace enrol_ethos\ethosclient\services;
 
 use enrol_ethos\ethosclient\client\ethos_client;
 use enrol_ethos\ethosclient\consumers\base\ethos_consumer;
+use enrol_ethos\ethosclient\entities\consume\ethos_notifications;
 use enrol_ethos\ethosclient\general\class_finder;
 use Exception;
 
 class ethos_notification_service
 {
+    private const CONSUME_LIMIT = 250;
+    private const PROCESS_LIMIT = 2000;
+
     private ethos_client $ethosClient;
 
     /**
@@ -33,7 +37,6 @@ class ethos_notification_service
     }
 
     private function populateConsumers() {
-
         $this->consumers = array();
         class_finder::includeAllFilesEthosClient("consumers");
 
@@ -53,16 +56,46 @@ class ethos_notification_service
     }
 
     /**
-     * @throws Exception
+     * Consume Messages
+     *
+     * @param string $previousLastProcessedId
+     * @param int $max
+     * @return ethos_notifications
      */
-    public function consumeMessages($lastProcessedId = 0, $consumeLimit = 250) {
-        $url = ethos_client::API_URL . "/consume?limit=". $consumeLimit ."&lastProcessedID=" . $lastProcessedId;
-        return $this->ethosClient->getJson($url, null);
-    }
+    public function consumeMessages(string $previousLastProcessedId = "0", int $max = self::PROCESS_LIMIT) : ethos_notifications {
 
-    public function echoNames() {
-        foreach($this->consumers as $consumer) {
-            echo $consumer->getResourceName() . "<br />";
+        $notifications = new ethos_notifications();
+        $lastProcessedId = $previousLastProcessedId;
+        $processedCount = 0;
+
+        do {
+            $limit = ($max && ($max < ($processedCount + self::CONSUME_LIMIT)))
+                ? ($max - $processedCount)
+                : self::CONSUME_LIMIT;
+            $url = ethos_client::API_URL . "/consume?limit=". $limit ."&lastProcessedID=" . $lastProcessedId;
+
+            try {
+                $messages = $this->ethosClient->getJson($url, null);
+            }
+            catch(Exception $e) {
+                breaK;
+            }
+
+            $resultsCount = count($messages);
+
+            foreach ($messages as $message) {
+                $lastProcessedId = $message->id;
+                $resourceName = isset($message->resource) ? $message->resource->name : "obu_unknown";
+
+                if (array_key_exists($resourceName, $this->consumers)) {
+                    $this->consumers[$resourceName]->addDataToMessages($notifications, $message);
+                }
+            }
+
+            $processedCount += $resultsCount;
         }
+        while ($resultsCount > 0 && self::PROCESS_LIMIT > $processedCount);
+
+        return $notifications;
     }
 }

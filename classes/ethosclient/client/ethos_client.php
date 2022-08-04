@@ -78,8 +78,6 @@ class ethos_client
             }
         }
 
-        var_dump($results);
-
         return $results;
     }
 

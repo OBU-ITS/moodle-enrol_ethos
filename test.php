@@ -7,4 +7,4 @@ require_once('../../config.php');
 require_once($CFG->libdir.'/weblib.php');
 
 $service = ethos_notification_service::getInstance();
-$service->echoNames();
+$notifications = $service->consumeMessages("0", 1);

@@ -12,9 +12,8 @@ class ethos_student_academic_program_consumer implements ethos_consumer {
         return self::RESOURCE_NAME;
     }
 
-    public function addDataToMessages(object $data, ethos_notifications $messages): string
+    function addDataToMessages(ethos_notifications $messages, object $data)
     {
         // TODO: Implement addDataToMessages() method.
-        echo "Add student-academic-program data";
     }
 }

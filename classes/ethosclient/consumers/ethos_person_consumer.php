@@ -12,9 +12,8 @@ class ethos_person_consumer implements ethos_consumer {
         return self::RESOURCE_NAME;
     }
 
-    function addDataToMessages(object $data, ethos_notifications $messages): string
+    function addDataToMessages(ethos_notifications $messages, object $data)
     {
         // TODO: Implement addDataToMessages() method.
-        echo "Add person data";
     }
 }
