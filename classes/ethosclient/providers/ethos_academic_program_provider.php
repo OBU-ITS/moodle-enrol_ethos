@@ -34,6 +34,17 @@ class ethos_academic_program_provider extends ethos_provider
     }
 
     /**
+     * @param $limit
+     * @param $offset
+     * @return ethos_academic_program_info[]
+     */
+    public function getBatch($limit, $offset) : array {
+        $items = $this->getFromEthos(null, true, $limit, $offset);
+
+        return array_map(array($this, 'convert'), $items);
+    }
+
+    /**
      * @return ethos_academic_program_info[]
      */
     public function getAll() : array {
