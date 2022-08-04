@@ -3,16 +3,16 @@ namespace enrol_ethos\handlers;
 
 use enrol_ethos\entities\reports\report_action;
 use enrol_ethos\entities\reports\report_run;
-use enrol_ethos\ethosclient\client\ethos_client;
-use enrol_ethos\ethosclient\service\message_model;
-use enrol_ethos\ethosclient\service\messages_model;
+use enrol_ethos\ethosclient\entities\consume\ethos_notification;
+use enrol_ethos\ethosclient\entities\consume\ethos_notifications;
+use enrol_ethos\ethosclient\services\ethos_consume_service;
 use enrol_ethos\services\ethos_report_service;
 use enrol_ethos\services\processing_service;
 
 class ethos_notifications_handler {
     private ethos_report_service $reportService;
     private processing_service $processingService;
-    private ethos_client $ethosClient;
+    private ethos_consume_service $consumeService;
 
     private const PROCESS_LIMIT = 2000;
 
@@ -20,7 +20,7 @@ class ethos_notifications_handler {
     {
         $this->reportService = new ethos_report_service();
         $this->processingService = new processing_service($trace);
-        $this->ethosClient = ethos_client::getInstance();
+        $this->consumeService = ethos_consume_service::getInstance();
     }
 
     public function handleNotifications() {
@@ -45,15 +45,15 @@ class ethos_notifications_handler {
         return $this->processingService->process_ethos_updates($reportRun, $messages);
     }
 
-    private function getNotifications(report_run $report): messages_model
+    private function getNotifications(report_run $report): ethos_notifications
     {
-        $messagesModel = new messages_model();
+        $messagesModel = new ethos_notifications();
 
-        $lastConsumedID = $this->reportService->getLastConsumedId(Id);
+        $lastConsumedID = $this->reportService->getLastConsumedId();
         $processedCount = 0;
 
         do {
-            $messages = $this->ethosClient->consumeMessages($lastConsumedID);
+            $messages = $this->consumeService->consumeMessages($lastConsumedID);
 
             $messagesCount = count($messages);
             $report->incrementMessagesConsumed($messagesCount);
@@ -76,14 +76,14 @@ class ethos_notifications_handler {
 
                     switch ($resourceName) {
                         case 'persons':
-                            $messageModel = new message_model($messageId, $resourceId, $messageContent->id);
+                            $messageModel = new ethos_notification($messageId, $resourceId, $messageContent->id);
 
                             if($messagesModel->addPerson($messageModel)) {
                                 $report->incrementMessagesProcessed();
                             }
                             break;
                         case 'student-academic-programs':
-                            $messageModel = new message_model($messageId, $resourceId, $messageContent->student->id);
+                            $messageModel = new ethos_notification($messageId, $resourceId, $messageContent->student->id);
 
                             if($messagesModel->addStudentAcademicPrograms($messageModel)) {
                                 $report->incrementMessagesProcessed();

@@ -7,7 +7,7 @@ use enrol_ethos\entities\reports\report_run;
 use enrol_ethos\ethosclient\service\curriculum_lookup_service;
 use enrol_ethos\ethosclient\service\ethos_person_provider;
 use enrol_ethos\ethosclient\service\ethos_student_academic_program_provider;
-use enrol_ethos\ethosclient\service\messages_model;
+use enrol_ethos\ethosclient\service\ethos_notifications;
 use enrol_ethos\repositories\db_course_category_repository;
 use enrol_ethos\repositories\db_course_repository;
 use enrol_ethos\repositories\db_user_repository;
@@ -102,7 +102,7 @@ class processing_service {
 
 //    /**
 //     * @param report_run $report
-//     * @param message_model[] $persons
+//     * @param ethos_notification[] $persons
 //     * @return report_action[]
 //     */
 //    public function process_person_updates(report_run $report, array $persons) : array {
@@ -141,10 +141,10 @@ class processing_service {
 
     /**
      * @param report_run $report
-     * @param messages_model $messagesModel
+     * @param ethos_notifications $messagesModel
      * @return report_action[]
      */
-    public function process_ethos_updates(report_run $report, messages_model $messagesModel) : array {
+    public function process_ethos_updates(report_run $report, ethos_notifications $messagesModel) : array {
         $bannerGuidsFromEthos = array();
 
         $employeeNumberAlternativeCredentialType = $this->alternativeCredentialService->getEmployeeNumberAlternativeCredentialType();

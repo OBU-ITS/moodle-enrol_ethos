@@ -1,7 +1,7 @@
 <?php
-namespace enrol_ethos\ethosclient\service;
+namespace enrol_ethos\ethosclient\entities\consume;
 
-class message_model {
+class ethos_notification {
     public string $messageId;
     public string$resourceId;
     public string $personId;

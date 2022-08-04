@@ -1,14 +1,14 @@
 <?php
-namespace enrol_ethos\ethosclient\service;
+namespace enrol_ethos\ethosclient\entities\consume;
 
-class messages_model {
+class ethos_notifications {
     /**
-     * @var message_model[]
+     * @var ethos_notification[]
      */
     public array $persons;
 
     /**
-     * @var message_model[]
+     * @var ethos_notification[]
      */
     public array $studentAcademicPrograms;
 
@@ -30,7 +30,7 @@ class messages_model {
         return !($this->hasPersons() || $this->hasStudentAcademicPrograms());
     }
 
-    public function addPerson(message_model $messageModel) : bool {
+    public function addPerson(ethos_notification $messageModel) : bool {
         if (!isset($messageModel->personId)) {
             return false;
         }
@@ -44,7 +44,7 @@ class messages_model {
         return false;
     }
 
-    public function addStudentAcademicPrograms(message_model $messageModel) : bool {
+    public function addStudentAcademicPrograms(ethos_notification $messageModel) : bool {
         if (!isset($messageModel->resourceId)) {
             return false;
         }
