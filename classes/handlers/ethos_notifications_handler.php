@@ -28,7 +28,7 @@ class ethos_notifications_handler {
         foreach(get_declared_classes() as $class) {
             $interfaces = class_implements($class);
 
-            if (!isset($interfaces['enrol_ethos\processors\base\ethos_consumer']) || !defined($class::RESOURCE_NAME)) {
+            if (!isset($interfaces['enrol_ethos\processors\base\obu_processor']) || !defined($class::RESOURCE_NAME)) {
                 continue;
             }
 
