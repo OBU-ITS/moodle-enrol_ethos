@@ -22,10 +22,24 @@ class obu_department_service
     }
 
     /**
+     * @param ethos_educational_institution_unit_info[] $educationalInstitutionUnits
+     * @return ethos_educational_institution_unit_info|null
+     */
+    public function getCollege(array $educationalInstitutionUnits) : ?ethos_educational_institution_unit_info {
+        foreach($educationalInstitutionUnits as $educationalInstitutionUnit) {
+            if($educationalInstitutionUnit->type == "department") {
+                return $educationalInstitutionUnit;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @param ethos_section_info_owning_institution_unit[] $owningInstitutionUnits
      * @return ethos_educational_institution_unit_info|null
      */
-    public function getDepartment(array $owningInstitutionUnits) : ?ethos_educational_institution_unit_info {
+    public function getDepartmentByOwningInstitutionUnits(array $owningInstitutionUnits) : ?ethos_educational_institution_unit_info {
         foreach($owningInstitutionUnits as $owningInstitutionUnit) {
             $institutionUnit = $owningInstitutionUnit->getInstitutionUnit();
             if($institutionUnit->type == "department") {

@@ -1,19 +1,26 @@
 <?php
 namespace enrol_ethos\services;
 
+use enrol_ethos\entities\mdl_course;
+use enrol_ethos\entities\obu_course_categories_info;
 use enrol_ethos\entities\obu_course_hierarchy_info;
 use enrol_ethos\ethosclient\entities\ethos_academic_program_info;
 use enrol_ethos\ethosclient\entities\ethos_section_info;
 use enrol_ethos\ethosclient\providers\ethos_academic_program_provider;
 use enrol_ethos\ethosclient\providers\ethos_section_provider;
+use enrol_ethos\helpers\obu_datetime_helper;
 
 class obu_program_service
 {
+    private const DEGREE_APPRENTICESHIP = "-DA";
+
     private ethos_academic_program_provider $academicProgramProvider;
+    private obu_college_service $collegeService;
 
     private function __construct()
     {
         $this->academicProgramProvider = ethos_academic_program_provider::getInstance();
+        $this->collegeService = obu_college_service::getInstance();
     }
 
     private static ?obu_program_service $instance = null;
@@ -59,68 +66,74 @@ class obu_program_service
     private function addProgramToHierarchy(obu_course_hierarchy_info $hierarchy, ethos_academic_program_info $program) {
 
         $sites = $program->getSites();
-        $academicprogramcode = $program->code;
-        $ump = $program->ump;
-        $umpjoint = $program->umpJoint;
-        $academiclevel = $program->getAcademicLevel();
-        $MajorFullTitle = $program->majorFullTitle;
-        $AcademicCredentials = $program->getAcademicCredentials();
+        $academicLevel = $program->getAcademicLevel();
+        $academicCredential = $program->getAcademicCredentials()[0]; // TODO : Check with Jock
+        $college = $this->collegeService->getCollege($program->getProgramOwners());
+        $startDate = obu_datetime_helper::convertStringToTimeStamp('01-JAN-2019');
 
         foreach ($sites as $site){
-            $idNumber = $this->getIdNumber($site->code, $academiclevel->code, $ump, $umpjoint, $academicprogramcode);
-            $shortName = $this->getShortName($academicprogramcode, $site->code);
-            if(substr_compare($academicprogramcode, "-DA", -3) === 0 ){
-                $fullName = $this->getFullNameDA($AcademicCredentials->title, $MajorFullTitle, $site->title);
+            $idNumber = $this->getIdNumber($site->code, $academicLevel->code, $program->ump, $program->umpJoint, $program->code);
+            $shortName = $this->getShortName($program->code, $site->code);
+            if(substr_compare($program->code, self::DEGREE_APPRENTICESHIP, -3) === 0 ){
+                $fullName = $this->getFullNameDA($academicCredential->title, $program->majorFullTitle, $site->title);
             } else{
-                $fullName = $this->getFullName($AcademicCredentials->title, $MajorFullTitle, $site->title);
+                $fullName = $this->getFullName($academicCredential->title, $program->majorFullTitle, $site->title);
             }
 
+            $course = new mdl_course($idNumber, $shortName, $fullName);
+            $course->startdate = $startDate;
+            $course->enddate = $startDate;
+            $course->bannerId = $program->id;
+
+            $categories = new obu_course_categories_info($site, $college, null, null);
+
+            $hierarchy->addCourse($course, $categories->getCategories());
         }
     }
 
     /**
      * @param $siteCode
-     * @param $academiclevelCode
+     * @param $academicLevelCode
      * @param $programUmp
      * @param $programUmpJoint
-     * @param $academicprogramCode
+     * @param $academicProgramCode
      * @return string
      */
-    private function getIdNumber($siteCode, $academiclevelCode, $programUmp, $programUmpJoint, $academicprogramCode) : string {
+    private function getIdNumber($siteCode, $academicLevelCode, $programUmp, $programUmpJoint, $academicProgramCode) : string {
 
-        return $siteCode . "~" . $academiclevelCode . "~" . $programUmp . "~" . $programUmpJoint . "#" . $academicprogramCode;
+        return $siteCode . "~" . $academicLevelCode . "~" . $programUmp . "~" . $programUmpJoint . "#" . $academicProgramCode;
     }
 
     /**
-     * @param $academicprogramcode
+     * @param $academicProgramCode
      * @param $siteCode
      * @return string
      */
-    private function getShortName($academicprogramcode, $siteCode) : string {
+    private function getShortName($academicProgramCode, $siteCode) : string {
 
-        return $academicprogramcode . "[" . $siteCode . "]";
+        return $academicProgramCode . "[" . $siteCode . "]";
     }
 
     /**
-     * @param $academiccredentialtitle
-     * @param $majorfulltitle
-     * @param $sitetitle
+     * @param $academicCredentialTitle
+     * @param $majorFullTitle
+     * @param $siteTitle
      * @return string
      */
-    private function getFullNameDA($academiccredentialtitle, $majorfulltitle, $sitetitle) : string {
+    private function getFullNameDA($academicCredentialTitle, $majorFullTitle, $siteTitle) : string {
 
-        return $academiccredentialtitle . ": " . $majorfulltitle . "[" . $sitetitle . "](" . "Degree Apprenticeship" . ")";
+        return $academicCredentialTitle . ": " . $majorFullTitle . "[" . $siteTitle . "](" . "Degree Apprenticeship" . ")";
     }
 
     /**
-     * @param $academiccredentialtitle
-     * @param $majorfulltitle
-     * @param $sitetitle
+     * @param $academicCredentialTitle
+     * @param $majorFullTitle
+     * @param $siteTitle
      * @return string
      */
-    private function getFullName($academiccredentialtitle, $majorfulltitle, $sitetitle) : string {
+    private function getFullName($academicCredentialTitle, $majorFullTitle, $siteTitle) : string {
 
-        return $academiccredentialtitle . ": " . $majorfulltitle . "[" . $sitetitle . "]";
+        return $academicCredentialTitle . ": " . $majorFullTitle . "[" . $siteTitle . "]";
     }
 
 }

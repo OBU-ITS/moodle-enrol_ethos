@@ -112,8 +112,8 @@ class obu_module_run_service
         $year =  $this->academicPeriodService->getYear($term);
         $site = $moduleRun->getSite();
         $longTitle = $this->titleService->getLongTitle($moduleRun->titles);
-        $college = $this->collegeService->getCollege($moduleRun->owningInstitutionUnits);
-        $department = $this->departmentService->getDepartment($moduleRun->owningInstitutionUnits);
+        $college = $this->collegeService->getCollegeByOwningInstitutionUnits($moduleRun->owningInstitutionUnits);
+        $department = $this->departmentService->getDepartmentByOwningInstitutionUnits($moduleRun->owningInstitutionUnits);
 
         $idNumber = $this->getIdNumber($year->code, $subject->abbreviation, $course->number, $subTerm->code, $moduleRun->number);
         $shortName = $this->getShortName($subject->abbreviation, $course->number, $term->code, $moduleRun->number);
