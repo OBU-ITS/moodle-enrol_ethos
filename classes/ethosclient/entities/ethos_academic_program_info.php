@@ -19,9 +19,9 @@ class ethos_academic_program_info
     //attributes
     public string $code;
     public string $id;
-    public string $ump = "X"; //TODO
-    public string $umpJoint = "X"; //TODO
-    public string $majorFullTitle = "XXX"; //TODO
+    public string $ump = "X"; // TODO
+    public string $umpJoint = "X"; // TODO
+    public string $majorFullTitle = "XXX"; // TODO
 
     //single ref
     private string $academicLevelId;
