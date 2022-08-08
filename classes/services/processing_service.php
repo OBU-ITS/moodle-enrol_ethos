@@ -16,7 +16,7 @@ class processing_service {
 
     private student_lookup_service $studentLookupService;
     private curriculum_lookup_service $curriculumLookupService;
-    private alternative_credential_service $alternativeCredentialService;
+    private obu_alternative_credential_service $alternativeCredentialService;
     private ethos_person_provider $personService;
     private ethos_student_academic_program_provider $studentAcademicProgramService;
 
@@ -36,7 +36,7 @@ class processing_service {
         $this->personService = ethos_person_provider::getInstance();
         $this->studentAcademicProgramService = ethos_student_academic_program_provider::getInstance();
 
-        $this->alternativeCredentialService = new alternative_credential_service();
+        $this->alternativeCredentialService = new obu_alternative_credential_service();
         $this->studentLookupService = new student_lookup_service($trace);
         $this->curriculumLookupService = new curriculum_lookup_service();
         $this->courseRepository = new db_course_repository($DB);

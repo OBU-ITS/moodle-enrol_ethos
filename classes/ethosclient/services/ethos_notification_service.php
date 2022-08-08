@@ -3,6 +3,7 @@ namespace enrol_ethos\ethosclient\services;
 
 use enrol_ethos\ethosclient\client\ethos_client;
 use enrol_ethos\ethosclient\consumers\base\ethos_consumer;
+use enrol_ethos\ethosclient\entities\consume\ethos_notification;
 use enrol_ethos\ethosclient\entities\consume\ethos_notifications;
 use enrol_ethos\ethosclient\general\class_finder;
 use Exception;
@@ -14,15 +15,9 @@ class ethos_notification_service
 
     private ethos_client $ethosClient;
 
-    /**
-     * @var ethos_consumer[]
-     */
-    private array $consumers;
-
     private function __construct()
     {
         $this->ethosClient = ethos_client::getInstance();
-        $this->populateConsumers();
     }
 
     private static ?ethos_notification_service $instance = null;
@@ -34,25 +29,6 @@ class ethos_notification_service
         }
 
         return self::$instance;
-    }
-
-    private function populateConsumers() {
-        $this->consumers = array();
-        class_finder::includeAllFilesEthosClient("consumers");
-
-        foreach(get_declared_classes() as $class) {
-            $interfaces = class_implements($class);
-
-            if (!isset($interfaces['enrol_ethos\ethosclient\consumers\base\ethos_consumer'])) {
-                continue;
-            }
-
-            $instance = new $class();
-            if ($instance instanceof ethos_consumer) {
-                $resourceName = $instance->getResourceName();
-                $this->consumers[$resourceName] = $instance;
-            }
-        }
     }
 
     /**
@@ -85,11 +61,8 @@ class ethos_notification_service
 
             foreach ($messages as $message) {
                 $lastProcessedId = $message->id;
-                $resourceName = isset($message->resource) ? $message->resource->name : "obu_unknown";
-
-                if (array_key_exists($resourceName, $this->consumers)) {
-                    $this->consumers[$resourceName]->addDataToMessages($notifications, $message);
-                }
+                $notification = new ethos_notification($messages);
+                $notifications->addNotification($notification);
             }
 
             $processedCount += $resultsCount;

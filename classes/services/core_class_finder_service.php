@@ -1,12 +1,12 @@
 <?php
 
-namespace enrol_ethos\ethosclient\general;
+namespace enrol_ethos\services;
 
-class class_finder {
+class core_class_finder_service {
     /**
-     * @param string $path subfolder path
+     * @param string $path sub-folder path
      */
-    public static function includeAllFilesEthosClient(string $path = "") {
+    public static function includeFilesInFolder(string $path = "") {
         $directory = $path == ""
             ? realpath(__DIR__ . "/../.")
             : realpath(__DIR__ . "/../" . $path);

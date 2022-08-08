@@ -1,101 +1,69 @@
 <?php
 namespace enrol_ethos\handlers;
 
-use enrol_ethos\entities\reports\report_action;
-use enrol_ethos\entities\reports\report_run;
-use enrol_ethos\ethosclient\entities\consume\ethos_notification;
-use enrol_ethos\ethosclient\entities\consume\ethos_notifications;
-use enrol_ethos\ethosclient\services\ethos_consume_service;
-use enrol_ethos\services\ethos_report_service;
-use enrol_ethos\services\processing_service;
+use enrol_ethos\ethosclient\services\ethos_notification_service;
+use enrol_ethos\processors\base\obu_processor;
+use enrol_ethos\services\core_class_finder_service;
 
 class ethos_notifications_handler {
-    private ethos_report_service $reportService;
-    private processing_service $processingService;
-    private ethos_consume_service $consumeService;
 
-    private const PROCESS_LIMIT = 2000;
+    private ethos_notification_service $consumeService;
 
-    public function __construct($trace)
+    /**
+     * @var obu_processor[]
+     */
+    private array $processors;
+
+    public function __construct()
     {
-        $this->reportService = new ethos_report_service();
-        $this->processingService = new processing_service($trace);
-        $this->consumeService = ethos_consume_service::getInstance();
+        $this->consumeService = ethos_notification_service::getInstance();
+
+        $this->populateProcessors();
     }
 
-    public function handleNotifications() {
-        $reportRun = new report_run();
+    private function populateProcessors() {
+        $this->processors = array();
+        core_class_finder_service::includeFilesInFolder("processors");
 
-        $reportActions = $this->processNotifications($reportRun);
+        foreach(get_declared_classes() as $class) {
+            $interfaces = class_implements($class);
 
-        $this->reportService->saveReport($reportRun, $reportActions);
+            if (!isset($interfaces['enrol_ethos\processors\base\ethos_consumer']) || !defined($class::RESOURCE_NAME)) {
+                continue;
+            }
+
+            $instance = new $class();
+            if ($instance instanceof obu_processor) {
+                $resourceName = constant($class::RESOURCE_NAME);
+                $this->processors[$resourceName] = $instance;
+            }
+        }
     }
 
     /**
-     * @param report_run $reportRun The report run
-     * @return report_action[] The actions created in the report run
+     * @param int|null $max Maximum number of messages to consume
      */
-    private function processNotifications(report_run $reportRun) : array {
-        $messages = $this->getNotifications($reportRun);
+    public function handleNotifications(?int $max = null) {
+        //$reportRun = new report_run();
 
-        if($messages->isEmpty()){
-            return array();
-        }
+        $this->processNotifications($max); //$reportActions = $this->processNotifications();
 
-        return $this->processingService->process_ethos_updates($reportRun, $messages);
+        //$this->reportService->saveReport($reportRun, $reportActions);
     }
 
-    private function getNotifications(report_run $report): ethos_notifications
-    {
-        $messagesModel = new ethos_notifications();
+    private function processNotifications(?int $max) {
+        $lastProcessId = 0; // TODO : Get last consumed from ethos audit
 
-        $lastConsumedID = $this->reportService->getLastConsumedId();
-        $processedCount = 0;
-
-        do {
-            $messages = $this->consumeService->consumeMessages($lastConsumedID);
-
-            $messagesCount = count($messages);
-            $report->incrementMessagesConsumed($messagesCount);
-
-            foreach ($messages as $message) {
-
-                $lastConsumedID = $message->id;
-
-                $processedCount++;
-
-                if (isset($message->resource)
-                    && isset($message->content)
-                    && isset($message->operation)
-                    && ($message->operation !== 'deleted')) {
-
-                    $messageId = $message->id;
-                    $resourceName = $message->resource->name;
-                    $resourceId = $message->resource->id;
-                    $messageContent = $message->content;
-
-                    switch ($resourceName) {
-                        case 'persons':
-                            $messageModel = new ethos_notification($messageId, $resourceId, $messageContent->id);
-
-                            if($messagesModel->addPerson($messageModel)) {
-                                $report->incrementMessagesProcessed();
-                            }
-                            break;
-                        case 'student-academic-programs':
-                            $messageModel = new ethos_notification($messageId, $resourceId, $messageContent->student->id);
-
-                            if($messagesModel->addStudentAcademicPrograms($messageModel)) {
-                                $report->incrementMessagesProcessed();
-                            }
-                            break;
-                    }
-                }
+        $messages = $this->consumeService->consumeMessages($lastProcessId, $max);
+        foreach($messages->getNotificationGroupKeys() as $messageGroupKey) {
+            if(!array_key_exists($messageGroupKey, $this->processors)) {
+                continue;
             }
-        } while ($messagesCount > 0 && $processedCount < self::PROCESS_LIMIT);
 
-        $report->last_consumed_id = $lastConsumedID;
-
-        return $messagesModel;
+            $processor = $this->processors[$messageGroupKey];
+            foreach($messages->getNotificationsByResource($messageGroupKey) as $message) {
+                $processor->process($message);
+            }
+        }
     }
 }

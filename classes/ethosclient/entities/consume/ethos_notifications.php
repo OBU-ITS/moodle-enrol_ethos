@@ -2,59 +2,46 @@
 namespace enrol_ethos\ethosclient\entities\consume;
 
 class ethos_notifications {
-    /**
-     * @var ethos_notification[]
-     */
-    public array $persons;
-
-    /**
-     * @var ethos_notification[]
-     */
-    public array $studentAcademicPrograms;
 
     public function __construct()
     {
-        $this->persons = array();
-        $this->studentAcademicPrograms = array();
+        $this->notifications = array();
     }
 
-    public function hasPersons() : bool {
-        return count($this->persons) > 0;
+    /**
+     * @var ethos_notification[][]
+     */
+    private array $notifications;
+
+    /**
+     * @return string[]
+     */
+    public function getNotificationGroupKeys() : array {
+        return array_keys($this->notifications);
     }
 
-    public function hasStudentAcademicPrograms() : bool {
-        return count($this->studentAcademicPrograms) > 0;
-    }
-
-    public function isEmpty() : bool {
-        return !($this->hasPersons() || $this->hasStudentAcademicPrograms());
-    }
-
-    public function addPerson(ethos_notification $messageModel) : bool {
-        if (!isset($messageModel->personId)) {
-            return false;
+    /**
+     * @param string $resourceName
+     * @return ethos_notification[]
+     */
+    public function getNotificationsByResource(string $resourceName) : array {
+        if(array_key_exists($resourceName, $this->notifications)) {
+            return $this->notifications[$resourceName];
         }
 
-        if (!in_array($messageModel->personId, array_column($this->persons, 'personId')))
-        {
-            $this->persons[] = $messageModel;
-            return true;
-        }
-
-        return false;
+        return array();
     }
 
-    public function addStudentAcademicPrograms(ethos_notification $messageModel) : bool {
-        if (!isset($messageModel->resourceId)) {
-            return false;
+    /**
+     * @param ethos_notification $notification
+     */
+    public function addNotification(ethos_notification $notification) {
+        if(!array_key_exists($notification->resourceName, $this->notifications)) {
+            $this->notifications[$notification->resourceName] = array();
         }
 
-        if (!in_array($messageModel->resourceId, array_column($this->studentAcademicPrograms, 'resourceId')))
-        {
-            $this->studentAcademicPrograms[] = $messageModel;
-            return true;
+        if(!array_key_exists($notification->resourceId, $this->notifications[$notification->resourceName])) {
+            $this->notifications[$notification->resourceName][$notification->operation . "_" . $notification->resourceId] = $notification;
         }
-
-        return false;
     }
 }
