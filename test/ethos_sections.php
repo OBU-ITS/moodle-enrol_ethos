@@ -1,6 +1,6 @@
 <?php
 
-use enrol_ethos\handlers\sync_module_runs_handler;
+use enrol_ethos\services\sync\obu_sync_section_service;
 
 require_once('../../../config.php');
 require_once($CFG->libdir.'/weblib.php');
@@ -10,8 +10,8 @@ $max = intval($maxStr);
 
 $start = microtime(true);
 $trace = new html_progress_trace();
-$handler = new sync_module_runs_handler($trace);
-$handler->handleSyncAll($max);
+$service = obu_sync_section_service::getInstance();
+$service->syncAll($trace, $max);
 
 $end= microtime(true);
 

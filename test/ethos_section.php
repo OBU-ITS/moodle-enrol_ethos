@@ -1,6 +1,6 @@
 <?php
 
-use enrol_ethos\handlers\sync_module_runs_handler;
+use enrol_ethos\services\sync\obu_sync_section_service;
 
 require_once('../../../config.php');
 require_once($CFG->libdir.'/weblib.php');
@@ -9,8 +9,8 @@ $idQs = $_GET["id"] ?? '52c25d16-b9fe-416f-9d7a-bf4a07b766cf';
 
 $start = microtime(true);
 $trace = new html_progress_trace();
-$handler = new sync_module_runs_handler();
-$handler->handleSync($trace, $idQs);
+$service = obu_sync_section_service::getInstance();
+$service->sync($trace, $idQs);
 
 $end= microtime(true);
 

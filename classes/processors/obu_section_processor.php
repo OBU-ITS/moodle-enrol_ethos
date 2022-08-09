@@ -3,25 +3,25 @@ namespace enrol_ethos\processors;
 
 use enrol_ethos\ethosclient\entities\consume\ethos_notification;
 use enrol_ethos\processors\base\obu_processor;
-use enrol_ethos\services\mdl_course_service;
+use enrol_ethos\services\sync\obu_sync_section_service;
 use progress_trace;
 
 class obu_section_processor implements obu_processor {
     const RESOURCE_NAME = "sections";
 
-    private mdl_course_service $courseService;
+    private obu_sync_section_service $syncService;
 
     private progress_trace $trace;
 
     public function __construct($trace)
     {
-        $this->courseService = mdl_course_service::getInstance();
+        $this->syncService = obu_sync_section_service::getInstance();
 
         $this->trace = $trace;
     }
 
     function process(ethos_notification $message)
     {
-        $this->courseService->reSyncModuleRun($this->trace, $message->id);
+        $this->syncService->sync($this->trace, $message->id);
     }
 }
