@@ -45,7 +45,7 @@ class mdl_course_custom_field_service
         string $type,
         int $displaySize,
         int $maxLength,
-        bool $isVisible) {
+        int $visibility) {
         $fields = $category->get_fields();
         foreach($fields as $field) {
             if($field->get("shortname") == $shortname) {
@@ -58,16 +58,16 @@ class mdl_course_custom_field_service
         $record->shortname = $shortname;
         $record->type = $type;
         $record->categoryid = $category->get("id");
-        $data = json_encode(
-            '"required" => "0",
+        $data = json_encode([
+            "required" => "0",
             "uniquevalues" => "0",
             "defaultvalue" => "",
-            "displaysize" => ' . $displaySize . ',
-            "maxlength" => ' . $maxLength . ',
+            "displaysize" => $displaySize,
+            "maxlength" => $maxLength,
             "ispassword" => "0",
             "link" => "",
             "locked" => "1",
-            "visibility" => "' . $isVisible . '"');
+            "visibility" => "$visibility"]);
         $record->configdata = $data;
 
         $field = field_controller::create(0, $record, $category);
