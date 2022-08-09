@@ -4,6 +4,7 @@ namespace enrol_ethos\handlers;
 use enrol_ethos\ethosclient\services\ethos_notification_service;
 use enrol_ethos\processors\base\obu_processor;
 use enrol_ethos\services\core_class_finder_service;
+use progress_trace;
 
 class ethos_notifications_handler {
 
@@ -14,10 +15,13 @@ class ethos_notifications_handler {
      */
     private array $processors;
 
-    public function __construct()
+    private progress_trace $trace;
+
+    public function __construct($trace)
     {
         $this->consumeService = ethos_notification_service::getInstance();
 
+        $this->trace = $trace;
         $this->populateProcessors();
     }
 
@@ -32,7 +36,7 @@ class ethos_notifications_handler {
                 continue;
             }
 
-            $instance = new $class();
+            $instance = new $class($this->trace);
             if ($instance instanceof obu_processor) {
                 $resourceName = constant($class::RESOURCE_NAME);
                 $this->processors[$resourceName] = $instance;

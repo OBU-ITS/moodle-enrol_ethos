@@ -25,7 +25,7 @@ class synchronise_courses extends \core\task\scheduled_task {
         ini_set('max_execution_time', 3600);
 
         $trace = new text_progress_trace();
-        $handler = new sync_module_runs_handler();
-        $handler->handleSyncAll($trace, 500);
+        $handler = new sync_module_runs_handler($trace);
+        $handler->handleSyncAll(500);
     }
 }

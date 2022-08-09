@@ -10,8 +10,8 @@ $max = intval($maxStr);
 
 $start = microtime(true);
 $trace = new html_progress_trace();
-$handler = new sync_module_runs_handler();
-$handler->handleSyncAll($trace, $max);
+$handler = new sync_module_runs_handler($trace);
+$handler->handleSyncAll($max);
 
 $end= microtime(true);
 

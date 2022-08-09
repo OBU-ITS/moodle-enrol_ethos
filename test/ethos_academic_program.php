@@ -9,8 +9,8 @@ $idQs = $_GET["id"] ?? '52c25d16-b9fe-416f-9d7a-bf4a07b766cf';
 
 $start = microtime(true);
 $trace = new html_progress_trace();
-$handler = new sync_programs_handler();
-$handler->handleSync($trace, $idQs);
+$handler = new sync_programs_handler($trace);
+$handler->handleSync($idQs);
 
 $end = microtime(true);
 

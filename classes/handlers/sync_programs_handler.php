@@ -9,18 +9,22 @@ class sync_programs_handler
 {
     private mdl_course_service $courseService;
 
-    public function __construct()
+    private progress_trace $trace;
+
+    public function __construct($trace)
     {
         $this->courseService = mdl_course_service::getInstance();
+
+        $this->trace = $trace;
     }
 
-    public function handleSync(progress_trace $trace, string $id)
+    public function handleSync(string $id)
     {
-        $this->courseService->reSyncProgram($trace, $id);
+        $this->courseService->reSyncProgram($this->trace, $id);
     }
 
-    public function handleSyncAll(progress_trace $trace, int $max = 0)
+    public function handleSyncAll(int $max = 0)
     {
-        $this->courseService->reSyncAllPrograms($trace, $max);
+        $this->courseService->reSyncAllPrograms($this->trace, $max);
     }
 }
