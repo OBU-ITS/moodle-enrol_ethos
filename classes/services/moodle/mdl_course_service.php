@@ -1,5 +1,5 @@
 <?php
-namespace enrol_ethos\services;
+namespace enrol_ethos\services\moodle;
 
 use enrol_ethos\entities\mdl_course;
 use enrol_ethos\entities\obu_course_hierarchy_info;

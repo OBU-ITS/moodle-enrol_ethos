@@ -2,7 +2,7 @@
 namespace enrol_ethos\services\sync;
 
 use enrol_ethos\entities\obu_course_hierarchy_info;
-use enrol_ethos\services\mdl_course_service;
+use enrol_ethos\services\moodle\mdl_course_service;
 use enrol_ethos\services\obu_program_service;
 use progress_trace;
 
