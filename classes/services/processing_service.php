@@ -7,7 +7,7 @@ use enrol_ethos\entities\reports\report_run;
 use enrol_ethos\ethosclient\service\curriculum_lookup_service;
 use enrol_ethos\ethosclient\service\ethos_person_provider;
 use enrol_ethos\ethosclient\service\ethos_student_academic_program_provider;
-use enrol_ethos\ethosclient\service\messages_model;
+use enrol_ethos\ethosclient\service\ethos_notifications;
 use enrol_ethos\repositories\db_course_category_repository;
 use enrol_ethos\repositories\db_course_repository;
 use enrol_ethos\repositories\db_user_repository;
@@ -16,7 +16,7 @@ class processing_service {
 
     private student_lookup_service $studentLookupService;
     private curriculum_lookup_service $curriculumLookupService;
-    private alternative_credential_service $alternativeCredentialService;
+    private obu_alternative_credential_service $alternativeCredentialService;
     private ethos_person_provider $personService;
     private ethos_student_academic_program_provider $studentAcademicProgramService;
 
@@ -36,7 +36,7 @@ class processing_service {
         $this->personService = ethos_person_provider::getInstance();
         $this->studentAcademicProgramService = ethos_student_academic_program_provider::getInstance();
 
-        $this->alternativeCredentialService = new alternative_credential_service();
+        $this->alternativeCredentialService = new obu_alternative_credential_service();
         $this->studentLookupService = new student_lookup_service($trace);
         $this->curriculumLookupService = new curriculum_lookup_service();
         $this->courseRepository = new db_course_repository($DB);
@@ -102,7 +102,7 @@ class processing_service {
 
 //    /**
 //     * @param report_run $report
-//     * @param message_model[] $persons
+//     * @param ethos_notification[] $persons
 //     * @return report_action[]
 //     */
 //    public function process_person_updates(report_run $report, array $persons) : array {
@@ -129,7 +129,7 @@ class processing_service {
 //
 //        $employeeNumberAlternativeCredentialType = $this->alternativeCredentialService->getEmployeeNumberAlternativeCredentialType();
 //        foreach ($personIds as $personId) {
-//            $person = $this->personService->getPersonById($personId);
+//            $person = $this->personService->get($personId);
 //
 //            if(!$this->alternativeCredentialService->hasAlternativeCredentialOfType($person, $employeeNumberAlternativeCredentialType)) {
 //                continue;
@@ -141,16 +141,16 @@ class processing_service {
 
     /**
      * @param report_run $report
-     * @param messages_model $messagesModel
+     * @param ethos_notifications $messagesModel
      * @return report_action[]
      */
-    public function process_ethos_updates(report_run $report, messages_model $messagesModel) : array {
+    public function process_ethos_updates(report_run $report, ethos_notifications $messagesModel) : array {
         $bannerGuidsFromEthos = array();
 
         $employeeNumberAlternativeCredentialType = $this->alternativeCredentialService->getEmployeeNumberAlternativeCredentialType();
         if(isset($messagesModel->persons) && count($messagesModel->persons) > 0) {
             foreach ($messagesModel->persons as $messageModel) {
-                $person = $this->personService->getPersonById($messageModel->personId);
+                $person = $this->personService->get($messageModel->personId);
                 if(!$this->alternativeCredentialService->hasAlternativeCredentialOfType($person, $employeeNumberAlternativeCredentialType)) {
                     continue;
                 }
@@ -165,7 +165,7 @@ class processing_service {
 
         if(isset($messagesModel->studentAcademicPrograms) && count($messagesModel->studentAcademicPrograms) > 0) {
             foreach ($messagesModel->studentAcademicPrograms as $messageModel) {
-                $studentAcademicProgram = $this->studentAcademicProgramService->getStudentAcademicProgram($messageModel->resourceId);
+                $studentAcademicProgram = $this->studentAcademicProgramService->get($messageModel->resourceId);
                 if(!isset($studentAcademicProgram)
                     || !isset($studentAcademicProgram->obu_SorlcurCactCode)
                     || $studentAcademicProgram->obu_SorlcurCactCode !== 'ACTIVE'
@@ -210,7 +210,7 @@ class processing_service {
         $moodleUsersWithoutMatchingBannerGuid = array();
 
         foreach($bannerGuidsNotInMoodle as $bannerGuid) {
-            $bannerPerson = $this->personService->getPersonById($bannerGuid);
+            $bannerPerson = $this->personService->get($bannerGuid);
             if(!$bannerPerson) {
                 continue;
             }

@@ -4,7 +4,7 @@ namespace enrol_ethos\ethosclient\entities;
 
 use enrol_ethos\ethosclient\providers\ethos_educational_institution_unit_provider;
 
-class ethos_owning_institution_unit_info
+class ethos_section_info_owning_institution_unit
 {
     public function __construct($data)
     {

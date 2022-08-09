@@ -6,10 +6,13 @@ use enrol_ethos\ethosclient\providers\base\ethos_provider;
 
 class ethos_section_provider extends ethos_provider
 {
+    const VERSION = 'v16';
+    const PATH = 'sections';
+
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider('sections', 'v16');
+        $this->prepareProvider(self::PATH, self::VERSION);
     }
 
     private static ?ethos_section_provider $instance = null;
@@ -29,10 +32,24 @@ class ethos_section_provider extends ethos_provider
         return $this->convert($item);
     }
 
+    /**
+     * @param $limit
+     * @param $offset
+     * @return ethos_section_info[]
+     */
+    public function getBatch($limit, $offset) : array {
+        $items = $this->getFromEthos(null, true, $limit, $offset);
+
+        return array_map(array($this, 'convert'), $items);
+    }
+
+    /**
+     * @return ethos_section_info[]
+     */
     public function getAll() : array {
         $items = $this->getFromEthos();
 
-        return array_map('convert', $items);
+        return array_map(array($this, 'convert'), $items);
     }
 
     private function convert(object $item) : ?ethos_section_info {

@@ -1,14 +1,19 @@
 <?php
 namespace enrol_ethos\ethosclient\providers;
 
+use enrol_ethos\ethosclient\entities\ethos_academic_discipline_info;
+use enrol_ethos\ethosclient\entities\ethos_site_info;
 use enrol_ethos\ethosclient\providers\base\ethos_provider;
 
 class ethos_academic_discipline_provider extends ethos_provider
 {
+    const VERSION = 'v15';
+    const PATH = 'academic-disciplines';
+
     private function __construct()
     {
         parent::__construct();
-        $this->prepareProvider('academic-disciplines', 'v15');
+        $this->prepareProvider(self::PATH, self::VERSION);
     }
 
     private static ?ethos_academic_discipline_provider $instance = null;
@@ -22,11 +27,22 @@ class ethos_academic_discipline_provider extends ethos_provider
         return self::$instance;
     }
 
-    public function get($id) : ?object {
-        return $this->getFromEthosById($id);
+    public function get($id) : ?ethos_academic_discipline_info {
+        $item = $this->getFromEthosById($id);
+
+        return $this->convert($item);
     }
 
-    public function getAll() : ?array {
-        return $this->getFromEthos();
+    /**
+     * @return ethos_academic_discipline_info[]
+     */
+    public function getAll() : array {
+        $items = $this->getFromEthos();
+
+        return array_map(array($this, 'convert'), $items);
+    }
+
+    private function convert(object $item) : ?ethos_academic_discipline_info {
+        return new ethos_academic_discipline_info($item);
     }
 }

@@ -48,8 +48,11 @@ abstract class ethos_provider
     }
 
     protected function getFromEthosById(string $id, bool $paged=null, int $maxResults=0) : ?object {
-        if ($valueFromCache = $this->cacheService->getFromCache($this->path, $id)) {
+        if ($this->cacheable && $valueFromCache = $this->cacheService->getFromCache($id, $this->cacheSettings->collection)) {
             return $valueFromCache;
+        }
+        else if(!$this->cacheable) {
+            echo "Not cachable : $this->path <br />";
         }
 
         $result = $this->getFromEthosClient($id, null, $paged, $maxResults);
@@ -61,19 +64,17 @@ abstract class ethos_provider
         return $result;
     }
 
-    protected function getFromEthos(string $urlOverride=null, bool $paged=null, int $maxResults=0) : ?array {
-        $result = $this->getFromEthosClient(null, $urlOverride, $paged, $maxResults);
+    protected function getFromEthos(string $urlOverride=null, bool $paged=null, int $maxResults=0, int $offset=0) : ?array {
+        return $this->getFromEthosClient(null, $urlOverride, $paged, $maxResults, $offset);
 
-        if ($this->cacheable) {
-            foreach ($result as $res) {
-                $this->cacheService->addToCache($res->id, $res, $this->cacheSettings);
-            }
-        }
-
-        return $result;
+//        if ($this->cacheable) {
+//            foreach ($result as $res) {
+//                $this->cacheService->addToCache($res->id, $res, $this->cacheSettings);
+//            }
+//        }
     }
 
-    private function getFromEthosClient(string $id=null, string $urlOverride=null, bool $paged=null, int $maxResults=0)
+    private function getFromEthosClient(string $id=null, string $urlOverride=null, bool $paged=null, int $maxResults=0, int $offset=0)
     {
         $url = $urlOverride ?: ethos_client::API_URL . "/api/" . $this->path;
 
@@ -88,6 +89,6 @@ abstract class ethos_provider
 
         return !$paged
             ? $this->ethosClient->getJson($url, $this->acceptHeader)
-            : $this->ethosClient->getJson($url, $this->acceptHeader,$maxResults,500);
+            : $this->ethosClient->getJson($url, $this->acceptHeader,$maxResults,500, $offset);
     }
 }

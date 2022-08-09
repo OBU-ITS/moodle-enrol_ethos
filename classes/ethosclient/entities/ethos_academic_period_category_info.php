@@ -45,7 +45,12 @@ class ethos_academic_period_category_info
         $this->type = $data->type;
 
         if (isset($data->parent)) {
-            $this->setParentId($data->parent->id);
+            if (isset($data->parent->academicPeriod)) {
+                $this->setParentId($data->parent->academicPeriod->id);
+            }
+            else {
+                $this->setParentId($data->parent->id);
+            }
         }
     }
 

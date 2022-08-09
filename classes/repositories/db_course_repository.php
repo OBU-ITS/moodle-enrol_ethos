@@ -1,10 +1,10 @@
 <?php
 namespace enrol_ethos\repositories;
-use enrol_ethos\entities\course as course;
+use enrol_ethos\entities\mdl_course;
 
 require_once($CFG->dirroot.'/course/lib.php');
 
-class db_course_repository implements \enrol_ethos\interfaces\course_repository_interface
+class db_course_repository
 {
     protected $db;
 
@@ -30,10 +30,11 @@ class db_course_repository implements \enrol_ethos\interfaces\course_repository_
     }
 
 
-    public function update(course $course) {
+    public function update(mdl_course $course) {
         $moodleCourse = $this->convertToMoodleCourse($course);
 
         $moodleCourse->timemodified = time();
+
         $moodleCourse->id = $course->id;
 
         try {
@@ -46,8 +47,8 @@ class db_course_repository implements \enrol_ethos\interfaces\course_repository_
         return true;
     }
 
-    public function create(course $course)
-    {        
+    public function create(mdl_course $course)
+    {
         $status = true;
         $logline = '';
         $moodleCourse = $this->convertToMoodleCourse($course);
@@ -60,13 +61,13 @@ class db_course_repository implements \enrol_ethos\interfaces\course_repository_
     }
 
     private function convertFromMoodleCourse($dbCourse) {
-        $course = new course( 
-            $dbCourse->idnumber, 
-            $dbCourse->shortname, 
-            $dbCourse->fullname, 
-            $dbCourse->category, 
+        $course = new mdl_course(
+            $dbCourse->idnumber,
+            $dbCourse->shortname,
+            $dbCourse->fullname,
+            $dbCourse->category,
             $dbCourse->id,
-            $dbCourse->startdate, 
+            $dbCourse->startdate,
             $dbCourse->enddate,
             false, //meta - todo
             $dbCourse->visible
@@ -75,7 +76,7 @@ class db_course_repository implements \enrol_ethos\interfaces\course_repository_
         return $course;
     }
 
-    private function convertToMoodleCourse(course $course) {
+    private function convertToMoodleCourse(mdl_course $course) {
         $moodlecourse = new \stdClass();
 
         if (empty($course->enddate)) {
@@ -86,15 +87,14 @@ class db_course_repository implements \enrol_ethos\interfaces\course_repository_
         }
         // Set some preferences.
         $logline = 'Using hard-coded settings:';
-        $moodlecourse->format               = 'topics';
-        $moodlecourse->numsections          = 6;
-        $moodlecourse->hiddensections       = 0;
+        //$moodlecourse->format               = 'topics';
+        //$moodlecourse->numsections          = 6;
+        //$moodlecourse->hiddensections       = 0;
         $moodlecourse->newsitems            = 3;
         $moodlecourse->showgrades           = 1;
         $moodlecourse->showreports          = 1;
-    
+
         $moodlecourse->idnumber = $course->idnumber;
-        //$moodleCourse->id = $course->id;
         $moodlecourse->shortname = $course->shortname;
         $moodlecourse->fullname = $course->name;
         $moodlecourse->startdate = $course->startdate;
@@ -105,7 +105,7 @@ class db_course_repository implements \enrol_ethos\interfaces\course_repository_
         return $moodlecourse;
     }
 
-    public function remove(course $course)
+    public function remove(mdl_course $course)
     {
         // Remove the $user
         // from the 'users' table

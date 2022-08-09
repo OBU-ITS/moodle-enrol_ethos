@@ -1,9 +1,9 @@
 <?php
 namespace enrol_ethos\entities;
 
-class course {
+class mdl_course {
     public $idnumber;
-    public $id;
+    public ?int $id;
     public $name;
     public $shortname;
     public $catid;
@@ -11,9 +11,10 @@ class course {
     public $startdate;
     public $enddate;
     public $visible;
+    public $bannerId = "";
 
     public function __construct(
-        $idnumber, $shortname, $name, $catid, 
+        $idnumber, $shortname, $name, $catid = '',
             $id = null, $startdate = 0, $enddate = 0, $meta=false, $visible=false)
     {
         $this->idnumber = $idnumber;

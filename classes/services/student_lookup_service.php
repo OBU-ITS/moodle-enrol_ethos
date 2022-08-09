@@ -72,7 +72,7 @@ class student_lookup_service {
 
     public function lookupStudentFromPersonId($bannerId) {
 
-        $person = $this->personService->getPersonById($bannerId);
+        $person = $this->personService->get($bannerId);
 
         return $this->lookupStudent($person);
     }
@@ -331,13 +331,13 @@ class student_lookup_service {
     }
 
 
-//    public function getStudentsWithChanges($lastProcessedID = 0, $maxProcessedID = 0, $processLimit = 4000): messages_model
+//    public function getStudentsWithChanges($lastProcessedID = 0, $maxProcessedID = 0, $processLimit = 4000): ethos_notifications
 //    {
 //        $this->log("Ethos consume started.");
 //
 //        $time_start = microtime(true);
 //
-//        $messagesModel = new messages_model();
+//        $messagesModel = new ethos_notifications();
 //        $processedCount = 0;
 //        $maxProcessedIdReached = false;
 //
@@ -374,16 +374,16 @@ class student_lookup_service {
 //                    switch ($resourceName) {
 //                        case 'persons':
 //                        case 'person-holds':
-//                            $messageModel = new message_model($messageId, $resourceId, $messageContent->id);
+//                            $messageModel = new ethos_notification($messageId, $resourceId, $messageContent->id);
 //                            $messagesModel->addPerson($messageModel);
 //                            break;
 //                        case 'student-academic-period-profiles':
 //                        case 'students':
 //                            // TODO : Implement student update
-//                            // $messageModel = new message_model($messageId, $resourceId, $messageContent->person->id);
+//                            // $messageModel = new ethos_notification($messageId, $resourceId, $messageContent->person->id);
 //                            break;
 //                        case 'student-academic-programs':
-//                            $messageModel = new message_model($messageId, $resourceId, $messageContent->student->id);
+//                            $messageModel = new ethos_notification($messageId, $resourceId, $messageContent->student->id);
 //                            $messagesModel->addStudentAcademicPrograms($messageModel);
 //                            break;
 //                    }

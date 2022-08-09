@@ -7,6 +7,7 @@ use enrol_ethos\ethosclient\providers\ethos_academic_period_provider;
 use enrol_ethos\ethosclient\providers\ethos_course_provider;
 use enrol_ethos\ethosclient\providers\ethos_site_provider;
 use enrol_ethos\ethosclient\services\ethos_owning_institution_unit_service;
+use enrol_ethos\ethosclient\services\ethos_section_title_service;
 
 class ethos_section_info
 {
@@ -21,7 +22,6 @@ class ethos_section_info
     public string $number;
     public string $startOn; // required
     public string $endOn;
-    public string $instructionalDeliveryMethod;
 
     // Single references
     private string $courseId;  // required
@@ -87,10 +87,17 @@ class ethos_section_info
     public function getAcademicLevelIds() : array {
         return $this->academicLevelIds;
     }
-    public function setAcademicLevelIds(array $ids) {
-        $this->academicLevelIds = $ids;
+    public function setAcademicLevelIds(array $objs) {
+        $this->academicLevelIds = array();
+        foreach($objs as $obj) {
+            $this->academicLevelIds[] = $obj->id;
+        }
         $this->academicLevels = null;
     }
+
+    /**
+     * @return ethos_academic_level_info[]
+     */
     public function getAcademicLevels() : array
     {
         if(!$this->academicLevels) {
@@ -104,8 +111,10 @@ class ethos_section_info
         return $this->academicLevels;
     }
 
+    //multiple objects
+
     /**
-     * @var ethos_owning_institution_unit_info[]
+     * @var ethos_section_info_owning_institution_unit[]
      */
     public array $owningInstitutionUnits;
 
@@ -116,14 +125,30 @@ class ethos_section_info
     {
         $service = ethos_owning_institution_unit_service::getInstance();
 
-        $this->owningInstitutionUnits[] = array();
+        $this->owningInstitutionUnits = array();
         foreach($owningInstitutionUnitObjs as $owningInstitutionUnitObj) {
             $this->owningInstitutionUnits[] = $service->get($owningInstitutionUnitObj);
         }
     }
 
-    // TODO : Joe
-    public array $titleIds;
+    //multiple objects
+    /**
+     * @var ethos_section_info_title[]
+     */
+    public array $titles;
+
+    /**
+     * @param object[] $titleObjs
+     */
+    private function setTitles(array $titleObjs)
+    {
+        $service = ethos_section_title_service::getInstance();
+
+        $this->titles = array();
+        foreach($titleObjs as $titleObj) {
+            $this->titles[] = $service->get($titleObj);
+        }
+    }
 
     public function populateObject(object $data) {
         if(!isset($data)) {
@@ -135,8 +160,9 @@ class ethos_section_info
         $this->number = $data->number;
         $this->startOn = $data->startOn;
         $this->endOn = $data->endOn;
-        $this->instructionalDeliveryMethod = $data->instructionalDeliveryMethod; // TODO : Check
+        $this->setAcademicLevelIds($data->academicLevels);
         $this->setOwningInstitutionUnits($data->owningInstitutionUnits);
+        $this->setTitles($data->titles);
 
         if(isset($data->course)) {
             $this->setCourseId($data->course->id);
