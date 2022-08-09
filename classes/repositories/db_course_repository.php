@@ -29,6 +29,19 @@ class db_course_repository
         }
     }
 
+    public function getAllCoursesWithCustomFieldData(string $profileFieldShortName, string $profileFieldValue = null) {
+        $sql  = 'select c.* ';
+        $sql .= 'from {course} c ';
+        $sql .= 'join {customfield_data} cd on c.id = cd.instanceid ';
+        $sql .= 'join {customfield_field} cf on cd.fieldid = cf.id ';
+        $sql .= 'join {customfield_category} cc on cf.categoryid = cc.id ';
+        $sql .=  'where cc.component = \'core_course\' AND cc.area = \'course\' AND cf.shortname = :shortname';
+        if ($profileFieldValue) {
+            $sql .=  ' AND cd.value = :value';
+        }
+
+        return $this->db->get_records_sql($sql, ['shortname' => $profileFieldShortName, 'value' => $profileFieldValue]);
+    }
 
     public function update(mdl_course $course) {
         $moodleCourse = $this->convertToMoodleCourse($course);

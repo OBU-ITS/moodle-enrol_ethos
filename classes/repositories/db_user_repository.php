@@ -184,10 +184,10 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
         $sql .= 'join {user_info_field} uif on uind.fieldid = uif.id ';
         $sql .=  'where uif.shortname = :shortname';
         if ($profileFieldValue) {
-            $sql .=  'and uind.data = :value';
+            $sql .=  ' and uind.data = :value';
         }
         if ($authType) {
-            $sql .=  'and u.auth = :authtype ';
+            $sql .=  ' and u.auth = :authtype ';
         }
 
         return $this->db->get_records_sql($sql, ['shortname' => $profileFieldShortName, 'value' => $profileFieldValue, 'authtype' => $authType]);
