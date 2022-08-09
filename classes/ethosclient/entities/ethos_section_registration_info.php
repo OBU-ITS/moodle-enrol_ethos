@@ -2,7 +2,9 @@
 
 namespace enrol_ethos\ethosclient\entities;
 
-use enrol_ethos\ethosclient\providers\ethos_section_registration_provider;
+use enrol_ethos\ethosclient\providers\ethos_person_provider;
+use enrol_ethos\ethosclient\providers\ethos_section_provider;
+
 
 class ethos_section_registration_info
 {
@@ -16,7 +18,7 @@ class ethos_section_registration_info
     public string $sectionRegistrationStatusReason;
 
     private string $registrantId;  // required
-    private ?ethos_section_registration_info $registrant = null;
+    private ?ethos_person_info $registrant = null;
     public function getRegistrantId() : string {
         return $this->registrantId;
     }
@@ -24,10 +26,10 @@ class ethos_section_registration_info
         $this->registrantId = $id;
         $this->registrant = null;
     }
-    public function getRegistrant() : ethos_section_registration_info
+    public function getRegistrant() : ethos_person_info
     {
         if(!$this->registrant) {
-            $provider = ethos_section_registration_provider::getInstance();
+            $provider = ethos_person_provider::getInstance();
             $this->registrant = $provider->get($this->registrantId);
         }
 
@@ -35,7 +37,7 @@ class ethos_section_registration_info
     }
 
     private string $sectionId;  // required
-    private ?ethos_section_registration_info $section = null;
+    private ?ethos_section_info $section = null;
     public function getSectionId() : string {
         return $this->sectionId;
     }
@@ -43,10 +45,10 @@ class ethos_section_registration_info
         $this->sectionId = $id;
         $this->section = null;
     }
-    public function getSection() : ethos_section_registration_info
+    public function getSection() : ethos_section_info
     {
         if(!$this->section) {
-            $provider = ethos_section_registration_provider::getInstance();
+            $provider = ethos_section_provider::getInstance();
             $this->section = $provider->get($this->sectionId);
         }
 
