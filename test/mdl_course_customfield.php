@@ -7,6 +7,7 @@ require_once('../../../config.php');
 require_once($CFG->libdir.'/weblib.php');
 
 $service = mdl_course_custom_field_service::getInstance();
-$category = $service->ensureCustomFieldCategory("Test 2");
 
-$service->ensureCustomField($category, "Test field", "test_field_1", PARAM_TEXT, 50, 200, course_handler::NOTVISIBLE);
+$category = $service->ensureCustomFieldCategory("Test");
+
+$service->ensureCustomField($category, "Test field", "test_field_2", PARAM_TEXT, 50, 200, course_handler::NOTVISIBLE);

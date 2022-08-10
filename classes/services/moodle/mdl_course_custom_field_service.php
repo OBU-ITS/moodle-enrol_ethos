@@ -58,16 +58,34 @@ class mdl_course_custom_field_service
         $record->shortname = $shortname;
         $record->type = $type;
         $record->categoryid = $category->get("id");
-        $data = json_encode([
-            "required" => "0",
-            "uniquevalues" => "0",
-            "defaultvalue" => "",
-            "displaysize" => $displaySize,
-            "maxlength" => $maxLength,
-            "ispassword" => "0",
-            "link" => "",
-            "locked" => "1",
-            "visibility" => "$visibility"]);
+        switch ($type) {
+            case "text":
+                $data = json_encode([
+                    "required" => "0",
+                    "uniquevalues" => "0",
+                    "defaultvalue" => "",
+                    "displaysize" => $displaySize,
+                    "maxlength" => $maxLength,
+                    "ispassword" => "0",
+                    "link" => "",
+                    "locked" => "1",
+                    "visibility" => "$visibility"]);
+                break;
+            case "date":
+                $data = json_encode([
+                    "required" => "0",
+                    "uniquevalues" => "0",
+                    "includetime" => "0",
+                    "mindate" => "0",
+                    "maxdate" => "0",
+                    "locked" => "1",
+                    "visibility" => "$visibility"]);
+                break;
+            default:
+                $data = "";
+                break;
+        }
+
         $record->configdata = $data;
 
         $field = field_controller::create(0, $record, $category);

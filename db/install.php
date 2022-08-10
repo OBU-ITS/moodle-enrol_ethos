@@ -24,7 +24,6 @@
  */
 
 use enrol_ethos\managers\obu_additional_field_manager;
-use enrol_ethos\services\moodle\mdl_course_custom_field_service;
 
 defined('MOODLE_INTERNAL') || die();
 
