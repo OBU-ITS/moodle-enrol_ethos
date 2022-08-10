@@ -57,7 +57,7 @@ class mdl_course_service
 
         if($course)
         {
-            if($updatedCourse = $this->getUpdatedCourse($trace, $course, $data))
+            if($updatedCourse = $this->getUpdatedCourse($course, $data))
             {
                 $this->courseRepo->update($updatedCourse);
                 $trace->output("Course updated : $data->name ($data->idnumber) ($data->bannerId)");
@@ -69,7 +69,7 @@ class mdl_course_service
         }
     }
 
-    private function getUpdatedCourse(progress_trace $trace, mdl_course $currentCourse, mdl_course $newCourse) {
+    private function getUpdatedCourse(mdl_course $currentCourse, mdl_course $newCourse) {
         $hasChanges = false;
 
         if(strval($currentCourse->idnumber) !== $newCourse->idnumber) {
@@ -88,7 +88,6 @@ class mdl_course_service
         }
 
         if(strval($currentCourse->catid) !== strval($newCourse->catid)) {
-            $trace->output("$currentCourse->catid ! = $newCourse->catid");
             $currentCourse->catid = $newCourse->catid;
             $hasChanges = true;
         }
