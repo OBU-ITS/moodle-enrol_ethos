@@ -23,7 +23,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use \enrol_ethos\db\obu\obu_additional_field_manager;
+use enrol_ethos\services\obu_additional_field_service;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -33,7 +33,7 @@ defined('MOODLE_INTERNAL') || die();
 
 function xmldb_enrol_ethos_install() {
 
-    $manager = obu_additional_field_manager::GetInstance();
+    $manager = obu_additional_field_service::GetInstance();
     $manager->ensureAdditionalFields();
 
     return true;

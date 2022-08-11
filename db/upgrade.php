@@ -33,7 +33,7 @@
  * using the functions defined in lib/ddllib.php
  */
 
-use \enrol_ethos\db\obu\obu_additional_field_manager;
+use enrol_ethos\services\obu_additional_field_service;
 
 function xmldb_enrol_ethos_upgrade($oldversion) {
 
@@ -41,7 +41,7 @@ function xmldb_enrol_ethos_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
-    $manager = obu_additional_field_manager::GetInstance();
+    $manager = obu_additional_field_service::GetInstance();
     $manager->ensureAdditionalFields();
 
     if($oldversion < 2022060901) {
