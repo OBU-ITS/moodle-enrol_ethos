@@ -11,6 +11,7 @@ class obu_staff_service
 {
     private ethos_person_provider $personProvider;
     private obu_alternative_credential_service $alternativeCredentialService;
+    private obu_person_name_service $personNameService;
 
     private ethos_alternative_credential_type_info $employeeAlternativeCredentialType;
 
@@ -18,6 +19,7 @@ class obu_staff_service
     {
         $this->personProvider = ethos_person_provider::getInstance();
         $this->alternativeCredentialService = obu_alternative_credential_service::getInstance();
+        $this->personNameService = obu_person_name_service::getInstance();
 
         $this->employeeAlternativeCredentialType = $this->alternativeCredentialService->getEmployeeNumberAlternativeCredentialType();
     }
@@ -79,7 +81,14 @@ class obu_staff_service
             return;
         }
 
+        $username = $this->personNameService->getUserName($person->credentials);
+        $officialName = $this->personNameService->getOfficialName($person->names);
+
         $user = new mdl_user();
+        $user->username = $username;
+        $user->firstname = $officialName->firstName;
+        $user->lastname = $officialName->lastName;
+        $user->email = $username . 'brookes.ac.uk';
 
         $users->addUser($user);
     }
