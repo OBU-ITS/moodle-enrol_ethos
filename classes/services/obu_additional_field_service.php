@@ -1,14 +1,13 @@
 <?php
 
-namespace enrol_ethos\managers;
+namespace enrol_ethos\services;
 
 use core_course\customfield\course_handler;
 use enrol_ethos\repositories\db_profile_category_repository;
 use enrol_ethos\repositories\db_profile_field_repository;
 use enrol_ethos\services\moodle\mdl_course_custom_field_service;
-use enrol_ethos\services\profile_field_service;
 
-class obu_additional_field_manager
+class obu_additional_field_service
 {
     private mdl_course_custom_field_service $courseCustomFieldService;
     private profile_field_service $profileFieldService;
@@ -24,8 +23,8 @@ class obu_additional_field_manager
         $this->profileFieldService = new profile_field_service($profileFieldRepository, $profileCategoryRepository);
     }
 
-    private static ?obu_additional_field_manager $instance = null;
-    public static function getInstance() : obu_additional_field_manager
+    private static ?obu_additional_field_service $instance = null;
+    public static function getInstance() : obu_additional_field_service
     {
         if (self::$instance == null)
         {
