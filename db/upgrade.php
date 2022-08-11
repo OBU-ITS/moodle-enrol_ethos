@@ -33,7 +33,7 @@
  * using the functions defined in lib/ddllib.php
  */
 
-use enrol_ethos\managers\obu_additional_field_manager;
+use \enrol_ethos\db\obu\obu_additional_field_manager;
 
 function xmldb_enrol_ethos_upgrade($oldversion) {
 

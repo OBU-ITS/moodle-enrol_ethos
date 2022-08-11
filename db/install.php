@@ -23,7 +23,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use enrol_ethos\managers\obu_additional_field_manager;
+use \enrol_ethos\db\obu\obu_additional_field_manager;
 
 defined('MOODLE_INTERNAL') || die();
 
