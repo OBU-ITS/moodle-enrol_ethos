@@ -70,6 +70,18 @@ class ethos_person_provider extends ethos_provider
         return array_map(array($this, 'convert'), $items);
     }
 
+
+    /**
+     * @param $limit
+     * @param $offset
+     * @return ethos_person_info[]
+     */
+    public function getBatch($limit, $offset) : array {
+        $items = $this->getFromEthos(null, true, $limit, $offset);
+
+        return array_map(array($this, 'convert'), $items);
+    }
+
     /**
      * @return ethos_person_info[]
      */

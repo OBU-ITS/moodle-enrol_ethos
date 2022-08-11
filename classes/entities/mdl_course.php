@@ -12,6 +12,7 @@ class mdl_course {
     public $enddate;
     public $visible;
     public $bannerId = "";
+    public mdl_course_custom_fields $customFields;
 
     public function __construct(
         $idnumber, $shortname, $name, $catid = '',

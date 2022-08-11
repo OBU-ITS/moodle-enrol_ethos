@@ -3,24 +3,19 @@
 namespace enrol_ethos\services;
 
 use core_course\customfield\course_handler;
-use enrol_ethos\repositories\db_profile_category_repository;
-use enrol_ethos\repositories\db_profile_field_repository;
 use enrol_ethos\services\moodle\mdl_course_custom_field_service;
+use enrol_ethos\services\moodle\mdl_user_profile_field_service;
 
 class obu_additional_field_service
 {
+
     private mdl_course_custom_field_service $courseCustomFieldService;
-    private profile_field_service $profileFieldService;
+    private mdl_user_profile_field_service $userProfileFieldService;
 
     private function __construct()
     {
-        global $DB;
-
         $this->courseCustomFieldService = mdl_course_custom_field_service::getInstance();
-
-        $profileFieldRepository = new db_profile_field_repository($DB);
-        $profileCategoryRepository = new db_profile_category_repository($DB);
-        $this->profileFieldService = new profile_field_service($profileFieldRepository, $profileCategoryRepository);
+        $this->userProfileFieldService = mdl_user_profile_field_service::getInstance();
     }
 
     private static ?obu_additional_field_service $instance = null;
@@ -90,8 +85,12 @@ class obu_additional_field_service
     }
 
     private function ensureUserFields() {
-        // TODO : Revise this
-        $this->profileFieldService->addDefaultCategory();
-        $this->profileFieldService->addDefaultFields();
+        global $CFG;
+        require_once($CFG->dirroot . '/user/profile/lib.php');
+
+        $category = $this->userProfileFieldService->ensureCustomFieldCategory("Test name");
+        $this->userProfileFieldService->ensureCustomField($category, "Display Name", "short_name_1", "text", 30, 200, PROFILE_VISIBLE_TEACHERS);
+        $this->userProfileFieldService->ensureCustomField($category, "Display Name", "short_name_1", "datetime", 30, 200, PROFILE_VISIBLE_NONE);
+
     }
 }

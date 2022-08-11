@@ -147,21 +147,21 @@ class processing_service {
     public function process_ethos_updates(report_run $report, ethos_notifications $messagesModel) : array {
         $bannerGuidsFromEthos = array();
 
-        $employeeNumberAlternativeCredentialType = $this->alternativeCredentialService->getEmployeeNumberAlternativeCredentialType();
-        if(isset($messagesModel->persons) && count($messagesModel->persons) > 0) {
-            foreach ($messagesModel->persons as $messageModel) {
-                $person = $this->personService->get($messageModel->personId);
-                if(!$this->alternativeCredentialService->hasAlternativeCredentialOfType($person, $employeeNumberAlternativeCredentialType)) {
-                    continue;
-                }
-
-                if (in_array($messageModel->personId, $bannerGuidsFromEthos)) {
-                    continue;
-                }
-
-                $bannerGuidsFromEthos[] = $messageModel->personId;
-            }
-        }
+//        $employeeNumberAlternativeCredentialType = $this->alternativeCredentialService->getEmployeeNumberAlternativeCredentialType();
+//        if(isset($messagesModel->persons) && count($messagesModel->persons) > 0) {
+//            foreach ($messagesModel->persons as $messageModel) {
+//                $person = $this->personService->get($messageModel->personId);
+//                if(!$this->alternativeCredentialService->hasAlternativeCredentialOfType($person, $employeeNumberAlternativeCredentialType)) {
+//                    continue;
+//                }
+//
+//                if (in_array($messageModel->personId, $bannerGuidsFromEthos)) {
+//                    continue;
+//                }
+//
+//                $bannerGuidsFromEthos[] = $messageModel->personId;
+//            }
+//        }
 
         if(isset($messagesModel->studentAcademicPrograms) && count($messagesModel->studentAcademicPrograms) > 0) {
             foreach ($messagesModel->studentAcademicPrograms as $messageModel) {

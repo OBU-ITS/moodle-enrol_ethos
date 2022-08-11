@@ -24,7 +24,6 @@ class mdl_course_custom_field_service
         return self::$instance;
     }
 
-
     public function ensureCustomFieldCategory($name) : category_controller {
         $categories = $this->handler->get_categories_with_fields();
         foreach($categories as $category) {

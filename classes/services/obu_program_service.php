@@ -33,14 +33,25 @@ class obu_program_service
         return self::$instance;
     }
 
+    /**
+     * @param obu_course_hierarchy_info $hierarchy
+     * @param string $id
+     */
     public function get(obu_course_hierarchy_info $hierarchy, string $id) {
         $program = $this->academicProgramProvider->get($id);
 
         $this->addProgramToHierarchy($hierarchy, $program);
     }
 
+    /**
+     * @param obu_course_hierarchy_info $hierarchy
+     * @param $limit
+     * @param $offset
+     * @return int
+     */
     public function getBatch(obu_course_hierarchy_info $hierarchy, $limit, $offset) : int {
         $programs = $this->academicProgramProvider->getBatch($limit, $offset);
+
         array_map(function($program) use ($hierarchy) {
              $this->addProgramToHierarchy($hierarchy, $program);
         }, $programs);
