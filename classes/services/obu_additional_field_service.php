@@ -65,23 +65,24 @@ class obu_additional_field_service
         $visibleCourseCategory = $this->courseCustomFieldService->ensureCustomFieldCategory("Section Data");
         $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Code", "section_code", \customfield_text\field_controller::TYPE, 50, 200, course_handler::VISIBLETOTEACHERS);
         $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Level", "section_level", \customfield_text\field_controller::TYPE, 50, 200, course_handler::VISIBLETOTEACHERS);
-        $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Level Id", "section_level_guid", \customfield_text\field_controller::TYPE, 50, 200, course_handler::VISIBLETOTEACHERS);
         $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Academic Year", "section_academic_year", \customfield_text\field_controller::TYPE, 50, 200, course_handler::VISIBLETOTEACHERS);
         $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Term", "section_term", \customfield_text\field_controller::TYPE, 50, 200, course_handler::VISIBLETOTEACHERS);
         $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Part Term", "section_pterm", \customfield_text\field_controller::TYPE, 50, 200, course_handler::VISIBLETOTEACHERS);
-        $this->courseCustomFieldService->ensureCustomField($hiddenCourseCategory, "Start Date", "section_start_date", \customfield_date\field_controller::TYPE, 0, 0, course_handler::VISIBLETOTEACHERS);
-        $this->courseCustomFieldService->ensureCustomField($hiddenCourseCategory, "End Date", "section_end_date", \customfield_date\field_controller::TYPE, 0, 0, course_handler::VISIBLETOTEACHERS);
-        $this->courseCustomFieldService->ensureCustomField($hiddenCourseCategory, "Archive Date", "section_archive_date", \customfield_date\field_controller::TYPE, 0, 0, course_handler::VISIBLETOTEACHERS);
+        $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Start Date", "section_start_date", \customfield_date\field_controller::TYPE, 0, 0, course_handler::VISIBLETOTEACHERS);
+        $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "End Date", "section_end_date", \customfield_date\field_controller::TYPE, 0, 0, course_handler::VISIBLETOTEACHERS);
+        $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Archive Date", "section_archive_date", \customfield_date\field_controller::TYPE, 0, 0, course_handler::VISIBLETOTEACHERS);
         $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Run", "section_run", \customfield_text\field_controller::TYPE, 50, 200, course_handler::VISIBLETOTEACHERS);
         $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Owning Institution Units", "section_owningInstitutionUnits", \customfield_text\field_controller::TYPE, 50, 200, course_handler::VISIBLETOTEACHERS);
         $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Site Code", "section_site_code", \customfield_text\field_controller::TYPE, 50, 200, course_handler::VISIBLETOTEACHERS);
 
         $hiddenCourseCategory = $this->courseCustomFieldService->ensureCustomFieldCategory("Section Data (Hidden)");
         $this->courseCustomFieldService->ensureCustomField($hiddenCourseCategory, "Academic Year Id", "section_academic_year_guid", \customfield_text\field_controller::TYPE, 50, 200, course_handler::NOTVISIBLE);
-        $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Term Id", "section_term_guid", \customfield_text\field_controller::TYPE, 50, 200, course_handler::NOTVISIBLE);
-        $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Part Term Id", "section_pterm_guid", \customfield_text\field_controller::TYPE, 50, 200, course_handler::NOTVISIBLE);
-        $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Owning Institution Units Ids", "section_owningInstitutionUnits_guids", \customfield_text\field_controller::TYPE, 50, 200, course_handler::NOTVISIBLE);
-        $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Site Id", "section_site_guid", \customfield_text\field_controller::TYPE, 50, 200, course_handler::NOTVISIBLE);
+        $this->courseCustomFieldService->ensureCustomField($hiddenCourseCategory, "Term Id", "section_term_guid", \customfield_text\field_controller::TYPE, 50, 200, course_handler::NOTVISIBLE);
+        $this->courseCustomFieldService->ensureCustomField($hiddenCourseCategory, "Part Term Id", "section_pterm_guid", \customfield_text\field_controller::TYPE, 50, 200, course_handler::NOTVISIBLE);
+        $this->courseCustomFieldService->ensureCustomField($hiddenCourseCategory, "Owning Institution Units Ids", "section_owningInstitutionUnits_guids", \customfield_text\field_controller::TYPE, 50, 200, course_handler::NOTVISIBLE);
+        $this->courseCustomFieldService->ensureCustomField($hiddenCourseCategory, "Site Id", "section_site_guid", \customfield_text\field_controller::TYPE, 50, 200, course_handler::NOTVISIBLE);
+        $this->courseCustomFieldService->ensureCustomField($hiddenCourseCategory, "Level Id", "section_level_guid", \customfield_text\field_controller::TYPE, 50, 200, course_handler::NOTVISIBLE);
+
     }
 
     private function ensureUserFields() {
