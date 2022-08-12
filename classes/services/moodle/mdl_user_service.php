@@ -2,6 +2,8 @@
 namespace enrol_ethos\services\moodle;
 
 use enrol_ethos\entities\mdl_user_profile;
+use enrol_ethos\entities\obu_users_info;
+use progress_trace;
 
 class mdl_user_service
 {
@@ -21,5 +23,9 @@ class mdl_user_service
 
     public function getCustomData(int $id) : mdl_user_profile {
         return new mdl_user_profile(); // TODO
+    }
+
+    public function handleUserCreation(progress_trace $trace, obu_users_info $users) {
+        // TODO : Joe
     }
 }

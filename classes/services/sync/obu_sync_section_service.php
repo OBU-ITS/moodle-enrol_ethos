@@ -40,7 +40,6 @@ class obu_sync_section_service
         $this->courseService->handleCourseCreation($trace, $hierarchy);
     }
 
-
     public function syncAll(progress_trace $trace, int $max = 0) {
         $offset = 0;
         $totalResults = 0;
