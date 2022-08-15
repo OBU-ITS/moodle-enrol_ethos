@@ -13,21 +13,20 @@ class mdl_user
 
     public function __construct()
     {
-
     }
 
-    private ?mdl_user_profile $profile;
+    private ?mdl_user_profile $customData;
     public function getCustomData() : mdl_user_profile{
-        if(!isset($this->profile)) {
+        if(!isset($this->customData)) {
             if($this->id > 0) {
                 $service = mdl_user_service::getInstance();
-                $this->profile = $service->getCustomData($this->id);
+                $this->customData = $service->getCustomData($this->id);
             }
             else {
-                $this->profile = new mdl_user_profile();
+                $this->customData = new mdl_user_profile();
             }
         }
 
-        return $this->profile;
+        return $this->customData;
     }
 }

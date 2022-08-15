@@ -2,6 +2,7 @@
 namespace enrol_ethos\services\moodle;
 
 use enrol_ethos\entities\mdl_course;
+use enrol_ethos\entities\mdl_course_custom_fields;
 use enrol_ethos\entities\obu_course_hierarchy_info;
 use enrol_ethos\repositories\db_course_repository;
 use progress_trace;
@@ -129,5 +130,10 @@ class mdl_course_service
         }
 
         return false;
+    }
+
+    public function getCustomData(int $id) : mdl_course_custom_fields {
+
+        return new mdl_course_custom_fields(); // TODO
     }
 }
