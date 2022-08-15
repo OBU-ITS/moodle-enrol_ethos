@@ -10,18 +10,12 @@ use enrol_ethos\ethosclient\providers\ethos_person_provider;
 class obu_staff_service
 {
     private ethos_person_provider $personProvider;
-    private obu_alternative_credential_service $alternativeCredentialService;
     private obu_person_name_service $personNameService;
-
-    private ethos_alternative_credential_type_info $employeeAlternativeCredentialType;
 
     private function __construct()
     {
         $this->personProvider = ethos_person_provider::getInstance();
-        $this->alternativeCredentialService = obu_alternative_credential_service::getInstance();
         $this->personNameService = obu_person_name_service::getInstance();
-
-        $this->employeeAlternativeCredentialType = $this->alternativeCredentialService->getEmployeeNumberAlternativeCredentialType();
     }
 
     private static ?obu_staff_service $instance = null;
@@ -36,12 +30,10 @@ class obu_staff_service
 
     /**
      * @param obu_users_info $users
-     * @param string $id
+     * @param ethos_person_info $person
      */
-    public function get(obu_users_info $users, string $id) {
-        $program = $this->personProvider->get($id);
-
-        $this->addPersonToUsers($users, $program);
+    public function get(obu_users_info $users, ethos_person_info $person) {
+        $this->addPersonToUsers($users, $person);
     }
 
     /**
@@ -77,10 +69,6 @@ class obu_staff_service
      */
     private function addPersonToUsers(obu_users_info $users, ethos_person_info $person)
     {
-        if(!$this->alternativeCredentialService->hasAlternativeCredentialOfType($person, $this->employeeAlternativeCredentialType)) {
-            return;
-        }
-
         $username = $this->personNameService->getUserName($person->credentials);
         $officialName = $this->personNameService->getOfficialName($person->names);
 

@@ -26,6 +26,17 @@ class ethos_person_hold_provider extends ethos_provider
         return self::$instance;
     }
 
+    /**
+     * @param $personId
+     * @return ethos_person_hold_info[]
+     */
+    public function getByPersonGuid($personId) : array {
+        $url = $this->buildUrlWithParameter('?person='. $personId);
+        $items = $this->getFromEthos($url);
+        return array_map(array($this, 'convert'), $items);
+    }
+
+
     public function get($id) : ?ethos_person_hold_info {
         $item = $this->getFromEthosById($id);
 

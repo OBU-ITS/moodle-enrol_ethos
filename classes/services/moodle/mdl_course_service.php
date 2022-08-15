@@ -2,6 +2,7 @@
 namespace enrol_ethos\services\moodle;
 
 use enrol_ethos\entities\mdl_course;
+use enrol_ethos\entities\mdl_course_custom_fields;
 use enrol_ethos\entities\obu_course_hierarchy_info;
 use enrol_ethos\repositories\db_course_repository;
 use progress_trace;
@@ -27,6 +28,28 @@ class mdl_course_service
         }
 
         return self::$instance;
+    }
+
+    /**
+     * Get Module Runs
+     *
+     * @param int $limit
+     * @param int $offset
+     * @return mdl_course[] module runs
+     */
+    public function getModuleRuns(int $limit, int $offset) : array {
+        // TODO : get courses by type
+    }
+
+    /**
+     * Get Programs
+     *
+     * @param int $limit
+     * @param int $offset
+     * @return mdl_course[] programs
+     */
+    public function getPrograms(int $limit, int $offset) : array {
+        // TODO : get courses by type
     }
 
     public function handleCourseCreation(progress_trace $trace, obu_course_hierarchy_info $courseHierarchy, string $keyPrefix = '', ?int $parentId = null) {
@@ -107,5 +130,10 @@ class mdl_course_service
         }
 
         return false;
+    }
+
+    public function getCustomData(int $id) : mdl_course_custom_fields {
+
+        return new mdl_course_custom_fields(); // TODO
     }
 }
