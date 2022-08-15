@@ -47,8 +47,8 @@ abstract class ethos_provider
         return ethos_client::API_URL . "/api/" . $this->path . "?criteria=" . $criteria;
     }
 
-    protected function buildUrlWithParameter($parameter) : string {
-        return ethos_client::API_URL . "/api/" . $this->path . $parameter;
+    protected function buildUrlWithParameter($parameter, $value) : string {
+        return ethos_client::API_URL . "/api/" . $this->path . "?" . $parameter . "=" . $value;
     }
 
     protected function getFromEthosById(string $id, bool $paged=null, int $maxResults=0) : ?object {
