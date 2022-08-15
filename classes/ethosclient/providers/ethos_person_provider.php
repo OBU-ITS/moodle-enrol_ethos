@@ -57,6 +57,8 @@ class ethos_person_provider extends ethos_provider
 
         $url = $this->buildUrlWithCriteria('{"alternativeCredentials":[{"type":{"id":"' . $credentialType->id . '"},"value":"' . $credential . '"}]}');
 
+
+
         $items = $this->getFromEthos($url);
         return array_map(array($this, 'convert'), $items);
     }

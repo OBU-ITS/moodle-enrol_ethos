@@ -9,7 +9,7 @@ use enrol_ethos\ethosclient\providers\ethos_person_provider;
 
 class obu_student_service
 {
-    private ethos_student $personProvider;
+    private ethos_person_provider $personProvider;
     private obu_person_name_service $personNameService;
 
     private ethos_alternative_credential_type_info $employeeAlternativeCredentialType;
@@ -32,12 +32,10 @@ class obu_student_service
 
     /**
      * @param obu_users_info $users
-     * @param string $id
+     * @param ethos_person_info $person
      */
-    public function get(obu_users_info $users, string $id) {
-        $program = $this->personProvider->get($id);
-
-        $this->addPersonToUsers($users, $program);
+    public function get(obu_users_info $users, ethos_person_info $person) {
+        $this->addPersonToUsers($users, $person);
     }
 
     /**
