@@ -29,6 +29,28 @@ class mdl_course_service
         return self::$instance;
     }
 
+    /**
+     * Get Module Runs
+     *
+     * @param int $limit
+     * @param int $offset
+     * @return mdl_course[] module runs
+     */
+    public function getModuleRuns(int $limit, int $offset) : array {
+        // TODO : get courses by type
+    }
+
+    /**
+     * Get Programs
+     *
+     * @param int $limit
+     * @param int $offset
+     * @return mdl_course[] programs
+     */
+    public function getPrograms(int $limit, int $offset) : array {
+        // TODO : get courses by type
+    }
+
     public function handleCourseCreation(progress_trace $trace, obu_course_hierarchy_info $courseHierarchy, string $keyPrefix = '', ?int $parentId = null) {
         $categoryIdNumber = $this->courseCategoryService->getCategoryId($keyPrefix, $courseHierarchy->currentCategory->codeName);
         $categoryId = $this->courseCategoryService->upsertCourseCategory($trace, $courseHierarchy->currentCategory, $categoryIdNumber, $parentId);

@@ -39,7 +39,6 @@ class obu_backfill_users
                 $this->syncPersonService->syncByUser($trace, $user);
             }
 
-
             $offset += self::RUN_LIMIT;
             $resultsCount = count($users);
             $totalResults += $resultsCount;

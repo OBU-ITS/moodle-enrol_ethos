@@ -35,7 +35,7 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
         return $this->db->get_record_sql($sql, ['username' => $username]);
     }
 
-    public function getAllUsers($authType=null, $includeDeleted=true) {
+    public function getAllUsers($authType=null, $includeDeleted=true, int $limit = 0, int $offset = 0) {
         // Join any user info data present with each user info field for the user object.
         $sql = 'SELECT username, id AS userid ';
         $sql .= 'FROM {user} ';
@@ -51,13 +51,18 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
 
         $sql .= 'ORDER BY username ';
 
-        $dbusers = $this->db->get_records_sql($sql, ['authtype' => $authType]);
+        if($limit > 0) {
+            $sql .= 'LIMIT :limit ';
+        }
+        if($offset > 0) {
+            $sql .= 'OFFSET :offset ';
+        }
 
-        return $dbusers;
+        return $this->db->get_records_sql($sql, ['authtype' => $authType, 'limit' => $limit, 'offset' => $offset]);
     }
 
-    public function getUsersByAuthType(string $authType) {
-        return $this->getAllUsers($authType,false);
+    public function getUsersByAuthType(string $authType, int $limit = 0, int $offset = 0) {
+        return $this->getAllUsers($authType,false, $limit, $offset);
     }
 
     public function createUser(string $username, string $firstname, string $lastname, string $email) : int {

@@ -38,6 +38,17 @@ class mdl_user_service
         return count($items) > 0 ? $items[0] : null;
     }
 
+    /**
+     * Get LDAP Users
+     *
+     * @param int $limit
+     * @param int $offset
+     * @return mdl_user[] users with the LDAP auth type
+     */
+    public function getLdapUsers(int $limit, int $offset) : array {
+        $this->userRepo->getUsersByAuthType("ldap", $limit, $offset);
+    }
+
     public function getCustomData(int $id) : mdl_user_profile {
 
         return new mdl_user_profile(); // TODO
