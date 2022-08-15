@@ -58,7 +58,7 @@ class ethos_student_advisor_relationships_provider extends ethos_provider
      * @return ethos_person_info[]
      */
     public function getByStudentPersonGuid($studentId) : array {
-        $url = $this->buildUrlWithCriteria('{"student":"' . $studentId . '}"');
+        $url = $this->buildUrlWithCriteria('{"student":"' . $studentId . '"}');
         $items = $this->getFromEthos($url);
         return array_map(array($this, 'convert'), $items);
     }
@@ -68,7 +68,7 @@ class ethos_student_advisor_relationships_provider extends ethos_provider
      * @return ethos_person_info[]
      */
     public function getByAdvisorPersonGuid($advisorId) : array {
-        $url = $this->buildUrlWithCriteria('{"advisor":"' . $advisorId . '}"');
+        $url = $this->buildUrlWithCriteria('{"advisor":"' . $advisorId . '"}');
         $items = $this->getFromEthos($url);
         return array_map(array($this, 'convert'), $items);
     }
