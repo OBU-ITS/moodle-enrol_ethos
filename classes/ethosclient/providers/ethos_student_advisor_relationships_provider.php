@@ -72,7 +72,7 @@ class ethos_student_advisor_relationships_provider extends ethos_provider
         $items = $this->getFromEthos($url);
         return array_map(array($this, 'convert'), $items);
     }
-    
+
     private function convert(object $item) : ?ethos_student_advisor_relationships_info {
         return new ethos_student_advisor_relationships_info($item);
     }

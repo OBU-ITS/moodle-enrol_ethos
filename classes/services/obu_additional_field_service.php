@@ -82,6 +82,7 @@ class obu_additional_field_service
         $this->courseCustomFieldService->ensureCustomField($hiddenCourseCategory, "Owning Institution Units Ids", "section_owningInstitutionUnits_guids", \customfield_text\field_controller::TYPE, 50, 200, course_handler::NOTVISIBLE);
         $this->courseCustomFieldService->ensureCustomField($hiddenCourseCategory, "Site Id", "section_site_guid", \customfield_text\field_controller::TYPE, 50, 200, course_handler::NOTVISIBLE);
         $this->courseCustomFieldService->ensureCustomField($hiddenCourseCategory, "Level Id", "section_level_guid", \customfield_text\field_controller::TYPE, 50, 200, course_handler::NOTVISIBLE);
+        $this->courseCustomFieldService->ensureCustomField($hiddenCourseCategory, "Id", "section_guid", \customfield_text\field_controller::TYPE, 50, 200, course_handler::NOTVISIBLE);
 
     }
 
