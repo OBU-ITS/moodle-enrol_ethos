@@ -3,7 +3,7 @@ namespace enrol_ethos\entities;
 
 class mdl_course_custom_fields
 {
-    //Academic Program
+    // Academic Program
     public string $apCode;
     public string $apGuid;
     public string $apLevel;
@@ -26,9 +26,9 @@ class mdl_course_custom_fields
     public string $apProgrammeAdministrators;
     public string $apDegreeApprenticeshipFlag;
     public string $apUmpFlag;
-    public string $apFranchTyp1;
+    public string $apFranchiseType1;
 
-    //Section
+    // Section
     public string $sectionCode;
     public string $sectionLevel;
     public string $sectionLevelGuid;
@@ -36,8 +36,8 @@ class mdl_course_custom_fields
     public string $sectionAcademicYearGuid;
     public string $sectionTerm;
     public string $sectionTermGuid;
-    public string $sectionPterm;
-    public string $sectionPtermGuid;
+    public string $sectionPTerm;
+    public string $sectionPTermGuid;
     public string $sectionStartDate;
     public string $sectionEndDate;
     public string $sectionArchiveDate;

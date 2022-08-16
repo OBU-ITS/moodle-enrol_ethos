@@ -5,7 +5,7 @@ namespace enrol_ethos\ethosclient\entities;
 use enrol_ethos\ethosclient\providers\ethos_advisor_type_provider;
 use enrol_ethos\ethosclient\providers\ethos_person_provider;
 
-class ethos_student_advisor_relationships_info
+class ethos_student_advisor_relationship_info
 {
     public function __construct(object $data)
     {

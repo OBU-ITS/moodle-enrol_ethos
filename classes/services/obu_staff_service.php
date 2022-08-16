@@ -1,9 +1,10 @@
 <?php
 namespace enrol_ethos\services;
 
+use enrol_ethos\entities\mdl_profile_field;
 use enrol_ethos\entities\mdl_user;
+use enrol_ethos\entities\mdl_user_profile;
 use enrol_ethos\entities\obu_users_info;
-use enrol_ethos\ethosclient\entities\ethos_alternative_credential_type_info;
 use enrol_ethos\ethosclient\entities\ethos_person_info;
 use enrol_ethos\ethosclient\providers\ethos_person_provider;
 
@@ -71,6 +72,10 @@ class obu_staff_service
     {
         $username = $this->personNameService->getUserName($person->credentials);
         $officialName = $this->personNameService->getOfficialName($person->names);
+
+        $profile = new mdl_user_profile();
+        // TODO : EMIR
+        // $profile->isAdviserFlag = (count($person->getAdvisors()) > 0);
 
         $user = new mdl_user();
         $user->username = $username;

@@ -2,10 +2,10 @@
 namespace enrol_ethos\ethosclient\providers;
 
 use enrol_ethos\ethosclient\entities\ethos_person_info;
-use enrol_ethos\ethosclient\entities\ethos_student_advisor_relationships_info;
+use enrol_ethos\ethosclient\entities\ethos_student_advisor_relationship_info;
 use enrol_ethos\ethosclient\providers\base\ethos_provider;
 
-class ethos_student_advisor_relationships_provider extends ethos_provider
+class ethos_student_advisor_relationship_provider extends ethos_provider
 {
     const VERSION = 'v10';
     const PATH = 'student-advisor-relationships';
@@ -16,8 +16,8 @@ class ethos_student_advisor_relationships_provider extends ethos_provider
         $this->prepareProvider(self::PATH, self::VERSION);
     }
 
-    private static ?ethos_student_advisor_relationships_provider $instance = null;
-    public static function getInstance() : ethos_student_advisor_relationships_provider
+    private static ?ethos_student_advisor_relationship_provider $instance = null;
+    public static function getInstance() : ethos_student_advisor_relationship_provider
     {
         if (self::$instance == null)
         {
@@ -27,25 +27,14 @@ class ethos_student_advisor_relationships_provider extends ethos_provider
         return self::$instance;
     }
 
-    public function get($id) : ?ethos_student_advisor_relationships_info {
+    public function get($id) : ?ethos_student_advisor_relationship_info {
         $item = $this->getFromEthosById($id);
 
         return $this->convert($item);
     }
 
     /**
-     * @param $limit
-     * @param $offset
-     * @return ethos_student_advisor_relationships_info[]
-     */
-    public function getBatch($limit, $offset) : array {
-        $items = $this->getFromEthos(null, true, $limit, $offset);
-
-        return array_map(array($this, 'convert'), $items);
-    }
-
-    /**
-     * @return ethos_student_advisor_relationships_info[]
+     * @return ethos_student_advisor_relationship_info[]
      */
     public function getAll() : array {
         $items = $this->getFromEthos();
@@ -55,7 +44,7 @@ class ethos_student_advisor_relationships_provider extends ethos_provider
 
     /**
      * @param $studentId
-     * @return ethos_person_info[]
+     * @return ethos_student_advisor_relationship_info[]
      */
     public function getByStudentPersonGuid($studentId) : array {
         $url = $this->buildUrlWithCriteria('{"student":"' . $studentId . '"}');
@@ -65,7 +54,7 @@ class ethos_student_advisor_relationships_provider extends ethos_provider
 
     /**
      * @param $advisorId
-     * @return ethos_person_info[]
+     * @return ethos_student_advisor_relationship_info[]
      */
     public function getByAdvisorPersonGuid($advisorId) : array {
         $url = $this->buildUrlWithCriteria('{"advisor":"' . $advisorId . '"}');
@@ -73,7 +62,7 @@ class ethos_student_advisor_relationships_provider extends ethos_provider
         return array_map(array($this, 'convert'), $items);
     }
 
-    private function convert(object $item) : ?ethos_student_advisor_relationships_info {
-        return new ethos_student_advisor_relationships_info($item);
+    private function convert(object $item) : ?ethos_student_advisor_relationship_info {
+        return new ethos_student_advisor_relationship_info($item);
     }
 }
