@@ -11,6 +11,7 @@ class mdl_course_service
 {
     private mdl_course_category_service $courseCategoryService;
     private db_course_repository $courseRepo;
+    private mdl_course_custom_field_service $courseCustomFieldService;
 
     private function __construct()
     {
@@ -38,7 +39,7 @@ class mdl_course_service
      * @return mdl_course[] module runs
      */
     public function getModuleRuns(int $limit, int $offset) : array {
-        // TODO : get courses by type
+
     }
 
     /**
@@ -133,7 +134,11 @@ class mdl_course_service
     }
 
     public function getCustomData(int $id) : mdl_course_custom_fields {
+        $customDataRaw = $this->courseCustomFieldService->getCustomData($id);
 
-        return new mdl_course_custom_fields(); // TODO
+        $customData = new mdl_course_custom_fields();
+        $customData->populateObject($customDataRaw);
+
+        return $customData;
     }
 }

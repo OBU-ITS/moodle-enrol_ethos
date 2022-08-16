@@ -91,4 +91,8 @@ class mdl_course_custom_field_service
 
         $field->save();
     }
+
+    public function getCustomData(int $id) : array {
+        return $this->handler->get_instance_data($id, true);
+    }
 }
