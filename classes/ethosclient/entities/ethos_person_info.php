@@ -3,6 +3,7 @@
 namespace enrol_ethos\ethosclient\entities;
 
 use enrol_ethos\ethosclient\providers\ethos_person_hold_provider;
+use enrol_ethos\ethosclient\providers\ethos_section_instructors_provider;
 use enrol_ethos\ethosclient\providers\ethos_student_advisor_relationship_provider;
 use enrol_ethos\ethosclient\services\ethos_person_alternative_credential_service;
 use enrol_ethos\ethosclient\services\ethos_person_credential_service;
@@ -123,6 +124,24 @@ class ethos_person_info
             $this->personHolds = $provider->getByPersonGuid($personId);
         }
         return $this->personHolds;
+    }
+
+    /**
+     * @var ethos_section_instructors_info[]|null
+     */
+    private ?array $instructorSections = null;
+
+    /**
+     * @return ethos_section_instructors_info[]
+     * @param $personId
+     */
+    public function getInstructorSections($personId): array
+    {
+        if ($this->instructorSections == null){
+            $provider = ethos_section_instructors_provider::getInstance();
+            $this->instructorSections = $provider->getByInstructorPersonGuid($personId);
+        }
+        return $this->instructorSections;
     }
 
     private function populateObject($data){
