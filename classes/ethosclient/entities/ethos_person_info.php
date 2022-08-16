@@ -17,6 +17,7 @@ class ethos_person_info
     }
 
     public string $id;
+    public string $pidm;
 
     /**
      * @var ethos_person_info_name[]
@@ -150,6 +151,7 @@ class ethos_person_info
         }
 
         $this->id = $data->id;
+        $this->pidm = $data->pidm;
         $this->setNames($data->names);
         $this->setCredentials($data->credentials);
         $this->setAlternativeCredentials($data->alternativeCredentials);

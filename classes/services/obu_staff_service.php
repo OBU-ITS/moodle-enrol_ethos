@@ -6,6 +6,7 @@ use enrol_ethos\entities\mdl_user;
 use enrol_ethos\entities\mdl_user_profile;
 use enrol_ethos\entities\obu_users_info;
 use enrol_ethos\ethosclient\entities\ethos_person_info;
+use enrol_ethos\ethosclient\entities\ethos_section_instructors_info;
 use enrol_ethos\ethosclient\providers\ethos_person_provider;
 
 class obu_staff_service
@@ -75,13 +76,17 @@ class obu_staff_service
 
         $profile = new mdl_user_profile();
         // TODO : EMIR
-        // $profile->isAdviserFlag = (count($person->getAdvisors()) > 0);
+        $profile->isAdviserFlag = (count($person->getAdvisors()) > 0);
+        $profile->isModuleLeadFlag = (count($person->getInstructorSections()) > 0);
+        $profile->personGuid = $person->id;
+        $profile->pidm = $person->pidm;
 
         $user = new mdl_user();
         $user->username = $username;
         $user->firstname = $officialName->firstName;
         $user->lastname = $officialName->lastName;
         $user->email = $username . 'brookes.ac.uk';
+        $user->setCustomData($profile);
 
         $users->addUser($user);
     }

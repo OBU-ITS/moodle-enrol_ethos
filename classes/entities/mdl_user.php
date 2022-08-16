@@ -30,8 +30,8 @@ class mdl_user
         return $this->customData;
     }
 
-    public function setCustomData(?mdl_user_profile $customData): void
+    public function setCustomData($profile)
     {
-        $this->customData = $customData;
+        $this->customData = $profile;
     }
 }

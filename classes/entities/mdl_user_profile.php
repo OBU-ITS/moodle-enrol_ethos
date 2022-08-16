@@ -20,4 +20,8 @@ class mdl_user_profile
     // Staff
     public string $isAdviserFlag;
     public string $isModuleLeadFlag;
+
+    public function __construct()
+    {
+    }
 }
