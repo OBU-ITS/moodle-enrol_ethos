@@ -77,10 +77,10 @@ class ethos_person_info
     private ?array $advisors = null;
 
     /**
-     * @return ethos_student_advisor_relationship_info[]|null
+     * @return ethos_student_advisor_relationship_info[]
      * @param $studentId
      */
-    public function getAdvisors($studentId): ?array
+    public function getAdvisors($studentId): array
     {
         if ($this->advisors == null){
             $provider = ethos_student_advisor_relationship_provider::getInstance();
@@ -95,10 +95,10 @@ class ethos_person_info
     private ?array $advisorStudents = null;
 
     /**
-     * @return ethos_student_advisor_relationship_info[]|null
+     * @return ethos_student_advisor_relationship_info[]
      * @param $advisorId
      */
-    public function getAdvisorStudents($advisorId): ?array
+    public function getAdvisorStudents($advisorId): array
     {
         if ($this->advisorStudents == null){
             $provider = ethos_student_advisor_relationship_provider::getInstance();
@@ -113,10 +113,10 @@ class ethos_person_info
     private ?array $personHolds = null;
 
     /**
-     * @return ethos_person_hold_info[]|null
+     * @return ethos_person_hold_info[]
      * @param $personId
      */
-    public function getPersonHolds($personId): ?array
+    public function getPersonHolds($personId): array
     {
         if ($this->personHolds == null){
             $provider = ethos_person_hold_provider::getInstance();
