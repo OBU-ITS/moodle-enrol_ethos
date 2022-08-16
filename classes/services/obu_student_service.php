@@ -2,6 +2,7 @@
 namespace enrol_ethos\services;
 
 use enrol_ethos\entities\mdl_user;
+use enrol_ethos\entities\mdl_user_profile;
 use enrol_ethos\entities\obu_users_info;
 use enrol_ethos\ethosclient\entities\ethos_alternative_credential_type_info;
 use enrol_ethos\ethosclient\entities\ethos_person_info;
@@ -74,11 +75,19 @@ class obu_student_service
         $username = $this->personNameService->getUserName($person->credentials);
         $officialName = $this->personNameService->getOfficialName($person->names);
 
+        $profile = new mdl_user_profile();
+        $profile->financeHold = ($person->getPersonHolds());
+        $profile->academicHold = ($person->getPersonHolds());
+        $profile->serviceNeeds = ($person->);
+        $profile->personGuid = $person->id;
+        $profile->pidm = $person->pidm;
+
         $user = new mdl_user();
         $user->username = $username;
         $user->firstname = $officialName->firstName;
         $user->lastname = $officialName->lastName;
         $user->email = $username . 'brookes.ac.uk';
+        $user->setCustomData($profile);
 
         $users->addUser($user);
     }

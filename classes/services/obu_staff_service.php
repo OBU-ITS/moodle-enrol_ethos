@@ -75,7 +75,6 @@ class obu_staff_service
         $officialName = $this->personNameService->getOfficialName($person->names);
 
         $profile = new mdl_user_profile();
-        // TODO : EMIR
         $profile->isAdviserFlag = (count($person->getAdvisors()) > 0);
         $profile->isModuleLeadFlag = (count($person->getInstructorSections()) > 0);
         $profile->personGuid = $person->id;
