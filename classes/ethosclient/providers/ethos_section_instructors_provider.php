@@ -34,17 +34,6 @@ class ethos_section_instructors_provider extends ethos_provider
     }
 
     /**
-     * @param $limit
-     * @param $offset
-     * @return ethos_section_instructors_info[]
-     */
-    public function getBatch($limit, $offset) : array {
-        $items = $this->getFromEthos(null, true, $limit, $offset);
-
-        return array_map(array($this, 'convert'), $items);
-    }
-
-    /**
      * @return ethos_section_instructors_info[]
      */
     public function getAll() : array {
@@ -55,7 +44,7 @@ class ethos_section_instructors_provider extends ethos_provider
 
     /**
      * @param $instructorId
-     * @return ethos_person_info[]
+     * @return ethos_section_instructors_info[]
      */
     public function getByInstructorPersonGuid($instructorId) : array {
         $url = $this->buildUrlWithCriteria('{"instructor":"' . $instructorId . '"}');
