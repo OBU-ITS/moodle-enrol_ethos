@@ -3,7 +3,7 @@
 namespace enrol_ethos\ethosclient\entities;
 
 use enrol_ethos\ethosclient\providers\ethos_person_hold_provider;
-use enrol_ethos\ethosclient\providers\ethos_student_advisor_relationships_provider;
+use enrol_ethos\ethosclient\providers\ethos_student_advisor_relationship_provider;
 use enrol_ethos\ethosclient\services\ethos_person_alternative_credential_service;
 use enrol_ethos\ethosclient\services\ethos_person_credential_service;
 use enrol_ethos\ethosclient\services\ethos_person_name_service;
@@ -72,36 +72,36 @@ class ethos_person_info
     }
 
     /**
-     * @var ethos_student_advisor_relationships_info[]|null
+     * @var ethos_student_advisor_relationship_info[]|null
      */
     private ?array $advisors = null;
 
     /**
-     * @return ethos_student_advisor_relationships_info[]|null
+     * @return ethos_student_advisor_relationship_info[]|null
      * @param $studentId
      */
     public function getAdvisors($studentId): ?array
     {
         if ($this->advisors == null){
-            $provider = ethos_student_advisor_relationships_provider::getInstance();
+            $provider = ethos_student_advisor_relationship_provider::getInstance();
             $this->advisors = $provider->getByAdvisorPersonGuid($studentId);
         }
         return $this->advisors;
     }
 
     /**
-     * @var ethos_student_advisor_relationships_info[]|null
+     * @var ethos_student_advisor_relationship_info[]|null
      */
     private ?array $advisorStudents = null;
 
     /**
-     * @return ethos_student_advisor_relationships_info[]|null
+     * @return ethos_student_advisor_relationship_info[]|null
      * @param $advisorId
      */
     public function getAdvisorStudents($advisorId): ?array
     {
         if ($this->advisorStudents == null){
-            $provider = ethos_student_advisor_relationships_provider::getInstance();
+            $provider = ethos_student_advisor_relationship_provider::getInstance();
             $this->advisorStudents = $provider->getByAdvisorPersonGuid($advisorId);
         }
         return $this->advisorStudents;
