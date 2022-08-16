@@ -2,6 +2,8 @@
 
 namespace enrol_ethos\ethosclient\entities;
 
+use enrol_ethos\ethosclient\providers\ethos_person_hold_provider;
+use enrol_ethos\ethosclient\providers\ethos_student_advisor_relationships_provider;
 use enrol_ethos\ethosclient\services\ethos_person_alternative_credential_service;
 use enrol_ethos\ethosclient\services\ethos_person_credential_service;
 use enrol_ethos\ethosclient\services\ethos_person_name_service;
@@ -67,6 +69,60 @@ class ethos_person_info
         foreach($alternativeCredentialObjs as $alternativeCredentialObj) {
             $this->alternativeCredentials[] = $service->get($alternativeCredentialObj);
         }
+    }
+
+    /**
+     * @var ethos_student_advisor_relationships_info[]|null
+     */
+    private ?array $advisors = null;
+
+    /**
+     * @return ethos_student_advisor_relationships_info[]|null
+     * @param $studentId
+     */
+    public function getAdvisors($studentId): ?array
+    {
+        if ($this->advisors == null){
+            $provider = ethos_student_advisor_relationships_provider::getInstance();
+            $this->advisors = $provider->getByAdvisorPersonGuid($studentId);
+        }
+        return $this->advisors;
+    }
+
+    /**
+     * @var ethos_student_advisor_relationships_info[]|null
+     */
+    private ?array $advisorStudents = null;
+
+    /**
+     * @return ethos_student_advisor_relationships_info[]|null
+     * @param $advisorId
+     */
+    public function getAdvisorStudents($advisorId): ?array
+    {
+        if ($this->advisorStudents == null){
+            $provider = ethos_student_advisor_relationships_provider::getInstance();
+            $this->advisorStudents = $provider->getByAdvisorPersonGuid($advisorId);
+        }
+        return $this->advisorStudents;
+    }
+
+    /**
+     * @var ethos_person_hold_info[]|null
+     */
+    private ?array $personHolds = null;
+
+    /**
+     * @return ethos_person_hold_info[]|null
+     * @param $personId
+     */
+    public function getPersonHolds($personId): ?array
+    {
+        if ($this->personHolds == null){
+            $provider = ethos_person_hold_provider::getInstance();
+            $this->personHolds = $provider->getByPersonGuid($personId);
+        }
+        return $this->personHolds;
     }
 
     private function populateObject($data){
