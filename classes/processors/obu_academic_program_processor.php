@@ -2,12 +2,13 @@
 namespace enrol_ethos\processors;
 
 use enrol_ethos\ethosclient\entities\consume\ethos_notification;
+use enrol_ethos\ethosclient\providers\ethos_academic_program_provider;
 use enrol_ethos\processors\base\obu_processor;
 use enrol_ethos\services\sync\obu_sync_academic_program_service;
 use progress_trace;
 
 class obu_academic_program_processor implements obu_processor {
-    const RESOURCE_NAME = "academic-programs";
+    const RESOURCE_NAME = ethos_academic_program_provider::PATH;
 
     private obu_sync_academic_program_service $syncService;
 
