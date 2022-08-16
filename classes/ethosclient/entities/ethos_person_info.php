@@ -80,13 +80,12 @@ class ethos_person_info
 
     /**
      * @return ethos_student_advisor_relationship_info[]
-     * @param $studentId
      */
-    public function getAdvisors($studentId): array
+    public function getAdvisors(): array
     {
         if ($this->advisors == null){
             $provider = ethos_student_advisor_relationship_provider::getInstance();
-            $this->advisors = $provider->getByAdvisorPersonGuid($studentId);
+            $this->advisors = $provider->getByAdvisorPersonGuid($this->id);
         }
         return $this->advisors;
     }
@@ -98,13 +97,12 @@ class ethos_person_info
 
     /**
      * @return ethos_student_advisor_relationship_info[]
-     * @param $advisorId
      */
-    public function getAdvisorStudents($advisorId): array
+    public function getAdvisorStudents(): array
     {
         if ($this->advisorStudents == null){
             $provider = ethos_student_advisor_relationship_provider::getInstance();
-            $this->advisorStudents = $provider->getByAdvisorPersonGuid($advisorId);
+            $this->advisorStudents = $provider->getByAdvisorPersonGuid($this->id);
         }
         return $this->advisorStudents;
     }
@@ -116,13 +114,12 @@ class ethos_person_info
 
     /**
      * @return ethos_person_hold_info[]
-     * @param $personId
      */
-    public function getPersonHolds($personId): array
+    public function getPersonHolds(): array
     {
         if ($this->personHolds == null){
             $provider = ethos_person_hold_provider::getInstance();
-            $this->personHolds = $provider->getByPersonGuid($personId);
+            $this->personHolds = $provider->getByPersonGuid($this->id);
         }
         return $this->personHolds;
     }
@@ -134,13 +131,12 @@ class ethos_person_info
 
     /**
      * @return ethos_section_instructors_info[]
-     * @param $personId
      */
-    public function getInstructorSections($personId): array
+    public function getInstructorSections(): array
     {
         if ($this->instructorSections == null){
             $provider = ethos_section_instructors_provider::getInstance();
-            $this->instructorSections = $provider->getByInstructorPersonGuid($personId);
+            $this->instructorSections = $provider->getByInstructorPersonGuid($this->id);
         }
         return $this->instructorSections;
     }
