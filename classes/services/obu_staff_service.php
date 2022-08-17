@@ -75,10 +75,10 @@ class obu_staff_service
         $officialName = $this->personNameService->getOfficialName($person->names);
 
         $profile = new mdl_user_profile();
-        $profile->isAdviserFlag = (count($person->getAdvisors()) > 0);
-        $profile->isModuleLeadFlag = (count($person->getInstructorSections()) > 0);
         $profile->personGuid = $person->id;
         $profile->pidm = $person->pidm;
+        $profile->isAdviserFlag = (count($person->getAdvisors()) > 0);
+        $profile->isModuleLeadFlag = (count($person->getInstructorSections()) > 0);
 
         $user = new mdl_user();
         $user->username = $username;

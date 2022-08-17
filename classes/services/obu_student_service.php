@@ -76,11 +76,15 @@ class obu_student_service
         $officialName = $this->personNameService->getOfficialName($person->names);
 
         $profile = new mdl_user_profile();
-        $profile->financeHold = ($person->getPersonHolds());
-        $profile->academicHold = ($person->getPersonHolds());
-        $profile->serviceNeeds = ($person->);
         $profile->personGuid = $person->id;
         $profile->pidm = $person->pidm;
+        $profile->financeHold = ""; // TODO Jock
+        $profile->academicHold = ""; // TODO Jock
+        $profile->serviceNeeds = $person->serviceNeeds;
+        $profile->studentGuid = $person->getStudent()->id;
+        //$profile->studentAdviser = $person->getAdvisors(); // TODO Joe
+        //$profile->studentAcademicPrograms = $person->; // TODO
+        $profile->studentStatus = $person->getStudent()->status;
 
         $user = new mdl_user();
         $user->username = $username;

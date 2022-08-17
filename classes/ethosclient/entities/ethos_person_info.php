@@ -5,6 +5,7 @@ namespace enrol_ethos\ethosclient\entities;
 use enrol_ethos\ethosclient\providers\ethos_person_hold_provider;
 use enrol_ethos\ethosclient\providers\ethos_section_instructors_provider;
 use enrol_ethos\ethosclient\providers\ethos_student_advisor_relationship_provider;
+use enrol_ethos\ethosclient\providers\ethos_student_provider;
 use enrol_ethos\ethosclient\services\ethos_person_alternative_credential_service;
 use enrol_ethos\ethosclient\services\ethos_person_credential_service;
 use enrol_ethos\ethosclient\services\ethos_person_name_service;
@@ -18,6 +19,7 @@ class ethos_person_info
 
     public string $id;
     public string $pidm;
+    public string $serviceNeeds = "XX"; //TODO
 
     /**
      * @var ethos_person_info_name[]
@@ -139,6 +141,17 @@ class ethos_person_info
             $this->instructorSections = $provider->getByInstructorPersonGuid($this->id);
         }
         return $this->instructorSections;
+    }
+
+    private ?ethos_student_info $student = null;
+
+    public function getStudent(): ethos_student_info
+    {
+        if ($this->student == null){
+            $provider = ethos_student_provider::getInstance();
+            $this->student = $provider->getStudentByPersonId($this->id);
+        }
+        return $this->student;
     }
 
     private function populateObject($data){
