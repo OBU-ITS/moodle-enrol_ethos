@@ -50,8 +50,12 @@ class mdl_user_service
     }
 
     public function getCustomData(int $id) : mdl_user_profile {
+        $customDataRaw = $this->userRepo->getUserProfileData($id);
 
-        return new mdl_user_profile(); // TODO
+        $customData = new mdl_user_profile();
+        $customData->populateObject($customDataRaw);
+
+        return $customData;
     }
 
     public function handleUserCreation(progress_trace $trace, obu_users_info $users) {

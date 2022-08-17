@@ -2,9 +2,10 @@
 namespace enrol_ethos\repositories;
 use enrol_ethos\interfaces\user_repository_interface;
 use enrol_ethos\entities\user;
+use profile_field_base;
 
-require_once($CFG->dirroot.'/lib/enrollib.php');
 require_once($CFG->dirroot.'/user/lib.php');
+require_once($CFG->dirroot.'/user/profile/lib.php');
 
 class db_user_repository extends \enrol_plugin implements user_repository_interface
 {
@@ -159,7 +160,7 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
             $this->db->insert_records('user_info_data', $newRecords);
         }
 
-        $this->unenrol_missing_enrolments($user);
+        //$this->unenrol_missing_enrolments($user);
 
         foreach ($user->enrolments as $enrolment) {
             $restrictStart = 0;
@@ -173,6 +174,20 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
                                 $restrictStart,
                                 $restrictEnd);
         }
+    }
+
+    /**
+     * @param int $id User Id
+     * @return array
+     */
+    public function getUserProfileData(int $id) : array {
+        $customDataRaw = array();
+
+        array_map(function($item) use ($customDataRaw) {
+            $customDataRaw[$item->field["shortname"]] = $item->data;
+        }, profile_get_user_fields_with_data($id));
+
+        return $customDataRaw;
     }
 
     public function remove(user $user)
@@ -293,25 +308,25 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
         return $result;
     }
 
-    private function unenrol_missing_enrolments($user) {
-        $courseIds = array_column(array_column($user->enrolments, 'course'), 'id');
-
-        $params = array('now'=>time(), 'userid'=>$user->id);
-
-        $sql = "SELECT ue.*, e.courseid as courseid, c.id AS contextid
-                    FROM {user_enrolments} ue
-                    JOIN {enrol} e ON (e.id = ue.enrolid AND e.enrol = 'ethos')
-                    JOIN {context} c ON (c.instanceid = e.courseid AND c.contextlevel = 50)
-                    WHERE ue.userid = :userid";
-        $rs = $this->db->get_recordset_sql($sql, $params);
-
-        foreach ($rs as $ue) {
-            if (!in_array($ue->courseid, $courseIds)) {
-                $this->unassign_role(5, $ue->courseid, $user->id);
-            }
-        }
-        $rs->close();
-    }
+//    private function unenrol_missing_enrolments($user) {
+//        $courseIds = array_column(array_column($user->enrolments, 'course'), 'id');
+//
+//        $params = array('now'=>time(), 'userid'=>$user->id);
+//
+//        $sql = "SELECT ue.*, e.courseid as courseid, c.id AS contextid
+//                    FROM {user_enrolments} ue
+//                    JOIN {enrol} e ON (e.id = ue.enrolid AND e.enrol = 'ethos')
+//                    JOIN {context} c ON (c.instanceid = e.courseid AND c.contextlevel = 50)
+//                    WHERE ue.userid = :userid";
+//        $rs = $this->db->get_recordset_sql($sql, $params);
+//
+//        foreach ($rs as $ue) {
+//            if (!in_array($ue->courseid, $courseIds)) {
+//                $this->unassign_role(5, $ue->courseid, $user->id);
+//            }
+//        }
+//        $rs->close();
+//    }
 
     private function unassign_role($roleid, $courseid, $userid) {
         global $CFG;
