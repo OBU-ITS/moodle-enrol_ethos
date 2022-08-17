@@ -52,10 +52,7 @@ class db_course_repository
             update_course($moodleCourse);
         }
         catch (Exception $e) {
-            $status = false;
-            return false;
         }
-        return true;
     }
 
     public function create(mdl_course $course) : mdl_course
