@@ -136,8 +136,8 @@ class obu_module_run_service
         $courseProfile->sectionStartDate = $moduleRun->startOn;
         $courseProfile->sectionEndDate = $moduleRun->endOn;
         $courseProfile->sectionRun = $moduleRun->number;
-        $courseProfile->sectionOwningInstitutionUnits = $department->code;
-        $courseProfile->sectionOwningInstitutionUnitsGuids = $department->id;
+        $courseProfile->sectionOwningInstitutionUnits = $department->code . ", " . $department->title . ", " . $college->code . ", " . $college->title;
+        $courseProfile->sectionOwningInstitutionUnitsGuids = $department->id . ", " . $college->id;
         $courseProfile->sectionSiteCode = $site->code;
         $courseProfile->sectionSiteGuid = $site->id;
         $courseProfile->sectionGuid = $moduleRun->id;
