@@ -2,6 +2,7 @@
 namespace enrol_ethos\services;
 
 use enrol_ethos\entities\mdl_course;
+use enrol_ethos\entities\mdl_course_custom_fields;
 use enrol_ethos\entities\obu_course_categories_info;
 use enrol_ethos\entities\obu_course_hierarchy_info;
 use enrol_ethos\ethosclient\entities\ethos_section_info;
@@ -114,15 +115,40 @@ class obu_module_run_service
         $longTitle = $this->titleService->getLongTitle($moduleRun->titles);
         $college = $this->collegeService->getCollegeByOwningInstitutionUnits($moduleRun->owningInstitutionUnits);
         $department = $this->departmentService->getDepartmentByOwningInstitutionUnits($moduleRun->owningInstitutionUnits);
+        $levels = $moduleRun->getAcademicLevels();
 
         $idNumber = $this->getIdNumber($year->code, $subject->abbreviation, $course->number, $subTerm->code, $moduleRun->number);
         $shortName = $this->getShortName($subject->abbreviation, $course->number, $term->code, $moduleRun->number);
         $fullName = $this->getFullName($subject->abbreviation, $course->number, $longTitle, $subTerm->title, $year->title, $moduleRun->number, $site->code);
 
+        $courseProfile = new mdl_course_custom_fields();
+        $courseProfile->sectionCode = $moduleRun->code;
+        $courseProfile->sectionLevel = join(', ', array_map(function($academicLevel) {
+            return $academicLevel->code;
+        }, $levels));
+        $courseProfile->sectionLevelGuid = join(',', $moduleRun->getAcademicLevelIds());
+        $courseProfile->sectionAcademicYear = $year->code;
+        $courseProfile->sectionAcademicYearGuid = $year->id;
+        $courseProfile->sectionTerm = $term->code;
+        $courseProfile->sectionTermGuid = $term->id;
+        $courseProfile->sectionPTerm = $subTerm->code;
+        $courseProfile->sectionPTermGuid = $subTerm->id;
+        $courseProfile->sectionStartDate = $moduleRun->startOn;
+        $courseProfile->sectionEndDate = $moduleRun->endOn;
+        $courseProfile->sectionRun = $moduleRun->number;
+        $courseProfile->sectionOwningInstitutionUnits = $department->code;
+        $courseProfile->sectionOwningInstitutionUnitsGuids = $department->id;
+        $courseProfile->sectionSiteCode = $site->code;
+        $courseProfile->sectionSiteGuid = $site->id;
+        $courseProfile->sectionGuid = $moduleRun->id;
+
+
         $course = new mdl_course($idNumber, $shortName, $fullName);
         $course->startdate = obu_datetime_helper::convertStringToTimeStamp($subTerm->startOn);
         $course->enddate = obu_datetime_helper::convertStringToTimeStamp($subTerm->endOn);
         $course->bannerId = $bannerSectionGuid;
+
+        $course->setCustomData($courseProfile);
 
         $categories = new obu_course_categories_info($site, $college, $department, $subject);
 

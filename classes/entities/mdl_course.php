@@ -45,4 +45,9 @@ class mdl_course {
 
         return $this->customData;
     }
+
+    public function setCustomData($courseProfile)
+    {
+        $this->customData = $courseProfile;
+    }
 }
