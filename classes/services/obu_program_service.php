@@ -3,6 +3,7 @@ namespace enrol_ethos\services;
 
 use enrol_ethos\entities\mdl_course;
 use enrol_ethos\entities\obu_course_categories_info;
+use enrol_ethos\entities\mdl_course_custom_fields;
 use enrol_ethos\entities\obu_course_hierarchy_info;
 use enrol_ethos\ethosclient\entities\ethos_academic_program_info;
 use enrol_ethos\ethosclient\entities\ethos_section_info;
@@ -81,6 +82,7 @@ class obu_program_service
         $academicCredential = $program->getAcademicCredentials()[0]; // TODO : Check with Jock
         $college = $this->collegeService->getCollege($program->getProgramOwners());
         $startDate = obu_datetime_helper::convertStringToTimeStamp('01-JAN-2019');
+        $disciplines = $program->disciplines;
 
         foreach ($sites as $site){
             $idNumber = $this->getIdNumber($site->code, $academicLevel->code, $program->ump, $program->umpJoint, $program->code);
@@ -91,10 +93,29 @@ class obu_program_service
                 $fullName = $this->getFullName($academicCredential->title, $program->majorFullTitle, $site->title);
             }
 
+            $courseProfile = new mdl_course_custom_fields();
+            $courseProfile->apCode = $program->code;
+            $courseProfile->apGuid = $program->id;
+            $courseProfile->apLevel = $academicLevel->code;
+            $courseProfile->apLevelGuid = $academicLevel->id;
+            $courseProfile->apCredentialsCode = $academicCredential->abbreviation;
+            $courseProfile->apCredentialsType = $academicCredential->type;
+            $courseProfile->apCredentialsGuid = $academicCredential->id;
+            //TODO apDisciplines
+            $courseProfile->apDisciplinesGuids = join(', ', array_map(function($discipline) {
+                return $discipline->getDisciplineId(); // TODO needs checking
+            }, $disciplines));
+            //TODO ask jock about disciplinesDepartment
+            $courseProfile->apOwners = $college->code . ", " . $college->title;
+            $courseProfile->apOwnersGuids = $college->id;
+            
+
             $course = new mdl_course($idNumber, $shortName, $fullName);
             $course->startdate = $startDate;
             $course->enddate = $startDate;
             $course->bannerId = $program->id;
+
+            $course->setCustomData($courseProfile);
 
             $categories = new obu_course_categories_info($site, $college, null, null);
 
