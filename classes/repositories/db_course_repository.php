@@ -117,12 +117,4 @@ class db_course_repository
 
         return $moodlecourse;
     }
-
-    public function remove(mdl_course $course)
-    {
-        // Remove the $user
-        // from the 'users' table
-        //$this->db->remove($user, 'users');
-    }
-
 }

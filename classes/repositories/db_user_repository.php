@@ -1,13 +1,13 @@
 <?php
 namespace enrol_ethos\repositories;
-use enrol_ethos\interfaces\user_repository_interface;
-use enrol_ethos\entities\user;
+
+use enrol_ethos\entities\mdl_user;
 use profile_field_base;
 
 require_once($CFG->dirroot.'/user/lib.php');
 require_once($CFG->dirroot.'/user/profile/lib.php');
 
-class db_user_repository extends \enrol_plugin implements user_repository_interface
+class db_user_repository extends \enrol_plugin
 {
     protected $db;
 
@@ -16,7 +16,7 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
         $this->db = $db;
     }
 
-    public function getById($id)
+    public function get($id)
     {
         $sql  = 'select u.id AS userid, username ';
         $sql .= 'from {user} u ';
@@ -66,19 +66,50 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
         return $this->getAllUsers($authType,false, $limit, $offset);
     }
 
-    public function createUser(string $username, string $firstname, string $lastname, string $email) : int {
-        $user = new \stdClass();
+    public function create(mdl_user $moodleUser) : mdl_user {
+        $user = $this->convertFromMoodleUser($moodleUser);
 
         $user->modified   = time();
         $user->confirmed  = 1;
         $user->auth       = 'ldap';
-        $user->username = trim(\core_text::strtolower($username));
         $user->suspended = 0;
-        $user->firstname = $firstname;
-        $user->lastname = $lastname;
-        $user->email = $email;
 
-        return user_create_user($user, false, false);
+        $dbUser = user_create_user($user, false, false);
+
+        // TODO : Create profile field data
+
+        return $this->convertToMoodleUser($dbUser);
+    }
+
+    public function update(mdl_user $moodleUser) {
+        $dbUser = $this->convertFromMoodleUser($moodleUser);
+
+        // TODO : Update profile field data
+
+        user_update_user($dbUser, false, true);
+
+    }
+
+    private function convertFromMoodleUser(mdl_user $moodleUser) {
+        $user = new \stdClass();
+
+        $user->username = trim(\core_text::strtolower($moodleUser->username));
+        $user->firstname = $moodleUser->firstname;
+        $user->lastname = $moodleUser->lastname;
+        $user->email = $moodleUser->email;
+
+        return $user;
+    }
+
+    private function convertToMoodleUser($dbUser) : mdl_user {
+        $moodleUser = new mdl_user();
+        $moodleUser->id = $dbUser->id;
+        $moodleUser->username = $dbUser->username;
+        $moodleUser->firstname = $dbUser->firstname;
+        $moodleUser->lastname = $dbUser->lastname;
+        $moodleUser->email = $dbUser->email;
+
+        return $moodleUser;
     }
 
     public function save(user $user)
@@ -188,13 +219,6 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
         }, profile_get_user_fields_with_data($id));
 
         return $customDataRaw;
-    }
-
-    public function remove(user $user)
-    {
-        // Remove the $user
-        // from the 'users' table
-        //$this->db->remove($user, 'users');
     }
 
     public function getAllUsersWithProfileFieldData(string $profileFieldShortName, string $profileFieldValue = null, string $authType = null) {

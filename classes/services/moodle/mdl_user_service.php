@@ -49,6 +49,45 @@ class mdl_user_service
         $this->userRepo->getUsersByAuthType("ldap", $limit, $offset);
     }
 
+    public function handleUserCreation(progress_trace $trace, obu_users_info $users) {
+        foreach($users->getUsers() as $user) {
+            $this->upsertUser($trace, $user);
+        }
+    }
+
+    private function upsertUser(progress_trace $trace, mdl_user $data) {
+        $user = $this->userRepo->getByUsername($data->username);
+
+        if($user)
+        {
+            if($updatedUser = $this->getUpdatedUser($user, $data))
+            {
+                $this->userRepo->update($updatedUser);
+                $trace->output("User updated : $data->username ($data->email)");
+            }
+        }
+        else {
+            $this->userRepo->create($data);
+            $trace->output("User created : $data->username ($data->email)");
+        }
+    }
+
+    private function getUpdatedUser(mdl_user $current, mdl_user $new) {
+        $hasChanges = false;
+
+        if('todo' == 'todo') {
+            $hasChanges = true;
+        }
+
+        // TODO
+
+        if($hasChanges) {
+            return $current;
+        }
+
+        return false;
+    }
+
     public function getCustomData(int $id) : mdl_user_profile {
         $customDataRaw = $this->userRepo->getUserProfileData($id);
 
@@ -58,7 +97,4 @@ class mdl_user_service
         return $customData;
     }
 
-    public function handleUserCreation(progress_trace $trace, obu_users_info $users) {
-        // TODO : Joe
-    }
 }
