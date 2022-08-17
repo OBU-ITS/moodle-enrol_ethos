@@ -82,8 +82,11 @@ class obu_student_service
         $profile->academicHold = ""; // TODO Jock
         $profile->serviceNeeds = $person->serviceNeeds;
         $profile->studentGuid = $person->getStudent()->id;
-        //$profile->studentAdviser = $person->getAdvisors(); // TODO Joe
-        //$profile->studentAcademicPrograms = $person->; // TODO
+        $profile->studentAdviser = join(',', array_map(function($advisorRelationship) {
+            $advisor = $advisorRelationship->getAdvisor();
+            $officialName = $this->personNameService->getOfficialName($advisor->names);
+            return $officialName->fullName;
+        }, $person->getAdvisors()));
         $profile->studentStatus = $person->getStudent()->status;
 
         $user = new mdl_user();
