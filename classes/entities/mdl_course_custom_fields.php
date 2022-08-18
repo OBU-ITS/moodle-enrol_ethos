@@ -14,6 +14,8 @@ class mdl_course_custom_fields
     public string $apDisciplines;
     public string $apDisciplinesGuids;
     public string $apDisciplinesDepartment;
+    public string $apDisciplinesJointProgram;
+    public string $apDisciplinesFullTitle;
     public string $apOwners;
     public string $apOwnersGuids;
     public string $apSiteCode;
@@ -27,6 +29,8 @@ class mdl_course_custom_fields
     public string $apDegreeApprenticeshipFlag;
     public string $apUmpFlag;
     public string $apFranchiseType1;
+    public string $apSandwichDisc;
+    public string $apAtasDisc;
 
     // Section
     public string $sectionCode;
@@ -59,6 +63,8 @@ class mdl_course_custom_fields
         $this->apDisciplines = $customData['ap_disciplines'];
         $this->apDisciplinesGuids = $customData['ap_disciplines_guid'];
         $this->apDisciplinesDepartment = $customData['ap_disciplines_department'];
+        $this->apDisciplinesJointProgram = $customData['ap_disciplines_joint_program'];
+        $this->apDisciplinesFullTitle = $customData['ap_disciplines_full_title'];
         $this->apOwners = $customData['ap_owners'];
         $this->apOwnersGuids = $customData['ap_owners_guids'];
         $this->apSiteCode = $customData['ap_site_code'];
@@ -72,6 +78,8 @@ class mdl_course_custom_fields
         $this->apDegreeApprenticeshipFlag = $customData['ap_degree_apprenticeship_flag'];
         $this->apUmpFlag = $customData['ap_ump_flag'];
         $this->apFranchiseType1 = $customData['ap_franch_typ_1'];
+        $this->apSandwichDisc = $customData['ap_sandwich_disc'];
+        $this->apAtasDisc = $customData['ap_atas_disc'];
         $this->sectionCode = $customData['section_code'];
         $this->sectionLevel = $customData['section_level'];
         $this->sectionLevelGuid = $customData['section_level_guid'];

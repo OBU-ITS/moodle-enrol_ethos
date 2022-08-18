@@ -101,14 +101,30 @@ class obu_program_service
             $courseProfile->apCredentialsCode = $academicCredential->abbreviation;
             $courseProfile->apCredentialsType = $academicCredential->type;
             $courseProfile->apCredentialsGuid = $academicCredential->id;
-            //TODO apDisciplines
-            $courseProfile->apDisciplinesGuids = join(', ', array_map(function($discipline) {
-                return $discipline->getDisciplineId(); // TODO needs checking
+            $courseProfile->apDisciplines = join(', ', array_map(function($discipline) {
+                return $discipline->getDiscipline()->abbreviation . ": " . $discipline->getDiscipline()->title;
             }, $disciplines));
-            //TODO ask jock about disciplinesDepartment
+            $courseProfile->apDisciplinesGuids = join(',', array_map(function($discipline) {
+                return $discipline->getDisciplineId();
+            }, $disciplines));
+            //TODO disciplinesDepartment
+            $courseProfile->apDisciplinesJointProgram = $program->umpJoint; //TODO
+            $courseProfile->apDisciplinesFullTitle = $program->majorFullTitle; //TODO
             $courseProfile->apOwners = $college->code . ", " . $college->title;
             $courseProfile->apOwnersGuids = $college->id;
-            
+            $courseProfile->apSiteCode = $site->code;
+            $courseProfile->apSiteGuid = $site->id;
+            $courseProfile->apStartDate = obu_datetime_helper::convertStringToTimeStamp($program->startOn);
+            $courseProfile->apEndDate = obu_datetime_helper::convertStringToTimeStamp($program->endOn);
+            $courseProfile->apStatus = $program->status;
+            //TODO ProgramLeads
+            //TODO CourseCoordinators
+            //TODO ProgramAdministrators
+            //TODO DegreeApprenticeshipDisc
+            $courseProfile->apUmpFlag = $program->ump;//TODO
+            $courseProfile->apFranchiseType1 = $program; //TODO
+            $courseProfile->apSandwichDisc = $program->sandwich;//TODO
+            $courseProfile->apAtasDisc = $program->atas;// TODO
 
             $course = new mdl_course($idNumber, $shortName, $fullName);
             $course->startdate = $startDate;

@@ -22,6 +22,12 @@ class ethos_academic_program_info
     public string $ump = "X"; // TODO
     public string $umpJoint = "X"; // TODO
     public string $majorFullTitle = "XXX"; // TODO
+    public string $sandwich = "X"; // TODO
+    public string $atas = "X"; // TODO
+    public string $status;
+    public string $startOn;
+    public string $endOn;
+
 
     //single ref
     private string $academicLevelId;
@@ -160,6 +166,9 @@ class ethos_academic_program_info
 
         $this->id = $data->id;
         $this->code = $data->code;
+        $this->status = $data->status;
+        $this->startOn = $data->startOn;
+        $this->endOn = $data->endOn; // TODO Jock check what to do if there is no end on?
         $this->setAcademicCredentialIds($data->academicCredentials);
         $this->setDisciplines($data->disciplines);
         $this->setProgramOwnerIds($data->programOwners);

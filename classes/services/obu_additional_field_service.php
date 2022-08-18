@@ -41,6 +41,8 @@ class obu_additional_field_service
         $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Credentials Code", "ap_credentials_code", \customfield_text\field_controller::TYPE, 50, 200, course_handler::VISIBLETOTEACHERS);
         $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Credentials Type", "ap_credentials_type", \customfield_text\field_controller::TYPE, 50, 200, course_handler::VISIBLETOTEACHERS);
         $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Disciplines", "ap_disciplines", \customfield_text\field_controller::TYPE, 50, 200, course_handler::VISIBLETOTEACHERS);
+        $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Disciplines Joint Program", "ap_disciplines_join_program", \customfield_text\field_controller::TYPE, 50, 200, course_handler::VISIBLETOTEACHERS);
+        $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Disciplines Full Title", "ap_disciplines_full_title", \customfield_text\field_controller::TYPE, 50, 200, course_handler::VISIBLETOTEACHERS);
         $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Owners", "ap_owners", \customfield_text\field_controller::TYPE, 50, 200, course_handler::VISIBLETOTEACHERS);
         $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Site Code", "ap_site_code", \customfield_text\field_controller::TYPE, 50, 200, course_handler::VISIBLETOTEACHERS);
         $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Start Date", "ap_startdate", \customfield_date\field_controller::TYPE, 0, 0, course_handler::VISIBLETOTEACHERS);
@@ -52,6 +54,9 @@ class obu_additional_field_service
         $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Degree Apprenticeship Flag", "ap_degree_apprenticeship_flag", \customfield_text\field_controller::TYPE, 50, 200, course_handler::VISIBLETOTEACHERS);
         $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Undergraduate Modular Program", "ap_ump_flag", \customfield_text\field_controller::TYPE, 50, 200, course_handler::VISIBLETOTEACHERS);
         $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Franchised", "ap_franch_typ_1", \customfield_text\field_controller::TYPE, 50, 200, course_handler::VISIBLETOTEACHERS);
+        $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Sandwich", "ap_sandwich_disc", \customfield_text\field_controller::TYPE, 50, 200, course_handler::VISIBLETOTEACHERS);
+        $this->courseCustomFieldService->ensureCustomField($visibleCourseCategory, "Atas", "ap_atas_disc", \customfield_text\field_controller::TYPE, 50, 200, course_handler::VISIBLETOTEACHERS);
+
 
         $hiddenCourseCategory = $this->courseCustomFieldService->ensureCustomFieldCategory("Academic Program Data (Hidden)");
         $this->courseCustomFieldService->ensureCustomField($hiddenCourseCategory, "Guid", "ap_guid", \customfield_text\field_controller::TYPE, 50, 200, course_handler::NOTVISIBLE);
