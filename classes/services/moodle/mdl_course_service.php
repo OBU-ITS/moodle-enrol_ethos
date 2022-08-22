@@ -126,7 +126,7 @@ class mdl_course_service
             $hasChanges = true;
         }
 
-        if($newCourse->courseType === "academicprogram"){
+        if($newCourse->courseType === "academicProgram"){
             if($currentCourse->getCustomData()->apCode !== $newCourse->getCustomData()->apCode) {
                 $currentCourse->getCustomData()->apCode = $newCourse->getCustomData()->apCode;
                 $hasChanges = true;

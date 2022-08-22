@@ -130,7 +130,7 @@ class obu_program_service
             $course->startdate = $startDate;
             $course->enddate = $startDate;
             $course->bannerId = $program->id;
-            $course->courseType = "academicprogram";
+            $course->courseType = "academicProgram";
 
             $course->setCustomData($courseProfile);
 
