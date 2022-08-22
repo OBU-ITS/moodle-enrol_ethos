@@ -94,6 +94,7 @@ class obu_student_service
         $user->firstname = $officialName->firstName;
         $user->lastname = $officialName->lastName;
         $user->email = $username . 'brookes.ac.uk';
+        $user->userType = "student";
         $user->setCustomData($profile);
 
         $users->addUser($user);
