@@ -126,6 +126,240 @@ class mdl_course_service
             $hasChanges = true;
         }
 
+        if($newCourse->courseType === "academicprogram"){
+            if($currentCourse->getCustomData()->apCode !== $newCourse->getCustomData()->apCode) {
+                $currentCourse->getCustomData()->apCode = $newCourse->getCustomData()->apCode;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apGuid !== $newCourse->getCustomData()->apGuid) {
+                $currentCourse->getCustomData()->apGuid = $newCourse->getCustomData()->apGuid;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apLevel !== $newCourse->getCustomData()->apLevel) {
+                $currentCourse->getCustomData()->apLevel = $newCourse->getCustomData()->apLevel;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apLevelGuid !== $newCourse->getCustomData()->apLevelGuid) {
+                $currentCourse->getCustomData()->apLevelGuid = $newCourse->getCustomData()->apLevelGuid;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apCredentialsCode !== $newCourse->getCustomData()->apCredentialsCode) {
+                $currentCourse->getCustomData()->apCredentialsCode = $newCourse->getCustomData()->apCredentialsCode;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apCredentialsType !== $newCourse->getCustomData()->apCredentialsType) {
+                $currentCourse->getCustomData()->apCredentialsType = $newCourse->getCustomData()->apCredentialsType;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apCredentialsGuid !== $newCourse->getCustomData()->apCredentialsGuid) {
+                $currentCourse->getCustomData()->apCredentialsGuid = $newCourse->getCustomData()->apCredentialsGuid;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apDisciplines !== $newCourse->getCustomData()->apDisciplines) {
+                $currentCourse->getCustomData()->apDisciplines = $newCourse->getCustomData()->apDisciplines;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apDisciplines !== $newCourse->getCustomData()->apDisciplines) {
+                $currentCourse->getCustomData()->apDisciplines = $newCourse->getCustomData()->apDisciplines;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apDisciplinesGuids !== $newCourse->getCustomData()->apDisciplinesGuids) {
+                $currentCourse->getCustomData()->apDisciplinesGuids = $newCourse->getCustomData()->apDisciplinesGuids;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apDisciplinesDepartment !== $newCourse->getCustomData()->apDisciplinesDepartment) {
+                $currentCourse->getCustomData()->apDisciplinesDepartment = $newCourse->getCustomData()->apDisciplinesDepartment;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apDisciplinesJointProgram !== $newCourse->getCustomData()->apDisciplinesJointProgram) {
+                $currentCourse->getCustomData()->apDisciplinesJointProgram = $newCourse->getCustomData()->apDisciplinesJointProgram;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apDisciplinesFullTitle !== $newCourse->getCustomData()->apDisciplinesFullTitle) {
+                $currentCourse->getCustomData()->apDisciplinesFullTitle = $newCourse->getCustomData()->apDisciplinesFullTitle;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apOwners !== $newCourse->getCustomData()->apOwners) {
+                $currentCourse->getCustomData()->apOwners = $newCourse->getCustomData()->apOwners;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apOwnersGuids !== $newCourse->getCustomData()->apOwnersGuids) {
+                $currentCourse->getCustomData()->apOwnersGuids = $newCourse->getCustomData()->apOwnersGuids;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apSiteCode !== $newCourse->getCustomData()->apSiteCode) {
+                $currentCourse->getCustomData()->apSiteCode = $newCourse->getCustomData()->apSiteCode;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apSiteGuid !== $newCourse->getCustomData()->apSiteGuid) {
+                $currentCourse->getCustomData()->apSiteGuid = $newCourse->getCustomData()->apSiteGuid;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apStartDate !== $newCourse->getCustomData()->apStartDate) {
+                $currentCourse->getCustomData()->apStartDate = $newCourse->getCustomData()->apStartDate;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apEndDate !== $newCourse->getCustomData()->apEndDate) {
+                $currentCourse->getCustomData()->apEndDate = $newCourse->getCustomData()->apEndDate;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apStatus !== $newCourse->getCustomData()->apStatus) {
+                $currentCourse->getCustomData()->apStatus = $newCourse->getCustomData()->apStatus;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apProgrammeLeads !== $newCourse->getCustomData()->apProgrammeLeads) {
+                $currentCourse->getCustomData()->apProgrammeLeads = $newCourse->getCustomData()->apProgrammeLeads;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apCourseCoordinators !== $newCourse->getCustomData()->apCourseCoordinators) {
+                $currentCourse->getCustomData()->apCourseCoordinators = $newCourse->getCustomData()->apCourseCoordinators;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apProgrammeAdministrators !== $newCourse->getCustomData()->apProgrammeAdministrators) {
+                $currentCourse->getCustomData()->apProgrammeAdministrators = $newCourse->getCustomData()->apProgrammeAdministrators;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apDegreeApprenticeshipFlag !== $newCourse->getCustomData()->apDegreeApprenticeshipFlag) {
+                $currentCourse->getCustomData()->apDegreeApprenticeshipFlag = $newCourse->getCustomData()->apDegreeApprenticeshipFlag;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apUmpFlag !== $newCourse->getCustomData()->apUmpFlag) {
+                $currentCourse->getCustomData()->apUmpFlag = $newCourse->getCustomData()->apUmpFlag;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apFranchiseType1 !== $newCourse->getCustomData()->apFranchiseType1) {
+                $currentCourse->getCustomData()->apFranchiseType1 = $newCourse->getCustomData()->apFranchiseType1;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apSandwichDisc !== $newCourse->getCustomData()->apSandwichDisc) {
+                $currentCourse->getCustomData()->apSandwichDisc = $newCourse->getCustomData()->apSandwichDisc;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->apAtasDisc !== $newCourse->getCustomData()->apAtasDisc) {
+                $currentCourse->getCustomData()->apAtasDisc = $newCourse->getCustomData()->apAtasDisc;
+                $hasChanges = true;
+            }
+        }
+
+        if($newCourse->courseType === "section") {
+            if($currentCourse->getCustomData()->sectionCode !== $newCourse->getCustomData()->sectionCode) {
+                $currentCourse->getCustomData()->sectionCode = $newCourse->getCustomData()->sectionCode;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->sectionLevel !== $newCourse->getCustomData()->sectionLevel) {
+                $currentCourse->getCustomData()->sectionLevel = $newCourse->getCustomData()->sectionLevel;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->sectionLevelGuid !== $newCourse->getCustomData()->sectionLevelGuid) {
+                $currentCourse->getCustomData()->sectionLevelGuid = $newCourse->getCustomData()->sectionLevelGuid;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->sectionAcademicYear !== $newCourse->getCustomData()->sectionAcademicYear) {
+                $currentCourse->getCustomData()->sectionAcademicYear = $newCourse->getCustomData()->sectionAcademicYear;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->sectionAcademicYearGuid !== $newCourse->getCustomData()->sectionAcademicYearGuid) {
+                $currentCourse->getCustomData()->sectionAcademicYearGuid = $newCourse->getCustomData()->sectionAcademicYearGuid;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->sectionTerm !== $newCourse->getCustomData()->sectionTerm) {
+                $currentCourse->getCustomData()->sectionTerm = $newCourse->getCustomData()->sectionTerm;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->sectionTermGuid !== $newCourse->getCustomData()->sectionTermGuid) {
+                $currentCourse->getCustomData()->sectionTermGuid = $newCourse->getCustomData()->sectionTermGuid;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->sectionPTerm !== $newCourse->getCustomData()->sectionPTerm) {
+                $currentCourse->getCustomData()->sectionPTerm = $newCourse->getCustomData()->sectionPTerm;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->sectionPTermGuid !== $newCourse->getCustomData()->sectionPTermGuid) {
+                $currentCourse->getCustomData()->sectionPTermGuid = $newCourse->getCustomData()->sectionPTermGuid;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->sectionStartDate !== $newCourse->getCustomData()->sectionStartDate) {
+                $currentCourse->getCustomData()->sectionStartDate = $newCourse->getCustomData()->sectionStartDate;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->sectionEndDate !== $newCourse->getCustomData()->sectionEndDate) {
+                $currentCourse->getCustomData()->sectionEndDate = $newCourse->getCustomData()->sectionEndDate;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->sectionArchiveDate !== $newCourse->getCustomData()->sectionArchiveDate) {
+                $currentCourse->getCustomData()->sectionArchiveDate = $newCourse->getCustomData()->sectionArchiveDate;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->sectionRun !== $newCourse->getCustomData()->sectionRun) {
+                $currentCourse->getCustomData()->sectionRun = $newCourse->getCustomData()->sectionRun;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->sectionOwningInstitutionUnits !== $newCourse->getCustomData()->sectionOwningInstitutionUnits) {
+                $currentCourse->getCustomData()->sectionOwningInstitutionUnits = $newCourse->getCustomData()->sectionOwningInstitutionUnits;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->sectionOwningInstitutionUnitsGuids !== $newCourse->getCustomData()->sectionOwningInstitutionUnitsGuids) {
+                $currentCourse->getCustomData()->sectionOwningInstitutionUnitsGuids = $newCourse->getCustomData()->sectionOwningInstitutionUnitsGuids;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->sectionSiteCode !== $newCourse->getCustomData()->sectionSiteCode) {
+                $currentCourse->getCustomData()->sectionSiteCode = $newCourse->getCustomData()->sectionSiteCode;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->sectionSiteGuid !== $newCourse->getCustomData()->sectionSiteGuid) {
+                $currentCourse->getCustomData()->sectionSiteGuid = $newCourse->getCustomData()->sectionSiteGuid;
+                $hasChanges = true;
+            }
+
+            if($currentCourse->getCustomData()->sectionGuid !== $newCourse->getCustomData()->sectionGuid) {
+                $currentCourse->getCustomData()->sectionGuid = $newCourse->getCustomData()->sectionGuid;
+                $hasChanges = true;
+            }
+        }
+
         if($hasChanges) {
             return $currentCourse;
         }
