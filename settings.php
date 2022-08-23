@@ -28,7 +28,7 @@ $hidden = $settings->hidden;
 
 $settings = new admin_category('ethosenrolsettingscat', get_string('pluginname', 'enrol_ethos'), $hidden);
 
-$settingsethos = new admin_settingpage('ethosenrolsettings', get_string('settings'), 'moodle/site:config');
+$settingsethos = new admin_settingpage('enrolsettingsethos', get_string('settings'), 'moodle/site:config');
 
 if ($ADMIN->fulltree) {
 
