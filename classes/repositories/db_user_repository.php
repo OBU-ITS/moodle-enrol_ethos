@@ -1,12 +1,13 @@
 <?php
 namespace enrol_ethos\repositories;
-use enrol_ethos\interfaces\user_repository_interface;
-use enrol_ethos\entities\user;
 
-require_once($CFG->dirroot.'/lib/enrollib.php');
+use enrol_ethos\entities\mdl_user;
+use profile_field_base;
+
 require_once($CFG->dirroot.'/user/lib.php');
+require_once($CFG->dirroot.'/user/profile/lib.php');
 
-class db_user_repository extends \enrol_plugin implements user_repository_interface
+class db_user_repository extends \enrol_plugin
 {
     protected $db;
 
@@ -15,7 +16,7 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
         $this->db = $db;
     }
 
-    public function getById($id)
+    public function get($id)
     {
         $sql  = 'select u.id AS userid, username ';
         $sql .= 'from {user} u ';
@@ -35,7 +36,7 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
         return $this->db->get_record_sql($sql, ['username' => $username]);
     }
 
-    public function getAllUsers($authType=null, $includeDeleted=true) {
+    public function getAllUsers($authType=null, $includeDeleted=true, int $limit = 0, int $offset = 0) {
         // Join any user info data present with each user info field for the user object.
         $sql = 'SELECT username, id AS userid ';
         $sql .= 'FROM {user} ';
@@ -51,28 +52,64 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
 
         $sql .= 'ORDER BY username ';
 
-        $dbusers = $this->db->get_records_sql($sql, ['authtype' => $authType]);
+        if($limit > 0) {
+            $sql .= 'LIMIT :limit ';
+        }
+        if($offset > 0) {
+            $sql .= 'OFFSET :offset ';
+        }
 
-        return $dbusers;
+        return $this->db->get_records_sql($sql, ['authtype' => $authType, 'limit' => $limit, 'offset' => $offset]);
     }
 
-    public function getUsersByAuthType(string $authType) {
-        return $this->getAllUsers($authType,false);
+    public function getUsersByAuthType(string $authType, int $limit = 0, int $offset = 0) {
+        return $this->getAllUsers($authType,false, $limit, $offset);
     }
 
-    public function createUser(string $username, string $firstname, string $lastname, string $email) : int {
-        $user = new \stdClass();
+    public function create(mdl_user $moodleUser) : mdl_user {
+        $user = $this->convertFromMoodleUser($moodleUser);
 
         $user->modified   = time();
         $user->confirmed  = 1;
         $user->auth       = 'ldap';
-        $user->username = trim(\core_text::strtolower($username));
         $user->suspended = 0;
-        $user->firstname = $firstname;
-        $user->lastname = $lastname;
-        $user->email = $email;
 
-        return user_create_user($user, false, false);
+        $dbUser = user_create_user($user, false, false);
+
+        // TODO : Create profile field data
+
+        return $this->convertToMoodleUser($dbUser);
+    }
+
+    public function update(mdl_user $moodleUser) {
+        $dbUser = $this->convertFromMoodleUser($moodleUser);
+
+        // TODO : Update profile field data
+
+        user_update_user($dbUser, false, true);
+
+    }
+
+    private function convertFromMoodleUser(mdl_user $moodleUser) {
+        $user = new \stdClass();
+
+        $user->username = trim(\core_text::strtolower($moodleUser->username));
+        $user->firstname = $moodleUser->firstname;
+        $user->lastname = $moodleUser->lastname;
+        $user->email = $moodleUser->email;
+
+        return $user;
+    }
+
+    private function convertToMoodleUser($dbUser) : mdl_user {
+        $moodleUser = new mdl_user();
+        $moodleUser->id = $dbUser->id;
+        $moodleUser->username = $dbUser->username;
+        $moodleUser->firstname = $dbUser->firstname;
+        $moodleUser->lastname = $dbUser->lastname;
+        $moodleUser->email = $dbUser->email;
+
+        return $moodleUser;
     }
 
     public function save(user $user)
@@ -154,7 +191,7 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
             $this->db->insert_records('user_info_data', $newRecords);
         }
 
-        $this->unenrol_missing_enrolments($user);
+        //$this->unenrol_missing_enrolments($user);
 
         foreach ($user->enrolments as $enrolment) {
             $restrictStart = 0;
@@ -170,11 +207,18 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
         }
     }
 
-    public function remove(user $user)
-    {
-        // Remove the $user
-        // from the 'users' table
-        //$this->db->remove($user, 'users');
+    /**
+     * @param int $id User Id
+     * @return array
+     */
+    public function getUserProfileData(int $id) : array {
+        $customDataRaw = array();
+
+        array_map(function($item) use ($customDataRaw) {
+            $customDataRaw[$item->field["shortname"]] = $item->data;
+        }, profile_get_user_fields_with_data($id));
+
+        return $customDataRaw;
     }
 
     public function getAllUsersWithProfileFieldData(string $profileFieldShortName, string $profileFieldValue = null, string $authType = null) {
@@ -184,10 +228,10 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
         $sql .= 'join {user_info_field} uif on uind.fieldid = uif.id ';
         $sql .=  'where uif.shortname = :shortname';
         if ($profileFieldValue) {
-            $sql .=  'and uind.data = :value';
+            $sql .=  ' and uind.data = :value';
         }
         if ($authType) {
-            $sql .=  'and u.auth = :authtype ';
+            $sql .=  ' and u.auth = :authtype ';
         }
 
         return $this->db->get_records_sql($sql, ['shortname' => $profileFieldShortName, 'value' => $profileFieldValue, 'authtype' => $authType]);
@@ -288,25 +332,25 @@ class db_user_repository extends \enrol_plugin implements user_repository_interf
         return $result;
     }
 
-    private function unenrol_missing_enrolments($user) {
-        $courseIds = array_column(array_column($user->enrolments, 'course'), 'id');
-
-        $params = array('now'=>time(), 'userid'=>$user->id);
-
-        $sql = "SELECT ue.*, e.courseid as courseid, c.id AS contextid
-                    FROM {user_enrolments} ue
-                    JOIN {enrol} e ON (e.id = ue.enrolid AND e.enrol = 'ethos')
-                    JOIN {context} c ON (c.instanceid = e.courseid AND c.contextlevel = 50)
-                    WHERE ue.userid = :userid";
-        $rs = $this->db->get_recordset_sql($sql, $params);
-
-        foreach ($rs as $ue) {
-            if (!in_array($ue->courseid, $courseIds)) {
-                $this->unassign_role(5, $ue->courseid, $user->id);
-            }
-        }
-        $rs->close();
-    }
+//    private function unenrol_missing_enrolments($user) {
+//        $courseIds = array_column(array_column($user->enrolments, 'course'), 'id');
+//
+//        $params = array('now'=>time(), 'userid'=>$user->id);
+//
+//        $sql = "SELECT ue.*, e.courseid as courseid, c.id AS contextid
+//                    FROM {user_enrolments} ue
+//                    JOIN {enrol} e ON (e.id = ue.enrolid AND e.enrol = 'ethos')
+//                    JOIN {context} c ON (c.instanceid = e.courseid AND c.contextlevel = 50)
+//                    WHERE ue.userid = :userid";
+//        $rs = $this->db->get_recordset_sql($sql, $params);
+//
+//        foreach ($rs as $ue) {
+//            if (!in_array($ue->courseid, $courseIds)) {
+//                $this->unassign_role(5, $ue->courseid, $user->id);
+//            }
+//        }
+//        $rs->close();
+//    }
 
     private function unassign_role($roleid, $courseid, $userid) {
         global $CFG;

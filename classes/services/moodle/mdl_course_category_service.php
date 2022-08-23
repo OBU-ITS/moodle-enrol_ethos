@@ -1,5 +1,5 @@
 <?php
-namespace enrol_ethos\services;
+namespace enrol_ethos\services\moodle;
 
 use core_course_category;
 use enrol_ethos\entities\obu_course_category_info;

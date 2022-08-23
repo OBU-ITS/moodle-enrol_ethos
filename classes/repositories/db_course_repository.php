@@ -29,38 +29,42 @@ class db_course_repository
         }
     }
 
+    public function getAllCoursesWithCustomFieldData(string $profileFieldShortName, string $profileFieldValue = null) {
+        $sql  = 'select c.* ';
+        $sql .= 'from {course} c ';
+        $sql .= 'join {customfield_data} cd on c.id = cd.instanceid ';
+        $sql .= 'join {customfield_field} cf on cd.fieldid = cf.id ';
+        $sql .= 'join {customfield_category} cc on cf.categoryid = cc.id ';
+        $sql .=  'where cc.component = \'core_course\' AND cc.area = \'course\' AND cf.shortname = :shortname';
+        if ($profileFieldValue) {
+            $sql .=  ' AND cd.value = :value';
+        }
+
+        return $this->db->get_records_sql($sql, ['shortname' => $profileFieldShortName, 'value' => $profileFieldValue]);
+    }
 
     public function update(mdl_course $course) {
         $moodleCourse = $this->convertToMoodleCourse($course);
 
-        $moodleCourse->timemodified = time();
-
-        $moodleCourse->id = $course->id;
+        // TODO : Update profile field data
 
         try {
             update_course($moodleCourse);
         }
         catch (Exception $e) {
-            $status = false;
-            return false;
         }
-        return true;
     }
 
-    public function create(mdl_course $course)
+    public function create(mdl_course $course) : mdl_course
     {
-        $status = true;
-        $logline = '';
         $moodleCourse = $this->convertToMoodleCourse($course);
 
-        $timecreated = time();
-        $moodleCourse->timecreated = $timecreated;
-        $moodleCourse->timemodified = $timecreated;
+        // TODO : create profile field data
 
         return $this->convertFromMoodleCourse(create_course($moodleCourse));
     }
 
-    private function convertFromMoodleCourse($dbCourse) {
+    private function convertFromMoodleCourse($dbCourse) : mdl_course {
         $course = new mdl_course(
             $dbCourse->idnumber,
             $dbCourse->shortname,
@@ -76,40 +80,26 @@ class db_course_repository
         return $course;
     }
 
-    private function convertToMoodleCourse(mdl_course $course) {
-        $moodlecourse = new \stdClass();
+    private function convertToMoodleCourse(mdl_course $course) : \stdClass {
+        $moodleCourse = new \stdClass();
+        $moodleCourse->id = $course->id;
 
-        if (empty($course->enddate)) {
-            $enddate = 0;
-        }
-        if (empty($course->startdate)) {
-            $startdate = 0;
-        }
         // Set some preferences.
-        $logline = 'Using hard-coded settings:';
-        //$moodlecourse->format               = 'topics';
-        //$moodlecourse->numsections          = 6;
-        //$moodlecourse->hiddensections       = 0;
-        $moodlecourse->newsitems            = 3;
-        $moodlecourse->showgrades           = 1;
-        $moodlecourse->showreports          = 1;
+        //$moodleCourse->format             = 'topics';
+        //$moodleCourse->numsections        = 6;
+        //$moodleCourse->hiddensections     = 0;
+        $moodleCourse->newsitems            = 3;
+        $moodleCourse->showgrades           = 1;
+        $moodleCourse->showreports          = 1;
 
-        $moodlecourse->idnumber = $course->idnumber;
-        $moodlecourse->shortname = $course->shortname;
-        $moodlecourse->fullname = $course->name;
-        $moodlecourse->startdate = $course->startdate;
-        $moodlecourse->enddate = $course->enddate;
-        $moodlecourse->category = $course->catid;
-        $moodlecourse->visible = $course->visible;
+        $moodleCourse->idnumber = $course->idnumber;
+        $moodleCourse->shortname = $course->shortname;
+        $moodleCourse->fullname = $course->name;
+        $moodleCourse->startdate = $course->startdate;
+        $moodleCourse->enddate = $course->enddate;
+        $moodleCourse->category = $course->catid;
+        $moodleCourse->visible = $course->visible;
 
-        return $moodlecourse;
+        return $moodleCourse;
     }
-
-    public function remove(mdl_course $course)
-    {
-        // Remove the $user
-        // from the 'users' table
-        //$this->db->remove($user, 'users');
-    }
-
 }

@@ -1,8 +1,9 @@
 <?php
 namespace enrol_ethos\services\sync;
 
+use enrol_ethos\entities\mdl_course;
 use enrol_ethos\entities\obu_course_hierarchy_info;
-use enrol_ethos\services\mdl_course_service;
+use enrol_ethos\services\moodle\mdl_course_service;
 use enrol_ethos\services\obu_module_run_service;
 use progress_trace;
 
@@ -31,15 +32,24 @@ class obu_sync_section_service
 
     public function sync(progress_trace $trace, $id)
     {
-        $hierarchy = obu_course_hierarchy_info::getTopCategory();
-
         $trace->output("Start re-sync module run for id:" . $id);
 
+        $hierarchy = obu_course_hierarchy_info::getTopCategory();
         $this->moduleRunService->get($hierarchy, $id);
 
         $this->courseService->handleCourseCreation($trace, $hierarchy);
     }
 
+    public function syncByCourse(progress_trace $trace, mdl_course $course)
+    {
+        $customData = $course->getCustomData();
+        $trace->output("Start re-sync module run for id:" . $customData->sectionGuid);
+
+        $hierarchy = obu_course_hierarchy_info::getTopCategory();
+        $this->moduleRunService->get($hierarchy, $customData->sectionGuid);
+
+        $this->courseService->handleCourseCreation($trace, $hierarchy);
+    }
 
     public function syncAll(progress_trace $trace, int $max = 0) {
         $offset = 0;

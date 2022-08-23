@@ -12,6 +12,7 @@ class ethos_student_info
     }
 
     public string $id;
+    public string $status;
 
     private string $personId;  // required
     private ?ethos_person_info $person = null;
@@ -38,6 +39,7 @@ class ethos_student_info
         }
 
         $this->id = $data->id;
+        $this->status = $data->status;
 
         if(isset($data->person)) {
             $this->setPersonId($data->person->id);

@@ -35,12 +35,14 @@ class ethos_student_provider extends ethos_provider
 
     /**
      * @param $personId
-     * @return ethos_student_info[]
+     * @return ethos_student_info
      */
-    public function getStudentByPersonId($personId) : array {
+    public function getStudentByPersonId($personId) : ethos_student_info {
         $url = $this->buildUrlWithCriteria('{"person": {"id": "'. $personId . '"}}');
         $items = $this->getFromEthos($url);
-        return array_map(array($this, 'convert'), $items);
+        $item = count($items)>0 ? $items[0] : null;
+
+        return $this->convert($item);
     }
 
     /**

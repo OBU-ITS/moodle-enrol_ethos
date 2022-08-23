@@ -2,6 +2,10 @@
 
 namespace enrol_ethos\ethosclient\entities;
 
+use enrol_ethos\ethosclient\providers\ethos_person_hold_provider;
+use enrol_ethos\ethosclient\providers\ethos_section_instructors_provider;
+use enrol_ethos\ethosclient\providers\ethos_student_advisor_relationship_provider;
+use enrol_ethos\ethosclient\providers\ethos_student_provider;
 use enrol_ethos\ethosclient\services\ethos_person_alternative_credential_service;
 use enrol_ethos\ethosclient\services\ethos_person_credential_service;
 use enrol_ethos\ethosclient\services\ethos_person_name_service;
@@ -14,6 +18,8 @@ class ethos_person_info
     }
 
     public string $id;
+    public string $pidm;
+    public string $serviceNeeds = "XX"; //TODO
 
     /**
      * @var ethos_person_info_name[]
@@ -69,12 +75,92 @@ class ethos_person_info
         }
     }
 
+    /**
+     * @var ethos_student_advisor_relationship_info[]|null
+     */
+    private ?array $advisors = null;
+
+    /**
+     * @return ethos_student_advisor_relationship_info[]
+     */
+    public function getAdvisors(): array
+    {
+        if ($this->advisors == null){
+            $provider = ethos_student_advisor_relationship_provider::getInstance();
+            $this->advisors = $provider->getByAdvisorPersonGuid($this->id);
+        }
+        return $this->advisors;
+    }
+
+    /**
+     * @var ethos_student_advisor_relationship_info[]|null
+     */
+    private ?array $advisorStudents = null;
+
+    /**
+     * @return ethos_student_advisor_relationship_info[]
+     */
+    public function getAdvisorStudents(): array
+    {
+        if ($this->advisorStudents == null){
+            $provider = ethos_student_advisor_relationship_provider::getInstance();
+            $this->advisorStudents = $provider->getByAdvisorPersonGuid($this->id);
+        }
+        return $this->advisorStudents;
+    }
+
+    /**
+     * @var ethos_person_hold_info[]|null
+     */
+    private ?array $personHolds = null;
+
+    /**
+     * @return ethos_person_hold_info[]
+     */
+    public function getPersonHolds(): array
+    {
+        if ($this->personHolds == null){
+            $provider = ethos_person_hold_provider::getInstance();
+            $this->personHolds = $provider->getByPersonGuid($this->id);
+        }
+        return $this->personHolds;
+    }
+
+    /**
+     * @var ethos_section_instructors_info[]|null
+     */
+    private ?array $instructorSections = null;
+
+    /**
+     * @return ethos_section_instructors_info[]
+     */
+    public function getInstructorSections(): array
+    {
+        if ($this->instructorSections == null){
+            $provider = ethos_section_instructors_provider::getInstance();
+            $this->instructorSections = $provider->getByInstructorPersonGuid($this->id);
+        }
+        return $this->instructorSections;
+    }
+
+    private ?ethos_student_info $student = null;
+
+    public function getStudent(): ethos_student_info
+    {
+        if ($this->student == null){
+            $provider = ethos_student_provider::getInstance();
+            $this->student = $provider->getStudentByPersonId($this->id);
+        }
+        return $this->student;
+    }
+
     private function populateObject($data){
         if(!isset($data)) {
             return;
         }
 
         $this->id = $data->id;
+        $this->pidm = $data->pidm;
         $this->setNames($data->names);
         $this->setCredentials($data->credentials);
         $this->setAlternativeCredentials($data->alternativeCredentials);

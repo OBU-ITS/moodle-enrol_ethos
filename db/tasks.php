@@ -26,15 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $tasks = [
     [
-        'classname' => 'enrol_ethos\task\create_psuedo_courses',
-        'blocking' => 0,
-        'minute' => '30',
-        'hour' => '17',
-        'day' => '*',
-        'month' => '1,7',
-        'dayofweek' => '0',
-    ],
-    [
         'classname' => 'enrol_ethos\task\process_ethos_updates',
         'blocking' => 0,
         'minute' => '45',

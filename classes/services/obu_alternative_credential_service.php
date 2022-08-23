@@ -1,18 +1,29 @@
 <?php
 namespace enrol_ethos\services;
 
+use enrol_ethos\ethosclient\entities\ethos_alternative_credential_type_info;
 use enrol_ethos\ethosclient\providers\ethos_alternative_credential_type_provider;
 
 class obu_alternative_credential_service
 {
     private ethos_alternative_credential_type_provider $alternativeCredentialService;
 
-    public function __construct()
+    private function __construct()
     {
         $this->alternativeCredentialService = ethos_alternative_credential_type_provider::getInstance();
     }
 
-    public function getEmployeeNumberAlternativeCredentialType() : ?object {
+    private static ?obu_alternative_credential_service $instance = null;
+    public static function getInstance(): obu_alternative_credential_service
+    {
+        if (self::$instance == null) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
+    }
+
+    public function getEmployeeNumberAlternativeCredentialType() : ethos_alternative_credential_type_info {
         return $this->alternativeCredentialService->getEmployeeNumberAlternativeCredentialType();
     }
 

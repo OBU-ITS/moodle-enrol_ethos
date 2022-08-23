@@ -1,6 +1,8 @@
 <?php
 namespace enrol_ethos\entities;
 
+use enrol_ethos\services\moodle\mdl_course_service;
+
 class mdl_course {
     public $idnumber;
     public ?int $id;
@@ -12,6 +14,7 @@ class mdl_course {
     public $enddate;
     public $visible;
     public $bannerId = "";
+    public string $courseType;
 
     public function __construct(
         $idnumber, $shortname, $name, $catid = '',
@@ -26,5 +29,26 @@ class mdl_course {
         $this->startdate = $startdate;
         $this->enddate = $enddate;
         $this->visible = $visible;
+    }
+
+
+    private ?mdl_course_custom_fields $customData;
+    public function getCustomData() : mdl_course_custom_fields{
+        if(!isset($this->customData)) {
+            if($this->id > 0) {
+                $service = mdl_course_service::getInstance();
+                $this->customData = $service->getCustomData($this->id);
+            }
+            else {
+                $this->customData = new mdl_course_custom_fields();
+            }
+        }
+
+        return $this->customData;
+    }
+
+    public function setCustomData($courseProfile)
+    {
+        $this->customData = $courseProfile;
     }
 }

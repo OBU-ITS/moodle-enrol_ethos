@@ -57,6 +57,8 @@ class ethos_person_provider extends ethos_provider
 
         $url = $this->buildUrlWithCriteria('{"alternativeCredentials":[{"type":{"id":"' . $credentialType->id . '"},"value":"' . $credential . '"}]}');
 
+
+
         $items = $this->getFromEthos($url);
         return array_map(array($this, 'convert'), $items);
     }
@@ -67,6 +69,18 @@ class ethos_person_provider extends ethos_provider
     public function getPersonsWithStudentRole() : array {
         $url = $this->buildUrlWithCriteria('{"roles":[{"role":"student"}]}');
         $items = $this->getFromEthos($url, true);
+        return array_map(array($this, 'convert'), $items);
+    }
+
+
+    /**
+     * @param $limit
+     * @param $offset
+     * @return ethos_person_info[]
+     */
+    public function getBatch($limit, $offset) : array {
+        $items = $this->getFromEthos(null, true, $limit, $offset);
+
         return array_map(array($this, 'convert'), $items);
     }
 

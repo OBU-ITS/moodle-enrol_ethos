@@ -33,18 +33,16 @@
  * using the functions defined in lib/ddllib.php
  */
 
+use enrol_ethos\services\obu_additional_field_service;
+
 function xmldb_enrol_ethos_upgrade($oldversion) {
 
     global $DB;
 
     $dbman = $DB->get_manager();
 
-    $profileFieldRepository = new \enrol_ethos\repositories\db_profile_field_repository($DB);
-    $profileCategoryRepository = new \enrol_ethos\repositories\db_profile_category_repository($DB);
-    $profileFieldService = new \enrol_ethos\services\profile_field_service($profileFieldRepository, $profileCategoryRepository);
-
-    $profileFieldService->addDefaultCategory();
-    $profileFieldService->addDefaultFields();
+    $manager = obu_additional_field_service::GetInstance();
+    $manager->ensureAdditionalFields();
 
     if($oldversion < 2022060901) {
 
@@ -80,10 +78,6 @@ function xmldb_enrol_ethos_upgrade($oldversion) {
         }
 
         upgrade_plugin_savepoint(true, 2022060901, 'enrol', 'ethos');
-    }
-
-    if($oldversion < 2022060902) {
-        upgrade_plugin_savepoint(true, 2022060902, 'enrol', 'ethos');
     }
 
     return true;
