@@ -88,6 +88,7 @@ class obu_staff_service
         $user->firstname = $officialName->firstName;
         $user->lastname = $officialName->lastName;
         $user->email = $username . 'brookes.ac.uk';
+        $user->userType = "staff";
         $user->setCustomData($profile);
 
         $users->addUser($user);

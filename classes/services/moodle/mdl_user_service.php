@@ -75,11 +75,88 @@ class mdl_user_service
     private function getUpdatedUser(mdl_user $current, mdl_user $new) {
         $hasChanges = false;
 
-        if('todo' == 'todo') {
+        if($current->username !== $new->username) {
+            $current->username = $new->username;
             $hasChanges = true;
         }
 
-        // TODO
+        if($current->firstname !== $new->firstname) {
+            $current->firstname = $new->firstname;
+            $hasChanges = true;
+        }
+
+        if($current->lastname !== $new->lastname) {
+            $current->lastname = $new->lastname;
+            $hasChanges = true;
+        }
+
+        if($current->email !== $new->email) {
+            $current->email = $new->email;
+            $hasChanges = true;
+        }
+
+        if($current->getCustomData()->personGuid !== $new->getCustomData()->personGuid) {
+            $current->getCustomData()->personGuid = $new->getCustomData()->personGuid;
+            $hasChanges = true;
+        }
+
+        if($current->getCustomData()->pidm !== $new->getCustomData()->pidm) {
+            $current->getCustomData()->pidm = $new->getCustomData()->pidm;
+            $hasChanges = true;
+        }
+
+        if($new->userType === "staff"){
+            if($current->getCustomData()->isAdviserFlag !== $new->getCustomData()->isAdviserFlag) {
+                $current->getCustomData()->isAdviserFlag = $new->getCustomData()->isAdviserFlag;
+                $hasChanges = true;
+            }
+
+            if($current->getCustomData()->isModuleLeadFlag !== $new->getCustomData()->isModuleLeadFlag) {
+                $current->getCustomData()->isModuleLeadFlag = $new->getCustomData()->isModuleLeadFlag;
+                $hasChanges = true;
+            }
+        }
+        elseif ($new->userType === "student"){
+            if($current->getCustomData()->financeHold !== $new->getCustomData()->financeHold) {
+                $current->getCustomData()->financeHold = $new->getCustomData()->financeHold;
+                $hasChanges = true;
+            }
+
+            if($current->getCustomData()->academicHold !== $new->getCustomData()->academicHold) {
+                $current->getCustomData()->academicHold = $new->getCustomData()->academicHold;
+                $hasChanges = true;
+            }
+
+            if($current->getCustomData()->serviceNeeds !== $new->getCustomData()->serviceNeeds) {
+                $current->getCustomData()->serviceNeeds = $new->getCustomData()->serviceNeeds;
+                $hasChanges = true;
+            }
+
+            if($current->getCustomData()->studentGuid !== $new->getCustomData()->studentGuid) {
+                $current->getCustomData()->studentGuid = $new->getCustomData()->studentGuid;
+                $hasChanges = true;
+            }
+
+            if($current->getCustomData()->studentAdviser !== $new->getCustomData()->studentAdviser) {
+                $current->getCustomData()->studentAdviser = $new->getCustomData()->studentAdviser;
+                $hasChanges = true;
+            }
+
+            if($current->getCustomData()->studentCompletionDate !== $new->getCustomData()->studentCompletionDate) {
+                $current->getCustomData()->studentCompletionDate = $new->getCustomData()->studentCompletionDate;
+                $hasChanges = true;
+            }
+
+            if($current->getCustomData()->studentAcademicPrograms !== $new->getCustomData()->studentAcademicPrograms) {
+                $current->getCustomData()->studentAcademicPrograms = $new->getCustomData()->studentAcademicPrograms;
+                $hasChanges = true;
+            }
+
+            if($current->getCustomData()->studentStatus !== $new->getCustomData()->studentStatus) {
+                $current->getCustomData()->studentStatus = $new->getCustomData()->studentStatus;
+                $hasChanges = true;
+            }
+        }
 
         if($hasChanges) {
             return $current;

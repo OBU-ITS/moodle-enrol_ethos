@@ -147,6 +147,7 @@ class obu_module_run_service
         $course->startdate = obu_datetime_helper::convertStringToTimeStamp($subTerm->startOn);
         $course->enddate = obu_datetime_helper::convertStringToTimeStamp($subTerm->endOn);
         $course->bannerId = $bannerSectionGuid;
+        $course->courseType = "section";
 
         $course->setCustomData($courseProfile);
 
