@@ -42,7 +42,7 @@ function xmldb_enrol_ethos_upgrade($oldversion) {
     $dbman = $DB->get_manager();
 
     $manager = obu_additional_field_service::GetInstance();
-//    $manager->ensureAdditionalFields();
+    $manager->ensureAdditionalFields();
 
     if($oldversion < 2022060901) {
 

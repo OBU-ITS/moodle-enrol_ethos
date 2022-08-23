@@ -13,11 +13,13 @@ class obu_staff_service
 {
     private ethos_person_provider $personProvider;
     private obu_person_name_service $personNameService;
+    private obu_section_instructor_service $sectionInstructorService;
 
     private function __construct()
     {
         $this->personProvider = ethos_person_provider::getInstance();
         $this->personNameService = obu_person_name_service::getInstance();
+        $this->sectionInstructorService = obu_section_instructor_service::getInstance();
     }
 
     private static ?obu_staff_service $instance = null;
@@ -78,7 +80,8 @@ class obu_staff_service
         $profile->personGuid = $person->id;
         $profile->pidm = $person->pidm;
         $profile->isAdviserFlag = (count($person->getAdvisors()) > 0);
-        $profile->isModuleLeadFlag = (count($person->getInstructorSections()) > 0);
+        $currentOrFutureInstructors = $this->sectionInstructorService->getCurrentOrFutureInstructors($person->getInstructorSections());
+        $profile->isModuleLeadFlag = (count($currentOrFutureInstructors) > 0);
 
         $user = new mdl_user();
         $user->username = $username;
