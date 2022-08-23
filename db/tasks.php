@@ -60,5 +60,14 @@ $tasks = [
         'day' => '*',
         'month' => '1,7',
         'dayofweek' => '0',
+    ],
+    [
+        'classname' => 'enrol_ethos\task\deprecation_detector',
+        'blocking' => 0,
+        'minute' => '45',
+        'hour' => '17',
+        'day' => '*',
+        'month' => '1,7',
+        'dayofweek' => '0',
     ]
 ];

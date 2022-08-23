@@ -4,7 +4,7 @@ namespace enrol_ethos\task;
 class deprecation_detector extends \core\task\scheduled_task{
 
     public function get_name() : string {
-        return "deprecation_detector";
+        return "Deprecation Detector";
     }
 
     public function execute() {

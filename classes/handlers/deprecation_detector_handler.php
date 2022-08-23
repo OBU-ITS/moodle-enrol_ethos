@@ -5,19 +5,19 @@ use enrol_ethos\services\deprecation_detector_service;
 
 class deprecation_detector_handler
 {
-    private deprecation_detector_service $deprecationdetectorService;
-    private available_resources_service $availableresourcesService;
+    private deprecation_detector_service $deprecationDetectorService;
+    private available_resources_service $availableResourcesService;
     private email_service $emailService;
 
 
     public function __construct()
     {
-        $this->deprecationdetectorService = new deprecation_detector_service();
-        $this->availableresourcesService = new available_resources_service();
+        $this->deprecationDetectorService = new deprecation_detector_service();
+        $this->availableResourcesService = new available_resources_service();
         $this->emailService = new email_service();
     }
 
-    private function getavailableresources(){
-        $this->availableresourcesService->getAvailableResourcesService();
+    private function getAvailableResources(){
+        $this->availableResourcesService->getAvailableResourcesService();
     }
 }

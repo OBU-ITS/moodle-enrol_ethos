@@ -1,17 +1,18 @@
 <?php
-namespace enrol_ethos\ethosclient\services;
+namespace enrol_ethos\services;
 
-use enrol_ethos\services\available_resources_service;
-use enrol_ethos\services\email_service;
+
+use enrol_ethos\ethosclient\services\ethos_available_resources_service;
+
 
 class deprecation_detector_service {
 
-    private available_resources_service $availableresourcesService;
+    private ethos_available_resources_service $availableResourcesService;
     private email_service $emailService;
 
     private function __construct()
     {
-        $this->available_resources_service = new available_resources_service();
+        $this->availableResourcesService = ethos_available_resources_service::getInstance();
         $this->emailService = new email_service();
     }
 
@@ -26,8 +27,8 @@ class deprecation_detector_service {
         return self::$instance;
     }
 
-    public function get($obj) : deprecation_detector_service {
+    public function get($obj) {
 
-        return new deprecation_detector_service($obj);
+        return 0;
     }
 }
