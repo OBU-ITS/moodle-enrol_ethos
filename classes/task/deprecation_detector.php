@@ -13,7 +13,7 @@ class deprecation_detector extends \core\task\scheduled_task{
         $trace->output("Test 1");
         $trace->output("Test 2");
 
-        $handler = new \enrol_ethos\handlers\deprecation_detector_handler($trace);
+        //$handler = new \enrol_ethos\handlers\deprecation_detector_handler($trace);
 
     }
 

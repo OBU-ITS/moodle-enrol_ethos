@@ -22,7 +22,7 @@ class mdl_profile_field {
         if(!isset($data)) {
             return;
         }
-
+        var_dump($data);
         $this->shortname = $data->shortname;
         $this->name = $data->name;
         $this->description = $data->description;
