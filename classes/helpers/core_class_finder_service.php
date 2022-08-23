@@ -1,15 +1,15 @@
 <?php
 
-namespace enrol_ethos\services;
+namespace enrol_ethos\helpers;
 
-class core_class_finder_service {
+class core_class_finder_helper {
     /**
      * @param string $path sub-folder path
      */
     public static function includeFilesInFolder(string $path = "") {
         $directory = $path == ""
-            ? realpath(__DIR__ . "/../.")
-            : realpath(__DIR__ . "/../" . $path);
+            ? realpath(__DIR__ . "/../classes")
+            : realpath(__DIR__ . "/classes/" . $path);
 
         if(!is_dir($directory)) {
             return;

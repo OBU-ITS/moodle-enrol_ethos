@@ -2,8 +2,8 @@
 namespace enrol_ethos\handlers;
 
 use enrol_ethos\ethosclient\services\ethos_notification_service;
+use enrol_ethos\helpers\core_class_finder_helper;
 use enrol_ethos\processors\base\obu_processor;
-use enrol_ethos\services\core_class_finder_service;
 use progress_trace;
 
 class ethos_notifications_handler {
@@ -27,7 +27,7 @@ class ethos_notifications_handler {
 
     private function populateProcessors() {
         $this->processors = array();
-        core_class_finder_service::includeFilesInFolder("processors");
+        core_class_finder_helper::includeFilesInFolder("processors");
 
         foreach(get_declared_classes() as $class) {
             $interfaces = class_implements($class);
