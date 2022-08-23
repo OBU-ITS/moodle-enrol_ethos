@@ -59,9 +59,11 @@ class db_course_repository
     {
         $moodleCourse = $this->convertToMoodleCourse($course);
 
+        $course = create_course($moodleCourse);
+
         // TODO : create profile field data
 
-        return $this->convertFromMoodleCourse(create_course($moodleCourse));
+        return $this->convertFromMoodleCourse($course);
     }
 
     private function convertFromMoodleCourse($dbCourse) : mdl_course {

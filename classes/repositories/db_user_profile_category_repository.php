@@ -28,7 +28,7 @@ class db_user_profile_category_repository
     public function get($id) : ?mdl_profile_category
     {
         if ($item = $this->db->get_record('user_info_category',array('id'=>$id))) {
-            return new mdl_profile_category($item);
+            return $this->convert($item);
         }
 
         return null;
@@ -37,10 +37,16 @@ class db_user_profile_category_repository
     public function getByName($name) : ?mdl_profile_category
     {
         if ($item = $this->db->get_record('user_info_category',array('name'=>$name))) {
-            return new mdl_profile_category($item);
+            return $this->convert($item);
         }
 
         return null;
+    }
+
+    private function convert($item) : mdl_profile_category {
+        $obj = new mdl_profile_category();
+        $obj->populateObject($item);
+        return $obj;
     }
 
     public function create(string $name) : mdl_profile_category {

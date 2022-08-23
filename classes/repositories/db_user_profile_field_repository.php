@@ -49,7 +49,9 @@ class db_user_profile_field_repository
     }
 
     private function convert($item) : mdl_profile_field {
-        return new mdl_profile_field($item);
+        $obj = new mdl_profile_field();
+        $obj->populateObject($item);
+        return $obj;
     }
 
     public function save(mdl_profile_field $profileField)

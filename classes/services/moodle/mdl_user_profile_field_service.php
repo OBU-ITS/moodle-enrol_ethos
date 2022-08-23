@@ -53,6 +53,8 @@ class mdl_user_profile_field_service
 
         // Defaults for other values.
         $data = [
+            'categoryid' => $category->id,
+            'datatype' => $type,
             'id' => 0,
             'name' => $name,
             'shortname' => $shortname,
@@ -96,7 +98,8 @@ class mdl_user_profile_field_service
             $data[$field] = $value;
         }
 
-        $item = new mdl_profile_field($data);
+        $item = new mdl_profile_field();
+        $item->populateObjectByArray($data);
 
         $this->userProfileFieldRepo->save($item);
     }
