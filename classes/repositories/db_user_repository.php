@@ -75,7 +75,7 @@ class db_user_repository extends \enrol_plugin
         $user->suspended = 0;
 
         $dbUser = user_create_user($user, false, false);
-
+        var_dump($dbUser);
         // TODO : Create profile field data
 
         return $this->convertToMoodleUser($dbUser);
@@ -103,12 +103,11 @@ class db_user_repository extends \enrol_plugin
 
     private function convertToMoodleUser($dbUser) : mdl_user {
         $moodleUser = new mdl_user();
-        $moodleUser->id = $dbUser->id;
-        $moodleUser->username = $dbUser->username;
-        $moodleUser->firstname = $dbUser->firstname;
-        $moodleUser->lastname = $dbUser->lastname;
-        $moodleUser->email = $dbUser->email;
-
+        $moodleUser->id = $dbUser->userid;
+        $moodleUser->username = $dbUser->username ?? '';
+        $moodleUser->firstname = $dbUser->firstname ?? '';
+        $moodleUser->lastname = $dbUser->lastname ?? '';
+        $moodleUser->email = $dbUser->email ?? '';
         return $moodleUser;
     }
 
@@ -302,7 +301,7 @@ class db_user_repository extends \enrol_plugin
             $dbusers = array_merge($dbusersBatch, $dbusers);
         }
 
-        return $dbusers;
+        return array_map(array($this, 'convertToMoodleUser'), $dbusers);
     }
 
     /**

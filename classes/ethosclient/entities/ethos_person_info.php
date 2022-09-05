@@ -163,6 +163,9 @@ class ethos_person_info
         $this->pidm = $data->pidm;
         $this->setNames($data->names);
         $this->setCredentials($data->credentials);
-        $this->setAlternativeCredentials($data->alternativeCredentials);
+        if (isset($data->alternativeCredentials)){
+            $this->setAlternativeCredentials($data->alternativeCredentials);
+
+        }
     }
 }

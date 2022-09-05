@@ -8,6 +8,7 @@ class mdl_user_profile
     // All
     public string $personGuid;
     public string $pidm;
+    public string $userType;
 
     // Student
     public string $financeHold;
@@ -26,6 +27,7 @@ class mdl_user_profile
     public function populateObject(array $customData) {
         $this->personGuid = $customData['person_guid'];
         $this->pidm = $customData['pidm'];
+        $this->userType = $customData['user_type'];
         $this->financeHold = $customData['finance_hold'];
         $this->academicHold = $customData['academic_hold'];
         $this->serviceNeeds = $customData['service_needs'];

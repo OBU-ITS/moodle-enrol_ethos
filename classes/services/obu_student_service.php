@@ -75,6 +75,7 @@ class obu_student_service
         $username = $this->personNameService->getUserName($person->credentials);
         $officialName = $this->personNameService->getOfficialName($person->names);
 
+
         $profile = new mdl_user_profile();
         $profile->personGuid = $person->id;
         $profile->pidm = $person->pidm;
@@ -93,7 +94,7 @@ class obu_student_service
         $user->username = $username;
         $user->firstname = $officialName->firstName;
         $user->lastname = $officialName->lastName;
-        $user->email = $username . 'brookes.ac.uk';
+        $user->email = $username . '@brookes.ac.uk';
         $user->userType = "student";
         $user->setCustomData($profile);
 

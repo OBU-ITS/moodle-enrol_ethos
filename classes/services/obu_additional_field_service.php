@@ -112,6 +112,7 @@ class obu_additional_field_service
         $this->userProfileFieldService->ensureCustomField($visibleUserCategory, "Is Module Lead", "is_module_lead_flag", "text", 30, 200, PROFILE_VISIBLE_NONE);
 
         $hiddenUserCategory = $this->userProfileFieldService->ensureCustomFieldCategory("All Persons Data (Hidden)");
+        $this->userProfileFieldService->ensureCustomField($hiddenUserCategory, "User Type", "user_type", "text", 30, 200, PROFILE_VISIBLE_NONE);
         $this->userProfileFieldService->ensureCustomField($hiddenUserCategory, "Person Id", "person_guid", "text", 30, 200, PROFILE_VISIBLE_NONE);
         $this->userProfileFieldService->ensureCustomField($hiddenUserCategory, "PIDM", "pidm", "text", 30, 200, PROFILE_VISIBLE_NONE);
     }
