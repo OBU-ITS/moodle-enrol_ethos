@@ -64,3 +64,5 @@ $string['ethos:enrol'] = 'Enrol users';
 $string['ethos:unenrol'] = 'Unenrol users from the course';
 $string['ethos:unenrolself'] = 'Unenrol self from the course';
 $string['ethos:manage'] = 'Manage user enrolments';
+
+$string['profilefields'] = 'Profile Fields';

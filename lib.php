@@ -181,4 +181,16 @@ class enrol_ethos_plugin extends enrol_plugin {
         return parent::update_instance($instance, $data);
     }
 
+    function local_message_myprofile_navigation(core_user\output\myprofile\tree $tree, $user, $iscurrentuser, $course){
+
+        $category = new core_user\output\myprofile\category('profilefields',get_string('profile_fields', 'enrol_ethos') , null);
+        $tree->add_category($category);
+
+        //$url = new moodle_url('/local/message/manage.php');
+        $string = get_string('profilefields', 'enrol_ethos');
+        $node = new core_user\output\myprofile\node('profilefields', 'information', $string, null, $url);
+        $tree->add_node($node);
+    }
+
+
 }
