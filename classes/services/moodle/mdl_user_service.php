@@ -105,7 +105,12 @@ class mdl_user_service
             $hasChanges = true;
         }
 
-        if($new->userType === "staff"){
+        if($current->getCustomData()->userType !== $new->getCustomData()->userType) {
+            $current->getCustomData()->userType = $new->getCustomData()->userType;
+            $hasChanges = true;
+        }
+
+        if($new->getCustomData()->userType == "staff"){
             if($current->getCustomData()->isAdviserFlag !== $new->getCustomData()->isAdviserFlag) {
                 $current->getCustomData()->isAdviserFlag = $new->getCustomData()->isAdviserFlag;
                 $hasChanges = true;
@@ -116,7 +121,7 @@ class mdl_user_service
                 $hasChanges = true;
             }
         }
-        elseif ($new->userType === "student"){
+        elseif ($new->getCustomData()->userType == "student"){
             if($current->getCustomData()->financeHold !== $new->getCustomData()->financeHold) {
                 $current->getCustomData()->financeHold = $new->getCustomData()->financeHold;
                 $hasChanges = true;

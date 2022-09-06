@@ -3,6 +3,7 @@ namespace enrol_ethos\repositories;
 
 use enrol_ethos\entities\mdl_user;
 use profile_field_base;
+use stdClass;
 
 require_once($CFG->dirroot.'/user/lib.php');
 require_once($CFG->dirroot.'/user/profile/lib.php');
@@ -27,13 +28,13 @@ class db_user_repository extends \enrol_plugin
         return $dbuser;
     }
 
-    public function getByUsername($username)
+    public function getByUsername($username) : mdl_user
     {
-        $sql  = 'select u.id AS userid, username ';
+        $sql  = 'select u.id AS userid, u.* ';
         $sql .= 'from {user} u ';
         $sql .= 'where u.username = :username';
 
-        return $this->db->get_record_sql($sql, ['username' => $username]);
+        return $this->convertToMoodleUser($this->db->get_record_sql($sql, ['username' => $username]));
     }
 
     public function getAllUsers($authType=null, $includeDeleted=true, int $limit = 0, int $offset = 0) {
@@ -73,26 +74,38 @@ class db_user_repository extends \enrol_plugin
         $user->confirmed  = 1;
         $user->auth       = 'ldap';
         $user->suspended = 0;
+        $user->mnethostid = 1;
 
-        $dbUser = user_create_user($user, false, false);
-        var_dump($dbUser);
-        // TODO : Create profile field data
+        $dbUserId = user_create_user($user, false, false);
+        $dbUser = $this->get($dbUserId);
 
-        return $this->convertToMoodleUser($dbUser);
+        $newMoodleUser = $this->convertToMoodleUser($dbUser);
+
+        $customData = $moodleUser
+            ->getCustomData()
+            ->getStandardClass($newMoodleUser->id);
+
+        profile_save_data($customData);
+
+        return $newMoodleUser;
     }
 
     public function update(mdl_user $moodleUser) {
         $dbUser = $this->convertFromMoodleUser($moodleUser);
 
-        // TODO : Update profile field data
-
         user_update_user($dbUser, false, true);
 
+        $customData = $moodleUser
+            ->getCustomData()
+            ->getStandardClass($moodleUser->id);
+
+        profile_save_data($customData);
     }
 
-    private function convertFromMoodleUser(mdl_user $moodleUser) {
+    private function convertFromMoodleUser(mdl_user $moodleUser) : stdClass {
         $user = new \stdClass();
 
+        $user->id = $moodleUser->id;
         $user->username = trim(\core_text::strtolower($moodleUser->username));
         $user->firstname = $moodleUser->firstname;
         $user->lastname = $moodleUser->lastname;
@@ -213,9 +226,10 @@ class db_user_repository extends \enrol_plugin
     public function getUserProfileData(int $id) : array {
         $customDataRaw = array();
 
-        array_map(function($item) use ($customDataRaw) {
-            $customDataRaw[$item->field["shortname"]] = $item->data;
-        }, profile_get_user_fields_with_data($id));
+        $fields = profile_get_user_fields_with_data($id);
+        foreach ($fields as $formField) {
+            $customDataRaw[$formField->field->shortname] = $formField->data;
+        }
 
         return $customDataRaw;
     }
