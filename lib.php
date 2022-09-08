@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 defined('MOODLE_INTERNAL') || die();
+require_once($CFG->dirroot.'/user/profile/lib.php');
 
 class enrol_ethos_plugin extends enrol_plugin {
 
@@ -181,16 +182,29 @@ class enrol_ethos_plugin extends enrol_plugin {
         return parent::update_instance($instance, $data);
     }
 
-    function local_message_myprofile_navigation(core_user\output\myprofile\tree $tree, $user, $iscurrentuser, $course){
+}
 
-        $category = new core_user\output\myprofile\category('profilefields',get_string('profile_fields', 'enrol_ethos') , null);
-        $tree->add_category($category);
 
-        //$url = new moodle_url('/local/message/manage.php');
-        $string = get_string('profilefields', 'enrol_ethos');
-        $node = new core_user\output\myprofile\node('profilefields', 'information', $string, null, $url);
-        $tree->add_node($node);
+function enrol_ethos_myprofile_navigation(core_user\output\myprofile\tree $tree, $user, $iscurrentuser, $course){
+
+    $category = new core_user\output\myprofile\category('profilefieldscat',get_string('profilefields', 'enrol_ethos') , null);
+    $tree->add_category($category);
+    $string = get_string('profilefields', 'enrol_ethos');
+    $string2 = get_string('profilefields2', 'enrol_ethos');
+    $contentarray = array();
+
+    $profileFields = profile_get_user_fields_with_data($user->id);
+
+    foreach ($profileFields as $field){
+        $shortname = $field->field->shortname;
+        $data = $field->data;
+
+        $fieldsstring = $shortname . ": " . $data;
+        array_push($contentarray, $fieldsstring);
     }
 
+    $content = implode($contentarray);
 
+    $node = new core_user\output\myprofile\node('profilefieldscat', 'profilefieldsnode', $string2, null, null, $content);
+    $tree->add_node($node);
 }
