@@ -10,7 +10,6 @@ class mdl_user
     public string $firstname;
     public string $lastname;
     public string $email;
-    public string $userType;
 
     public function __construct()
     {
