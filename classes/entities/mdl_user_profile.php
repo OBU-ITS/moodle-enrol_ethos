@@ -13,6 +13,7 @@ class mdl_user_profile
     // Student
     public string $financeHold = '';
     public string $academicHold = '';
+    public string $personHolds = '';
     public string $serviceNeeds = '';
     public string $studentGuid = '';
     public string $studentAdviser = '';
@@ -30,6 +31,7 @@ class mdl_user_profile
         $this->userType = $customData['user_type'] ?? '';
         $this->financeHold = $customData['finance_hold'] ?? '';
         $this->academicHold = $customData['academic_hold'] ?? '';
+        $this->personHolds = $customData['person_holds'] ?? '';
         $this->serviceNeeds = $customData['service_needs'] ?? '';
         $this->studentGuid = $customData['student_guid'] ?? '';
         $this->studentAdviser = $customData['student_adviser'] ?? '';
@@ -49,6 +51,7 @@ class mdl_user_profile
         $rtn->profile_field_user_type = $this->userType;
         $rtn->profile_field_finance_hold = $this->financeHold;
         $rtn->profile_field_academic_hold = $this->academicHold;
+        $rtn->profile_field_person_holds = $this->personHolds;
         $rtn->profile_field_service_needs = $this->serviceNeeds;
         $rtn->profile_field_student_guid = $this->studentGuid;
         $rtn->profile_field_student_adviser = $this->studentAdviser;

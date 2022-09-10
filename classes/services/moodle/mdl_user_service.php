@@ -132,6 +132,11 @@ class mdl_user_service
                 $hasChanges = true;
             }
 
+            if($current->getCustomData()->personHolds !== $new->getCustomData()->personHolds) {
+                $current->getCustomData()->personHolds = $new->getCustomData()->personHolds;
+                $hasChanges = true;
+            }
+
             if($current->getCustomData()->serviceNeeds !== $new->getCustomData()->serviceNeeds) {
                 $current->getCustomData()->serviceNeeds = $new->getCustomData()->serviceNeeds;
                 $hasChanges = true;
