@@ -18,7 +18,10 @@ class obu_person_hold {
         }
 
         $this->id = $data->id;
-        // TODO :
-        // convert string to datetime where appropriate
+        $this->startDateTime = strtotime($data->startOn);
+        $this->endDateTime =strtotime($data->endOn);
+        $this->typeCode = $data->typeCode;
+        $this->typeTitle = $data->typeTitle;
+        $this->typeId = $data->typeID;
     }
 }
