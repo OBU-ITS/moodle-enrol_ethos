@@ -44,7 +44,7 @@ class obu_sync_person_hold_service
             return;
         }
 
-        $this->personHoldService->remove($hold, $user);
+        $this->personHoldService->update($hold, $user);
     }
 
     public function remove(progress_trace $trace, string $id) {
