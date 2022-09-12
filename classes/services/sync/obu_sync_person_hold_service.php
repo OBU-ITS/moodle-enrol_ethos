@@ -1,8 +1,11 @@
 <?php
 namespace enrol_ethos\services\sync;
 
+use enrol_ethos\entities\mdl_user;
+use enrol_ethos\entities\obu_users_info;
 use enrol_ethos\ethosclient\providers\ethos_person_hold_provider;
 use enrol_ethos\repositories\db_user_repository;
+use enrol_ethos\services\moodle\mdl_user_service;
 use obu_person_hold_service;
 use progress_trace;
 
@@ -10,6 +13,7 @@ class obu_sync_person_hold_service
 {
     private ethos_person_hold_provider $personHoldProvider;
     private obu_person_hold_service $personHoldService;
+    private mdl_user_service $userService;
     private db_user_repository $userRepo;
 
     private function __construct()
@@ -18,6 +22,7 @@ class obu_sync_person_hold_service
 
         $this->personHoldProvider = ethos_person_hold_provider::getInstance();
         $this->personHoldService = obu_person_hold_service::getInstance();
+        $this->userService = mdl_user_service::getInstance();
         $this->userRepo = new db_user_repository($DB);
     }
 
@@ -31,6 +36,12 @@ class obu_sync_person_hold_service
         return self::$instance;
     }
 
+    /**
+     * Synchronise a users person holds
+     *
+     * @param progress_trace $trace
+     * @param string $id Person Hold Guid
+     */
     public function sync(progress_trace $trace, string $id) {
         $hold = $this->personHoldProvider->get($id);
         if($hold == null) {
@@ -45,8 +56,15 @@ class obu_sync_person_hold_service
         }
 
         $this->personHoldService->update($hold, $user);
+        $this->saveUser($trace, $user);
     }
 
+    /**
+     * Remove person hold from user
+     *
+     * @param progress_trace $trace
+     * @param string $id Person Hold Guid
+     */
     public function remove(progress_trace $trace, string $id) {
         $user = $this->userRepo->getUserWhereProfileFieldContains("person_holds", $id);
         if($user == null) {
@@ -55,5 +73,18 @@ class obu_sync_person_hold_service
         }
 
         $this->personHoldService->remove($id, $user);
+        $this->saveUser($trace, $user);
+    }
+
+    /**
+     * Save User changes
+     *
+     * @param progress_trace $trace
+     * @param mdl_user $user
+     */
+    private function saveUser(progress_trace $trace, mdl_user $user) {
+        $users = new obu_users_info();
+        $users->addUser($user);
+        $this->userService->handleUserCreation($trace, $users);
     }
 }
