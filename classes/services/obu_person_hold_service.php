@@ -20,6 +20,10 @@ class obu_person_hold_service
         return self::$instance;
     }
 
+    /**
+     * @param string $holds
+     * @return string
+     */
     public function cleanHoldsProfileField(string $holds) : string {
         $obuPersonHolds = $this->deserializeHolds($holds);
         $updatedData = $this->cleanHolds($obuPersonHolds);
@@ -27,14 +31,19 @@ class obu_person_hold_service
     }
 
     /**
-     * @param obu_person_hold[] $holds
+     * @param obu_person_hold[] $personHoldsArray
      * @return obu_person_hold[]
      */
-    private function cleanHolds(array $holds) : array {
-        // Todo
-        // decode json to an array
-        // move holds where the end date is in the past
-        // encode to json
+    private function cleanHolds(array $personHoldsArray) : array {
+        $newPersonHoldsArray = array();
+
+        foreach ($personHoldsArray as $personHold){
+            if ($personHold->endDate > time()){
+                $newPersonHoldsArray[] = $personHold;
+            }
+        }
+
+        return $newPersonHoldsArray;
     }
 
     /**
@@ -62,9 +71,14 @@ class obu_person_hold_service
         return json_encode($holds);
     }
 
+    /**
+     * @param ethos_person_hold_info $ethosHold
+     * @param mdl_user $user
+     */
     public function update(ethos_person_hold_info $ethosHold, mdl_user $user) {
         $personHoldsJson = $user->getCustomData()->personHolds;
         $personHoldsArray = $this->deserializeHolds($personHoldsJson);
+        $personHoldsArray = $this->cleanHolds($personHoldsArray);
 
         foreach ($personHoldsArray as $personHold){
             if (($personHold->id) === $ethosHold->id){
@@ -77,6 +91,10 @@ class obu_person_hold_service
         $user->getCustomData()->personHolds = $updatedHolds;
     }
 
+    /**
+     * @param string $holdGuid
+     * @param mdl_user $user
+     */
     public function remove(string $holdGuid, mdl_user $user) {
         $personHoldsJson = $user->getCustomData()->personHolds;
         $personHoldsArray = $this->deserializeHolds($personHoldsJson);
@@ -88,6 +106,7 @@ class obu_person_hold_service
             }
         }
 
+        $newPersonHoldsArray = $this->cleanHolds($newPersonHoldsArray);
         $updatedHolds = $this->serializeHolds($newPersonHoldsArray);
         $user->getCustomData()->personHolds = $updatedHolds;
     }
