@@ -194,6 +194,16 @@ function enrol_ethos_myprofile_navigation(core_user\output\myprofile\tree $tree,
     foreach ($profileFields as $field){
         $shortname = $field->field->shortname;
         $data = $field->data;
+
+        if ($shortname === "user_type"){
+            $userType = $data;
+            break;
+        }
+    }
+
+    foreach ($profileFields as $field){
+        $shortname = $field->field->shortname;
+        $data = $field->data;
         $name = $field->field->name;
         $fieldcatname = $field->get_category_name();
 
@@ -201,7 +211,16 @@ function enrol_ethos_myprofile_navigation(core_user\output\myprofile\tree $tree,
             continue;
         }
 
-        $node = new core_user\output\myprofile\node('profilefieldscat', $shortname, $name, null, null, $data);
-        $tree->add_node($node);
+        if (strcasecmp($userType, "Staff") == 0){
+            $node = new core_user\output\myprofile\node('profilefieldscat', $shortname, $name, null, null, $userType);
+            $tree->add_node($node);
+        }
+
+        elseif(strcasecmp($userType, "Student") == 0){
+            if (strpos($fieldcatname, 'Student') !== false){
+                $node = new core_user\output\myprofile\node('profilefieldscat', $shortname, $name, null, null, $userType);
+                $tree->add_node($node);
+            }
+        }
     }
 }
