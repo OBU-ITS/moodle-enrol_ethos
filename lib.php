@@ -211,14 +211,14 @@ function enrol_ethos_myprofile_navigation(core_user\output\myprofile\tree $tree,
             continue;
         }
 
-        if (strcasecmp($userType, "Staff") == 0){
-            $node = new core_user\output\myprofile\node('profilefieldscat', $shortname, $name, null, null, $userType);
+        if (strcasecmp($userType, "STAFF") == 0){
+            $node = new core_user\output\myprofile\node('profilefieldscat', $shortname, $name, null, null, $data);
             $tree->add_node($node);
         }
 
-        elseif(strcasecmp($userType, "Student") == 0){
+        elseif(strcasecmp($userType, "STUDENT") == 0){
             if (strpos($fieldcatname, 'Student') !== false){
-                $node = new core_user\output\myprofile\node('profilefieldscat', $shortname, $name, null, null, $userType);
+                $node = new core_user\output\myprofile\node('profilefieldscat', $shortname, $name, null, null, $data);
                 $tree->add_node($node);
             }
         }
