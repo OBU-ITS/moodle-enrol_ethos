@@ -19,7 +19,7 @@ class db_user_repository extends \enrol_plugin
 
     public function get($id)
     {
-        $sql  = 'select u.id AS userid, username ';
+        $sql  = 'select u.id AS userid, u.* ';
         $sql .= 'from {user} u ';
         $sql .=  'where u.id = :id';
 
@@ -232,6 +232,29 @@ class db_user_repository extends \enrol_plugin
         }
 
         return $customDataRaw;
+    }
+
+    public function getUserWhereProfileFieldContains(string $profileFieldShortName, string $profileFieldValue) {
+        $condition = $this->db->sql_like('uind.data', ':value');
+        $value = '%'.$this->db->sql_like_escape($profileFieldValue).'%';
+        return $this->userWhereProfileField($profileFieldShortName, $condition, $value);
+    }
+
+    public function getUserWhereProfileFieldEquals(string $profileFieldShortName, string $profileFieldValue) {
+        return $this->userWhereProfileField($profileFieldShortName, "uind.data = :value", $profileFieldValue);
+    }
+
+    private function userWhereProfileField(string $shortname, string $condition, string $value) {
+        $sql  = 'select u.id AS userid, u.*, uind.id AS hasuserdata ';
+        $sql .= 'from {user} u ';
+        $sql .= 'join {user_info_data} uind on uind.userid = u.id ';
+        $sql .= 'join {user_info_field} uif on uind.fieldid = uif.id ';
+        $sql .=  'where uif.shortname = :shortname ';
+        $sql .=  'and ' . $condition;
+
+        $record = $this->db->get_record_sql($sql, ['shortname' => $shortname, 'value' => $value]);
+
+        return $this->convertToMoodleUser($record);
     }
 
     public function getAllUsersWithProfileFieldData(string $profileFieldShortName, string $profileFieldValue = null, string $authType = null) {
