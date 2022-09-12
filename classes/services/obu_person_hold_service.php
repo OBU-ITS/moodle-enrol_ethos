@@ -63,10 +63,32 @@ class obu_person_hold_service
     }
 
     public function update(ethos_person_hold_info $ethosHold, mdl_user $user) {
-        // TODO
+        $personHoldsJson = $user->getCustomData()->personHolds;
+        $personHoldsArray = $this->deserializeHolds($personHoldsJson);
+
+        foreach ($personHoldsArray as $personHold){
+            if (($personHold->id) === $ethosHold->id){
+                $personHold->populateObjectByEthosPersonHold($ethosHold);
+                break;
+            }
+        }
+
+        $updatedHolds = $this->serializeHolds($personHoldsArray);
+        $user->getCustomData()->personHolds = $updatedHolds;
     }
 
     public function remove(string $holdGuid, mdl_user $user) {
-        // TODO
+        $personHoldsJson = $user->getCustomData()->personHolds;
+        $personHoldsArray = $this->deserializeHolds($personHoldsJson);
+        $newPersonHoldsArray = array();
+
+        foreach ($personHoldsArray as $personHold){
+            if ($personHold->id !== $holdGuid){
+                $newPersonHoldsArray[] = $personHold;
+            }
+        }
+
+        $updatedHolds = $this->serializeHolds($newPersonHoldsArray);
+        $user->getCustomData()->personHolds = $updatedHolds;
     }
 }

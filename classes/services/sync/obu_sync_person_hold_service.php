@@ -2,15 +2,18 @@
 namespace enrol_ethos\services\sync;
 
 use enrol_ethos\ethosclient\providers\ethos_person_hold_provider;
+use obu_person_hold_service;
 use progress_trace;
 
 class obu_sync_person_hold_service
 {
     private ethos_person_hold_provider $personHoldProvider;
+    private obu_person_hold_service $personHoldService;
 
     private function __construct()
     {
         $this->personHoldProvider = ethos_person_hold_provider::getInstance();
+        $this->personHoldService = obu_person_hold_service::getInstance();
     }
 
     private static ?obu_sync_person_hold_service $instance = null;
