@@ -103,6 +103,7 @@ class obu_additional_field_service
         $hiddenUserCategory = $this->userProfileFieldService->ensureCustomFieldCategory("Student Data (Hidden)");
         $this->userProfileFieldService->ensureCustomField($hiddenUserCategory, "Finance Hold", "finance_hold", "text", 30, 200, PROFILE_VISIBLE_NONE);
         $this->userProfileFieldService->ensureCustomField($hiddenUserCategory, "Academic Hold", "academic_hold", "text", 30, 200, PROFILE_VISIBLE_NONE);
+        $this->userProfileFieldService->ensureCustomField($hiddenUserCategory, "Person Holds", "person_holds", "text", 30, 200, PROFILE_VISIBLE_NONE);
         $this->userProfileFieldService->ensureCustomField($hiddenUserCategory, "Service Needs", "service_needs", "text", 30, 200, PROFILE_VISIBLE_NONE);
         $this->userProfileFieldService->ensureCustomField($hiddenUserCategory, "Guid", "student_guid", "text", 30, 200, PROFILE_VISIBLE_NONE);
         $this->userProfileFieldService->ensureCustomField($hiddenUserCategory, "Academic Programs", "student_academic_programs", "text", 30, 200, PROFILE_VISIBLE_NONE);

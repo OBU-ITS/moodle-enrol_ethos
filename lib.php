@@ -189,22 +189,19 @@ function enrol_ethos_myprofile_navigation(core_user\output\myprofile\tree $tree,
 
     $category = new core_user\output\myprofile\category('profilefieldscat',get_string('profilefields', 'enrol_ethos') , null);
     $tree->add_category($category);
-    $string = get_string('profilefields', 'enrol_ethos');
-    $string2 = get_string('profilefields2', 'enrol_ethos');
-    $contentarray = array();
-
     $profileFields = profile_get_user_fields_with_data($user->id);
 
     foreach ($profileFields as $field){
         $shortname = $field->field->shortname;
         $data = $field->data;
+        $name = $field->field->name;
+        $fieldcatname = $field->get_category_name();
 
-        $fieldsstring = $shortname . ": " . $data;
-        array_push($contentarray, $fieldsstring);
+        if (strpos($fieldcatname, 'Hidden') !== false || empty($data)){
+            continue;
+        }
+
+        $node = new core_user\output\myprofile\node('profilefieldscat', $shortname, $name, null, null, $data);
+        $tree->add_node($node);
     }
-
-    $content = implode($contentarray);
-
-    $node = new core_user\output\myprofile\node('profilefieldscat', 'profilefieldsnode', $string2, null, null, $content);
-    $tree->add_node($node);
 }
