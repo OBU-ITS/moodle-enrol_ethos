@@ -193,16 +193,6 @@ function enrol_ethos_myprofile_navigation(core_user\output\myprofile\tree $tree,
     global $USER;
     $userType = $USER->profile["user_type"];
 
-//    foreach ($profileFields as $field){
-//        $shortname = $field->field->shortname;
-//        $data = $field->data;
-//
-//        if ($shortname === "user_type"){
-//            $userType = $data;
-//            break;
-//        }
-//    }
-
     foreach ($profileFields as $field){
         $shortname = $field->field->shortname;
         $data = $field->data;
