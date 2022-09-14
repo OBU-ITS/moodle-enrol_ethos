@@ -190,16 +190,18 @@ function enrol_ethos_myprofile_navigation(core_user\output\myprofile\tree $tree,
     $category = new core_user\output\myprofile\category('profilefieldscat',get_string('profilefields', 'enrol_ethos') , null);
     $tree->add_category($category);
     $profileFields = profile_get_user_fields_with_data($user->id);
+    global $USER;
+    $userType = $USER->profile["user_type"];
 
-    foreach ($profileFields as $field){
-        $shortname = $field->field->shortname;
-        $data = $field->data;
-
-        if ($shortname === "user_type"){
-            $userType = $data;
-            break;
-        }
-    }
+//    foreach ($profileFields as $field){
+//        $shortname = $field->field->shortname;
+//        $data = $field->data;
+//
+//        if ($shortname === "user_type"){
+//            $userType = $data;
+//            break;
+//        }
+//    }
 
     foreach ($profileFields as $field){
         $shortname = $field->field->shortname;
@@ -209,6 +211,10 @@ function enrol_ethos_myprofile_navigation(core_user\output\myprofile\tree $tree,
 
         if (strpos($fieldcatname, 'Hidden') !== false || empty($data)){
             continue;
+        }
+
+        if ($shortname === "student_completion_date"){
+            $data = date('d-m-Y', $data);
         }
 
         if (strcasecmp($userType, "STAFF") == 0){
