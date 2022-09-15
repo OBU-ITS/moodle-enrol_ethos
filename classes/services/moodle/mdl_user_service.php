@@ -122,16 +122,6 @@ class mdl_user_service
             }
         }
         elseif ($new->getCustomData()->userType == "student"){
-            if($current->getCustomData()->financeHold !== $new->getCustomData()->financeHold) {
-                $current->getCustomData()->financeHold = $new->getCustomData()->financeHold;
-                $hasChanges = true;
-            }
-
-            if($current->getCustomData()->academicHold !== $new->getCustomData()->academicHold) {
-                $current->getCustomData()->academicHold = $new->getCustomData()->academicHold;
-                $hasChanges = true;
-            }
-
             if($current->getCustomData()->personHolds !== $new->getCustomData()->personHolds) {
                 $current->getCustomData()->personHolds = $new->getCustomData()->personHolds;
                 $hasChanges = true;

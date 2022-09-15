@@ -78,8 +78,6 @@ class obu_student_service
         $profile = new mdl_user_profile();
         $profile->personGuid = $person->id;
         $profile->pidm = $person->pidm;
-        $profile->financeHold = ""; // TODO Jock
-        $profile->academicHold = ""; // TODO Jock
         $profile->serviceNeeds = $person->serviceNeeds;
         $profile->studentGuid = $person->getStudent()->id;
         $profile->studentAdviser = join(',', array_map(function($advisorRelationship) {
