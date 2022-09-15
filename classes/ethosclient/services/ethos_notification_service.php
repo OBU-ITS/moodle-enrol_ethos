@@ -51,7 +51,7 @@ class ethos_notification_service
             $url = ethos_client::API_URL . "/consume?limit=". $limit ."&lastProcessedID=" . $lastProcessedId;
 
             try {
-                $messages = $this->ethosClient->getJson($url, null);
+                $messages = $this->ethosClient->getJson($url, "");
             }
             catch(Exception $e) {
                 breaK;
@@ -61,7 +61,7 @@ class ethos_notification_service
 
             foreach ($messages as $message) {
                 $lastProcessedId = $message->id;
-                $notification = new ethos_notification($messages);
+                $notification = new ethos_notification($message);
                 $notifications->addNotification($notification);
             }
 

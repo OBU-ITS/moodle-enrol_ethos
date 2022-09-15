@@ -16,10 +16,10 @@ class ethos_notification {
         if(!isset($data)) {
             return;
         }
-        if(!isset($data->resource)) {
-            $this->resourceName = $data->resource->name;
-            $this->resourceId = $data->resource->id;
-        }
+
+        $this->resourceName = $data->resource->name;
+        $this->resourceId = $data->resource->id;
+
 
         $this->id = $data->id;
         $this->published = $data->published;

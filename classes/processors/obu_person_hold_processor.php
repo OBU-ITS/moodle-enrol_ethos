@@ -23,6 +23,7 @@ class obu_person_hold_processor implements obu_processor {
 
     function process(ethos_notification $message)
     {
+        $this->trace->output("Hello World");
         if($message->operation == "deleted") {
             $this->syncService->remove($this->trace, $message->id);
         }

@@ -57,12 +57,17 @@ class ethos_notifications_handler {
 
     private function processNotifications(?int $max) {
         $lastProcessId = 0; // TODO : Get last consumed from ethos audit
-
-        $messages = $this->consumeService->consumeMessages($lastProcessId, $max);
+        $this->trace->output("Hello Planet 1");
+        $messages = isset($max)
+            ? $this->consumeService->consumeMessages($lastProcessId, $max)
+            : $this->consumeService->consumeMessages($lastProcessId);
+        $this->trace->output("Hello Planet 2");
+        var_dump($messages);
         foreach($messages->getNotificationGroupKeys() as $messageGroupKey) {
             if(!array_key_exists($messageGroupKey, $this->processors)) {
                 continue;
             }
+            $this->trace->output("Hello Planet 3". count($messages->getNotificationsByResource($messageGroupKey)));
 
             $processor = $this->processors[$messageGroupKey];
             foreach($messages->getNotificationsByResource($messageGroupKey) as $message) {
