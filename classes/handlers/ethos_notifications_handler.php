@@ -1,6 +1,8 @@
 <?php
 namespace enrol_ethos\handlers;
 
+use enrol_ethos\ethosclient\entities\consume\ethos_notification;
+use enrol_ethos\ethosclient\entities\consume\ethos_notifications;
 use enrol_ethos\ethosclient\services\ethos_notification_service;
 use enrol_ethos\helpers\core_class_finder_helper;
 use enrol_ethos\processors\base\obu_processor;
@@ -68,19 +70,27 @@ class ethos_notifications_handler {
             : $this->consumeService->consumeMessages($lastProcessId);
 
         foreach($messages->getNotificationGroupKeys() as $messageGroupKey) {
-            $this->trace->output("Searching processor for $messageGroupKey");
-
-            if(!array_key_exists($messageGroupKey, $this->processors)) {
-                $this->trace->output("Skipping $messageGroupKey");
-                continue;
-            }
-
-            $processor = $this->processors[$messageGroupKey];
-            $this->trace->output("Processor found $messageGroupKey");
-            foreach($messages->getNotificationsByResource($messageGroupKey) as $message) {
-                $this->trace->output("Processing $message->resourceId");
-                $processor->process($message);
-            }
+            $this->processNotificationGroup($messageGroupKey, $messages);
         }
+    }
+
+    public function processNotificationGroup(string $messageGroupKey, ethos_notifications $messages) {
+        $this->trace->output("Searching processor for $messageGroupKey");
+
+        if(!array_key_exists($messageGroupKey, $this->processors)) {
+            $this->trace->output("Skipping $messageGroupKey");
+            return;
+        }
+
+        $processor = $this->processors[$messageGroupKey];
+        $this->trace->output("Processor found $messageGroupKey");
+        foreach($messages->getNotificationsByResource($messageGroupKey) as $message) {
+            $this->processNotificationResource($processor, $message);
+        }
+    }
+
+    public function processNotificationResource(obu_processor $processor, ethos_notification $message) {
+        $this->trace->output("Processing $message->resourceId");
+        $processor->process($message);
     }
 }
