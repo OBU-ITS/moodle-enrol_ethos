@@ -3,12 +3,15 @@
 require_once('../../config.php');
 require_once($CFG->libdir.'/weblib.php');
 
+$trace = new html_progress_trace();
+$handler = new \enrol_ethos\handlers\ethos_notifications_handler($trace);
 
-$service = \enrol_ethos\services\sync\obu_sync_person_service::getInstance();
-$trace = new \html_progress_trace();
-$service->sync($trace, 'f66812d3-f2de-4f10-a394-0f0ee3aeb61d');
+$notification = new \enrol_ethos\ethosclient\entities\consume\ethos_notification();
+$notification->resourceId = '076e0b9a-124f-4db1-a18b-a25157182ded';
+$notification->operation="replaced";
+$notification->resourceName="person-holds";
+$notifications = new \enrol_ethos\ethosclient\entities\consume\ethos_notifications();
+$notifications->addNotification($notification);
 
-echo  "Hello!";
-echo "World.....";
-echo "Goodbye";
+$handler->processNotificationGroup('person-holds', $notifications);
 

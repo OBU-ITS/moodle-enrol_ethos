@@ -8,8 +8,7 @@ class ethos_notification {
     public string $resourceId;
     public string $operation;
 
-    public function __construct(object $data) {
-        $this->populateObject($data);
+    public function __construct() {
     }
 
     public function populateObject(object $data) {

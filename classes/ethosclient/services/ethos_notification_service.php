@@ -61,7 +61,8 @@ class ethos_notification_service
 
             foreach ($messages as $message) {
                 $lastProcessedId = $message->id;
-                $notification = new ethos_notification($message);
+                $notification = new ethos_notification();
+                $notification->populateObject($message);
                 $notifications->addNotification($notification);
             }
 
