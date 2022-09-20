@@ -11,8 +11,7 @@ class obu_person_hold {
     public string $typeTitle;
     public string $typeId;
 
-    public function __construct(object $data) {
-        $this->populateObject($data);
+    public function __construct() {
     }
 
     public function populateObjectByEthosPersonHold(ethos_person_hold_info $data) {
