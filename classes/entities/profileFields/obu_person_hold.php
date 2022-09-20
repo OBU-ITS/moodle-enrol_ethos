@@ -1,4 +1,5 @@
 <?php
+namespace enrol_ethos\entities\profileFields;
 
 use enrol_ethos\ethosclient\entities\ethos_person_hold_info;
 

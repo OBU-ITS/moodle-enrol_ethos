@@ -1,6 +1,8 @@
 <?php
+namespace enrol_ethos\services;
 
 use enrol_ethos\entities\mdl_user;
+use enrol_ethos\entities\profileFields\obu_person_hold;
 use enrol_ethos\ethosclient\entities\ethos_person_hold_info;
 
 class obu_person_hold_service

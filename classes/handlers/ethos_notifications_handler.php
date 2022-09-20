@@ -32,13 +32,18 @@ class ethos_notifications_handler {
         foreach(get_declared_classes() as $class) {
             $interfaces = class_implements($class);
 
-            if (!isset($interfaces['enrol_ethos\processors\base\obu_processor']) || !defined($class::RESOURCE_NAME)) {
+            if (!isset($interfaces['enrol_ethos\processors\base\obu_processor'])) {
                 continue;
             }
 
             $instance = new $class($this->trace);
             if ($instance instanceof obu_processor) {
-                $resourceName = constant($class::RESOURCE_NAME);
+                try {
+                    $constant_reflex = new \ReflectionClassConstant($class, 'RESOURCE_NAME');
+                    $resourceName = $constant_reflex->getValue();
+                } catch (\ReflectionException $e) {
+                    $resourceName = '';
+                }
                 $this->processors[$resourceName] = $instance;
             }
         }
@@ -57,20 +62,23 @@ class ethos_notifications_handler {
 
     private function processNotifications(?int $max) {
         $lastProcessId = 0; // TODO : Get last consumed from ethos audit
-        $this->trace->output("Hello Planet 1");
+
         $messages = isset($max)
             ? $this->consumeService->consumeMessages($lastProcessId, $max)
             : $this->consumeService->consumeMessages($lastProcessId);
-        $this->trace->output("Hello Planet 2");
-        var_dump($messages);
+
         foreach($messages->getNotificationGroupKeys() as $messageGroupKey) {
+            $this->trace->output("Searching processor for $messageGroupKey");
+
             if(!array_key_exists($messageGroupKey, $this->processors)) {
+                $this->trace->output("Skipping $messageGroupKey");
                 continue;
             }
-            $this->trace->output("Hello Planet 3". count($messages->getNotificationsByResource($messageGroupKey)));
 
             $processor = $this->processors[$messageGroupKey];
+            $this->trace->output("Processor found $messageGroupKey");
             foreach($messages->getNotificationsByResource($messageGroupKey) as $message) {
+                $this->trace->output("Processing $message->resourceId");
                 $processor->process($message);
             }
         }

@@ -23,12 +23,13 @@ class obu_person_hold_processor implements obu_processor {
 
     function process(ethos_notification $message)
     {
-        $this->trace->output("Hello World");
+        $this->trace->output("Processing Person hold ($message->resourceId)");
+
         if($message->operation == "deleted") {
-            $this->syncService->remove($this->trace, $message->id);
+            $this->syncService->remove($this->trace, $message->resourceId);
         }
         else {
-            $this->syncService->sync($this->trace, $message->id);
+            $this->syncService->sync($this->trace, $message->resourceId);
         }
     }
 }

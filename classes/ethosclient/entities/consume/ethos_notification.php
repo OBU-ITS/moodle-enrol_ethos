@@ -19,8 +19,6 @@ class ethos_notification {
 
         $this->resourceName = $data->resource->name;
         $this->resourceId = $data->resource->id;
-
-
         $this->id = $data->id;
         $this->published = $data->published;
         $this->operation = $data->operation;

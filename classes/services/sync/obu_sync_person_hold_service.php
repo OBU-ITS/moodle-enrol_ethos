@@ -6,7 +6,7 @@ use enrol_ethos\entities\obu_users_info;
 use enrol_ethos\ethosclient\providers\ethos_person_hold_provider;
 use enrol_ethos\repositories\db_user_repository;
 use enrol_ethos\services\moodle\mdl_user_service;
-use obu_person_hold_service;
+use enrol_ethos\services\obu_person_hold_service;
 use progress_trace;
 
 class obu_sync_person_hold_service
@@ -54,8 +54,10 @@ class obu_sync_person_hold_service
             $trace->output("User with hold ($id) not found.");
             return;
         }
-
+        $trace->output("Updating user ($user->email) with hold ($id)");
+        var_dump($user);
         $this->personHoldService->update($hold, $user);
+        var_dump($user);
         $this->saveUser($trace, $user);
     }
 
