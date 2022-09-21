@@ -55,9 +55,7 @@ class obu_sync_person_hold_service
             return;
         }
         $trace->output("Updating user ($user->email) with hold ($id)");
-        var_dump($user);
         $this->personHoldService->update($hold, $user);
-        var_dump($user);
         $this->saveUser($trace, $user);
     }
 
