@@ -74,7 +74,7 @@ class ethos_notifications_handler {
         }
     }
 
-    private function processNotificationGroup(string $messageGroupKey, ethos_notifications $messages) {
+    public function processNotificationGroup(string $messageGroupKey, ethos_notifications $messages) {
         $this->trace->output("Searching processor for $messageGroupKey");
 
         if(!array_key_exists($messageGroupKey, $this->processors)) {
