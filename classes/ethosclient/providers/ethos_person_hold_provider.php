@@ -56,6 +56,10 @@ class ethos_person_hold_provider extends ethos_provider
     }
 
     private function convert(object $item) : ?ethos_person_hold_info {
+        if(!isset($item) || !property_exists($item, "id")) {
+            return null;
+        }
+
         return new ethos_person_hold_info($item);
     }
 }
