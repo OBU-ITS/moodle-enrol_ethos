@@ -273,7 +273,7 @@ class db_user_repository extends \enrol_plugin
             $sql .= ' and uind.data = :value';
         }
         else {
-            $sql .= ' and uind.data not null and uind.data <> \'\'';
+            $sql .= ' and uind.data is not null and uind.data <> \'\'';
         }
         if ($authType) {
             $sql .= ' and u.auth = :authtype';
