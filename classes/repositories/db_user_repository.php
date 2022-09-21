@@ -257,20 +257,31 @@ class db_user_repository extends \enrol_plugin
         return $this->convertToMoodleUser($record);
     }
 
-    public function getAllUsersWithProfileFieldData(string $profileFieldShortName, string $profileFieldValue = null, string $authType = null) {
+    /**
+     * @param string $profileFieldShortName
+     * @param string|null $profileFieldValue
+     * @param string|null $authType
+     * @return mdl_user[]
+     */
+    public function getAllUsersWithProfileFieldData(string $profileFieldShortName, string $profileFieldValue = null, string $authType = null) : array {
         $sql  = 'select u.id AS userid, username, data, uind.id AS hasuserdata ';
         $sql .= 'from {user} u ';
         $sql .= 'join {user_info_data} uind on uind.userid = u.id ';
         $sql .= 'join {user_info_field} uif on uind.fieldid = uif.id ';
         $sql .=  'where uif.shortname = :shortname';
         if ($profileFieldValue) {
-            $sql .=  ' and uind.data = :value';
+            $sql .= ' and uind.data = :value';
+        }
+        else {
+            $sql .= ' and uind.data not null and uind.data <> \'\'';
         }
         if ($authType) {
-            $sql .=  ' and u.auth = :authtype ';
+            $sql .= ' and u.auth = :authtype';
         }
 
-        return $this->db->get_records_sql($sql, ['shortname' => $profileFieldShortName, 'value' => $profileFieldValue, 'authtype' => $authType]);
+        $dbUsers = $this->db->get_records_sql($sql, ['shortname' => $profileFieldShortName, 'value' => $profileFieldValue, 'authtype' => $authType]);
+
+        return array_map(array($this, 'convertToMoodleUser'), $dbUsers);
     }
 
     public function getUsersWithoutProfileFieldData(string $profileFieldShortName, string $authType = null) {
@@ -284,7 +295,9 @@ class db_user_repository extends \enrol_plugin
             $sql .=  'and u.auth = :authtype ';
         }
 
-        return $this->db->get_records_sql($sql, ['shortname' => $profileFieldShortName, 'authtype' => $authType]);
+        $dbUsers = $this->db->get_records_sql($sql, ['shortname' => $profileFieldShortName, 'authtype' => $authType]);
+
+        return array_map(array($this, 'convertToMoodleUser'), $dbUsers);
     }
 
     public function getUsersByProfileField(string $profileFieldShortName, array $dataArray) {

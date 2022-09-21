@@ -44,7 +44,7 @@ $tasks = [
         'dayofweek' => '0',
     ],
     [
-        'classname' => 'enrol_ethos\task\test_scheduled_task',
+        'classname' => 'enrol_ethos\task\synchronise_courses',
         'blocking' => 0,
         'minute' => '45',
         'hour' => '17',
@@ -53,7 +53,7 @@ $tasks = [
         'dayofweek' => '0',
     ],
     [
-        'classname' => 'enrol_ethos\task\synchronise_courses',
+        'classname' => 'enrol_ethos\task\house_keeping',
         'blocking' => 0,
         'minute' => '45',
         'hour' => '17',
