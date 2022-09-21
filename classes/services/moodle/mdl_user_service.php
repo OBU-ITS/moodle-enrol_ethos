@@ -121,7 +121,7 @@ class mdl_user_service
                 $hasChanges = true;
             }
         }
-        elseif ($new->getCustomData()->userType == "student"){
+        elseif (strcasecmp($new->getCustomData()->userType, "student") == 0){
             if($current->getCustomData()->personHolds !== $new->getCustomData()->personHolds) {
                 $current->getCustomData()->personHolds = $new->getCustomData()->personHolds;
                 $hasChanges = true;

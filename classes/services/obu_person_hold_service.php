@@ -60,7 +60,9 @@ class obu_person_hold_service
         }
 
         return array_map(function ($item) {
-            return new obu_person_hold($item);
+            $hold = new obu_person_hold();
+            $hold->populateObject($item);
+            return $hold;
         }, $data);
     }
 
@@ -81,12 +83,20 @@ class obu_person_hold_service
         $personHoldsJson = $user->getCustomData()->personHolds;
         $personHoldsArray = $this->deserializeHolds($personHoldsJson);
         $personHoldsArray = $this->cleanHolds($personHoldsArray);
+        $updated = false;
 
         foreach ($personHoldsArray as $personHold){
             if (($personHold->id) === $ethosHold->id){
                 $personHold->populateObjectByEthosPersonHold($ethosHold);
+                $updated = true;
                 break;
             }
+        }
+
+        if (!$updated){
+            $hold = new obu_person_hold();
+            $hold->populateObjectByEthosPersonHold($ethosHold);
+            $personHoldsArray[] = $hold;
         }
 
         $updatedHolds = $this->serializeHolds($personHoldsArray);
