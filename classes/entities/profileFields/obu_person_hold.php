@@ -31,8 +31,8 @@ class obu_person_hold {
         }
 
         $this->id = $data->id;
-        $this->startOn = strtotime($data->startOn);
-        $this->endOn =strtotime($data->endOn);
+        $this->startOn = $data->startOn;
+        $this->endOn = $data->endOn;
         $this->typeCode = $data->typeCode;
         $this->typeTitle = $data->typeTitle;
         $this->typeID = $data->typeID;
