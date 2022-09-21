@@ -264,7 +264,7 @@ class db_user_repository extends \enrol_plugin
      * @return mdl_user[]
      */
     public function getAllUsersWithProfileFieldData(string $profileFieldShortName, string $profileFieldValue = null, string $authType = null) : array {
-        $sql  = 'select u.id AS userid, username, data, uind.id AS hasuserdata ';
+        $sql  = 'select u.id AS userid, u.*, uind.id AS hasuserdata ';
         $sql .= 'from {user} u ';
         $sql .= 'join {user_info_data} uind on uind.userid = u.id ';
         $sql .= 'join {user_info_field} uif on uind.fieldid = uif.id ';
@@ -285,7 +285,7 @@ class db_user_repository extends \enrol_plugin
     }
 
     public function getUsersWithoutProfileFieldData(string $profileFieldShortName, string $authType = null) {
-        $sql  = 'select u.id AS userid, username ';
+        $sql  = 'select u.id AS userid, u.* ';
         $sql .= 'from {user} u ';
         $sql .= 'join {user_info_data} uind on uind.userid = u.id ';
         $sql .= 'join {user_info_field} uif on uind.fieldid = uif.id ';
