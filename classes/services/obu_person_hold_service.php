@@ -86,7 +86,7 @@ class obu_person_hold_service
         $updated = false;
 
         foreach ($personHoldsArray as $personHold){
-            if ($personHold->typeCode === $ethosHold->getType()->code){
+            if ($personHold->id === $ethosHold->id){
                 $personHold->populateObjectByEthosPersonHold($ethosHold);
                 $updated = true;
                 break;
