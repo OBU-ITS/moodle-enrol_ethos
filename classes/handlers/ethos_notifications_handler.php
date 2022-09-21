@@ -74,7 +74,7 @@ class ethos_notifications_handler {
         }
     }
 
-    public function processNotificationGroup(string $messageGroupKey, ethos_notifications $messages) {
+    private function processNotificationGroup(string $messageGroupKey, ethos_notifications $messages) {
         $this->trace->output("Searching processor for $messageGroupKey");
 
         if(!array_key_exists($messageGroupKey, $this->processors)) {
@@ -89,7 +89,7 @@ class ethos_notifications_handler {
         }
     }
 
-    public function processNotificationResource(obu_processor $processor, ethos_notification $message) {
+    private function processNotificationResource(obu_processor $processor, ethos_notification $message) {
         $this->trace->output("Processing $message->resourceId");
         $processor->process($message);
     }
