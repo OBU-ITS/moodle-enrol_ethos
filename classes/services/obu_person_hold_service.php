@@ -72,7 +72,9 @@ class obu_person_hold_service
      */
     private function serializeHolds(array $holds) : string
     {
-        return json_encode($holds);
+        return count($holds) == 0
+            ? ""
+            : json_encode($holds);
     }
 
     /**
