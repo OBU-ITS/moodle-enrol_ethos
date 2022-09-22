@@ -27,7 +27,11 @@ class resyncuser_form extends moodleform {
     }
     //Custom validation should be added here
     function validation($data, $files) {
-        return array();
+        $errors = array();
+        if (empty($data["userid"]) || $data["userid"] === get_string('tool_resyncuser_username_defaultvalue', 'enrol_ethos')){
+            $errors[] = "error";
+        }
+        return $errors;
     }
 }
 
@@ -37,11 +41,17 @@ if ($fromform = $mform->get_data()) {
     //In this case you process validated data. $mform->get_data() returns data posted in form.
     $notification = "Form Submitted";
     \core\notification::info($notification);
-}
+} else{
+
     // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
     // or on the first display of the form.
+    if ($mform->is_submitted() && !$mform->is_validated()){
+        $notification2 = "User could not be found, please try again";
+        \core\notification::error($notification2);
+    }
+}
 
-    //displays the form
+
 
 $mform->display();
 
