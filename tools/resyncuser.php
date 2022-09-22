@@ -39,8 +39,17 @@ $mform = new resyncuser_form();
 
 if ($fromform = $mform->get_data()) {
     //In this case you process validated data. $mform->get_data() returns data posted in form.
-    $notification = "Form Submitted";
-    \core\notification::info($notification);
+    $sync = \enrol_ethos\services\sync\obu_sync_person_hold_service::getInstance();
+    $trace = new \null_progress_trace();
+    if($sync->reSyncUser($trace, $fromform["userid"])) {
+        $notification = "Form Submitted";
+        \core\notification::info($notification);
+    }
+    else {
+        $notification2 = "User could not be found, please try again";
+        \core\notification::error($notification2);
+    }
+
 } else{
 
     // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
