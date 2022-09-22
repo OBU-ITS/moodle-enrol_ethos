@@ -1,10 +1,10 @@
 <?php
 namespace enrol_ethos\repositories;
-use enrol_ethos\entities\course as course;
+use enrol_ethos\entities\mdl_course;
 
 require_once($CFG->dirroot.'/course/lib.php');
 
-class db_course_repository implements \enrol_ethos\interfaces\course_repository_interface
+class db_course_repository
 {
     protected $db;
 
@@ -29,44 +29,51 @@ class db_course_repository implements \enrol_ethos\interfaces\course_repository_
         }
     }
 
+    public function getAllCoursesWithCustomFieldData(string $profileFieldShortName, string $profileFieldValue = null) {
+        $sql  = 'select c.* ';
+        $sql .= 'from {course} c ';
+        $sql .= 'join {customfield_data} cd on c.id = cd.instanceid ';
+        $sql .= 'join {customfield_field} cf on cd.fieldid = cf.id ';
+        $sql .= 'join {customfield_category} cc on cf.categoryid = cc.id ';
+        $sql .=  'where cc.component = \'core_course\' AND cc.area = \'course\' AND cf.shortname = :shortname';
+        if ($profileFieldValue) {
+            $sql .=  ' AND cd.value = :value';
+        }
 
-    public function update(course $course) {
+        return $this->db->get_records_sql($sql, ['shortname' => $profileFieldShortName, 'value' => $profileFieldValue]);
+    }
+
+    public function update(mdl_course $course) {
         $moodleCourse = $this->convertToMoodleCourse($course);
 
-        $moodleCourse->timemodified = time();
-        $moodleCourse->id = $course->id;
+        // TODO : Update profile field data
 
         try {
             update_course($moodleCourse);
         }
         catch (Exception $e) {
-            $status = false;
-            return false;
         }
-        return true;
     }
 
-    public function create(course $course)
-    {        
-        $status = true;
-        $logline = '';
+    public function create(mdl_course $course) : mdl_course
+    {
         $moodleCourse = $this->convertToMoodleCourse($course);
 
-        $timecreated = time();
-        $moodleCourse->timecreated = $timecreated;
-        $moodleCourse->timemodified = $timecreated;
+        $course = create_course($moodleCourse);
 
-        return $this->convertFromMoodleCourse(create_course($moodleCourse));
+        // TODO : create profile field data
+
+        return $this->convertFromMoodleCourse($course);
     }
 
-    private function convertFromMoodleCourse($dbCourse) {
-        $course = new course( 
-            $dbCourse->idnumber, 
-            $dbCourse->shortname, 
-            $dbCourse->fullname, 
-            $dbCourse->category, 
+    private function convertFromMoodleCourse($dbCourse) : mdl_course {
+        $course = new mdl_course(
+            $dbCourse->idnumber,
+            $dbCourse->shortname,
+            $dbCourse->fullname,
+            $dbCourse->category,
             $dbCourse->id,
-            $dbCourse->startdate, 
+            $dbCourse->startdate,
             $dbCourse->enddate,
             false, //meta - todo
             $dbCourse->visible
@@ -75,41 +82,26 @@ class db_course_repository implements \enrol_ethos\interfaces\course_repository_
         return $course;
     }
 
-    private function convertToMoodleCourse(course $course) {
-        $moodlecourse = new \stdClass();
+    private function convertToMoodleCourse(mdl_course $course) : \stdClass {
+        $moodleCourse = new \stdClass();
+        $moodleCourse->id = $course->id;
 
-        if (empty($course->enddate)) {
-            $enddate = 0;
-        }
-        if (empty($course->startdate)) {
-            $startdate = 0;
-        }
         // Set some preferences.
-        $logline = 'Using hard-coded settings:';
-        $moodlecourse->format               = 'topics';
-        $moodlecourse->numsections          = 6;
-        $moodlecourse->hiddensections       = 0;
-        $moodlecourse->newsitems            = 3;
-        $moodlecourse->showgrades           = 1;
-        $moodlecourse->showreports          = 1;
-    
-        $moodlecourse->idnumber = $course->idnumber;
-        //$moodleCourse->id = $course->id;
-        $moodlecourse->shortname = $course->shortname;
-        $moodlecourse->fullname = $course->name;
-        $moodlecourse->startdate = $course->startdate;
-        $moodlecourse->enddate = $course->enddate;
-        $moodlecourse->category = $course->catid;
-        $moodlecourse->visible = $course->visible;
+        //$moodleCourse->format             = 'topics';
+        //$moodleCourse->numsections        = 6;
+        //$moodleCourse->hiddensections     = 0;
+        $moodleCourse->newsitems            = 3;
+        $moodleCourse->showgrades           = 1;
+        $moodleCourse->showreports          = 1;
 
-        return $moodlecourse;
+        $moodleCourse->idnumber = $course->idnumber;
+        $moodleCourse->shortname = $course->shortname;
+        $moodleCourse->fullname = $course->name;
+        $moodleCourse->startdate = $course->startdate;
+        $moodleCourse->enddate = $course->enddate;
+        $moodleCourse->category = $course->catid;
+        $moodleCourse->visible = $course->visible;
+
+        return $moodleCourse;
     }
-
-    public function remove(course $course)
-    {
-        // Remove the $user
-        // from the 'users' table
-        //$this->db->remove($user, 'users');
-    }
-
 }

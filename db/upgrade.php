@@ -24,7 +24,7 @@
  *
  * The upgrade function in this file will attempt
  * to perform all the necessary actions to upgrade
- * your older installtion to the current version.
+ * your older installation to the current version.
  *
  * If there's something it cannot do itself, it
  * will tell you what you need to do.
@@ -33,20 +33,52 @@
  * using the functions defined in lib/ddllib.php
  */
 
-// TODO update older upgrade code?
+use enrol_ethos\services\obu_additional_field_service;
 
-function xmldb_enrol_ethos_upgrade($oldversion=0) {
+function xmldb_enrol_ethos_upgrade($oldversion) {
 
-    global $CFG, $THEME, $DB;
+    global $DB;
 
     $dbman = $DB->get_manager();
 
-    $profileFieldRepository = new \enrol_ethos\repositories\db_profile_field_repository($DB);
-    $profileCategoryRepository = new \enrol_ethos\repositories\db_profile_category_repository($DB);
-    $profileFieldService = new \enrol_ethos\services\profile_field_service($profileFieldRepository, $profileCategoryRepository);
+    $manager = obu_additional_field_service::GetInstance();
+    $manager->ensureAdditionalFields();
 
-    $profileFieldService->addDefaultCategory();
-    $profileFieldService->addDefaultFields();        
-    
+    if($oldversion < 2022060901) {
+
+        $table = new xmldb_table('ethos_report_run');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('run_time', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $table->add_field('messages_consumed', XMLDB_TYPE_INTEGER, '6', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $table->add_field('messages_processed', XMLDB_TYPE_INTEGER, '6', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $table->add_field('users_created', XMLDB_TYPE_INTEGER, '6', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $table->add_field('users_updated', XMLDB_TYPE_INTEGER, '6', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $table->add_field('elapsed_time', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $table->add_field('last_consumed_id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        $table = new xmldb_table('ethos_report_action');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('run_id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $table->add_field('action_type', XMLDB_TYPE_CHAR, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '');
+        $table->add_field('resource_name', XMLDB_TYPE_CHAR, '50', null, XMLDB_NOTNULL, null, '');
+        $table->add_field('resource_id', XMLDB_TYPE_CHAR, '36', null, XMLDB_NOTNULL, null, '');
+        $table->add_field('resource_description', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, '');
+
+        $table->add_key('id', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('report_id', XMLDB_KEY_FOREIGN, array('run_id'), 'ethos_report_run', array('id'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        upgrade_plugin_savepoint(true, 2022060901, 'enrol', 'ethos');
+    }
+
     return true;
 }

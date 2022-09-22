@@ -23,6 +23,8 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use enrol_ethos\services\obu_additional_field_service;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -30,15 +32,9 @@ defined('MOODLE_INTERNAL') || die();
  */
 
 function xmldb_enrol_ethos_install() {
-    //Add category and fields to all users
-    
-    global $DB;
-    $profileFieldRepository = new \enrol_ethos\repositories\db_profile_field_repository($DB);
-    $profileCategoryRepository = new \enrol_ethos\repositories\db_profile_category_repository($DB);
-    $profileFieldService = new \enrol_ethos\services\profile_field_service($profileFieldRepository, $profileCategoryRepository);
 
-    $profileFieldService->addDefaultCategory();
-    $profileFieldService->addDefaultFields();
+    $manager = obu_additional_field_service::GetInstance();
+    $manager->ensureAdditionalFields();
 
     return true;
 }
