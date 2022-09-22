@@ -51,12 +51,14 @@ class obu_sync_person_hold_service
 
         $user = $this->userRepo->getUserWhereProfileFieldEquals("person_guid", $hold->getPersonId());
         if($user == null) {
-            $trace->output("User with hold ($id) not found.");
+            $trace->output("User ({$hold->getPersonId()}) with hold ($id) not found.");
             return;
         }
+
         $trace->output("Updating user ($user->email) with hold ($id)");
-        $this->personHoldService->update($hold, $user);
-        $this->saveUser($trace, $user);
+        if($this->personHoldService->update($hold, $user)) {
+            $this->saveUser($trace, $user);
+        }
     }
 
     /**

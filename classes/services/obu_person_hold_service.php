@@ -81,7 +81,11 @@ class obu_person_hold_service
      * @param ethos_person_hold_info $ethosHold
      * @param mdl_user $user
      */
-    public function update(ethos_person_hold_info $ethosHold, mdl_user $user) {
+    public function update(ethos_person_hold_info $ethosHold, mdl_user $user) : bool {
+        if (strtotime($ethosHold->endOn) < time()){
+            return false;
+        }
+
         $personHoldsJson = $user->getCustomData()->personHolds;
         $personHoldsArray = $this->deserializeHolds($personHoldsJson);
         $personHoldsArray = $this->cleanHolds($personHoldsArray);
@@ -103,6 +107,8 @@ class obu_person_hold_service
 
         $updatedHolds = $this->serializeHolds($personHoldsArray);
         $user->getCustomData()->personHolds = $updatedHolds;
+
+        return true;
     }
 
     /**

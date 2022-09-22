@@ -75,22 +75,18 @@ class ethos_notifications_handler {
     }
 
     public function processNotificationGroup(string $messageGroupKey, ethos_notifications $messages) {
-        $this->trace->output("Searching processor for $messageGroupKey");
-
         if(!array_key_exists($messageGroupKey, $this->processors)) {
-            $this->trace->output("Skipping $messageGroupKey");
+            $this->trace->output("No Processor found for $messageGroupKey");
             return;
         }
 
         $processor = $this->processors[$messageGroupKey];
-        $this->trace->output("Processor found $messageGroupKey");
         foreach($messages->getNotificationsByResource($messageGroupKey) as $message) {
             $this->processNotificationResource($processor, $message);
         }
     }
 
     private function processNotificationResource(obu_processor $processor, ethos_notification $message) {
-        $this->trace->output("Processing $message->resourceId");
         $processor->process($message);
     }
 }
