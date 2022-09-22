@@ -22,7 +22,7 @@ class resyncuser_form extends moodleform {
 
         $mform->addElement('text', 'userid', get_string('tool_resyncuser_username_label', 'enrol_ethos'));
         $mform->setType('userid', PARAM_NOTAGS);
-        $mform->setDefault('userid', get_string('tool_resyncuser_username_defaultvalue', 'enrol_ethos'));
+//        $mform->setDefault('userid', get_string('tool_resyncuser_username_defaultvalue', 'enrol_ethos'));
         $mform->addElement('submit', 'resyncbutton', get_string('tool_resyncuser_button_label', 'enrol_ethos'));
     }
     //Custom validation should be added here
@@ -41,7 +41,7 @@ if ($fromform = $mform->get_data()) {
     //In this case you process validated data. $mform->get_data() returns data posted in form.
     $sync = \enrol_ethos\services\sync\obu_sync_person_hold_service::getInstance();
     $trace = new \null_progress_trace();
-    if($sync->reSyncUser($trace, $fromform["userid"])) {
+    if($sync->reSyncUser($trace, $fromform->userid)) {
         $notification = "Form Submitted";
         \core\notification::info($notification);
     }
