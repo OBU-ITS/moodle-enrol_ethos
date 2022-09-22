@@ -37,6 +37,39 @@ class obu_sync_person_hold_service
     }
 
     /**
+     *
+     *
+     * @param progress_trace $trace
+     * @param string $username
+     * @return void
+     */
+    public function reSyncUser(progress_trace $trace, string $username) {
+        $user = $this->userRepo->getByUsername($username);
+        if($user == null) {
+            $trace->output("User with username ($username) not found.");
+            return;
+        }
+        if($user->getCustomData()->personGuid == '') {
+            $trace->output("User with username ($username) does not have a person guid.");
+            return;
+        }
+
+        $user->getCustomData()->personHolds = '';
+
+        $updated = false;
+        $holds = $this->personHoldProvider->getByPersonGuid($user->getCustomData()->personGuid);
+        array_map(function ($hold) use ($user, &$updated) {
+            if($this->personHoldService->update($hold, $user)) {
+                $updated = true;
+            }
+        }, $holds);
+
+        if($updated) {
+            $this->saveUser($trace, $user);
+        }
+    }
+
+    /**
      * Synchronise a users person holds
      *
      * @param progress_trace $trace
