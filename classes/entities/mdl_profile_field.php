@@ -59,6 +59,7 @@ class mdl_profile_field {
         $this->forceunique = $data["forceunique"];
         $this->signup = $data["signup"];
         $this->visible = $data["visible"];
+        $this->id = $data["id"];
         $this->defaultdata = $data["defaultdata"];
         $this->param1 = $data["param1"];
         $this->param2 = $data["param2"];
