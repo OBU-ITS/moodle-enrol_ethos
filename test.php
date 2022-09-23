@@ -1,25 +1,46 @@
 <?php
 
-use enrol_ethos\services\obu_person_hold_service;
-
+use enrol_ethos\processors\base\obu_processor;
 
 require_once('../../config.php');
 require_once($CFG->libdir.'/weblib.php');
 
-$trace = new html_progress_trace();
-$handler = new \enrol_ethos\handlers\ethos_notifications_handler($trace);
+$processors = array();
 
-$notification = new \enrol_ethos\ethosclient\entities\consume\ethos_notification();
-$notification->resourceId = 'c1fa8640-079f-49eb-883e-f74f0fbanana';
-$notification->operation="replaced";
-$notification->resourceName="person-holds";
-$notifications = new \enrol_ethos\ethosclient\entities\consume\ethos_notifications();
-$notifications->addNotification($notification);
+$directory = realpath(__DIR__ . "\classes\\" . "processors");
+echo "Dir: $directory <br />";
 
-$handler->processNotificationGroup('person-holds', $notifications);
-
-$service = obu_person_hold_service::getInstance();
-$temp = $service->cleanHoldsProfileField("[]");
-if ($temp === ""){
-    echo("no data found");
+if(!is_dir($directory)) {
+    return;
 }
+
+foreach (array_filter(glob($directory . "\*.php"), 'is_file') as $file)
+{
+    echo "File: $file <br />";
+    include $file;
+}
+
+
+$trace = new \null_progress_trace();
+foreach(get_declared_classes() as $class) {
+    $interfaces = class_implements($class);
+
+    if (!isset($interfaces['enrol_ethos\processors\base\obu_processor'])) {
+        continue;
+    }
+
+    $instance = new $class($trace);
+    if ($instance instanceof obu_processor) {
+        try {
+            $constant_reflex = new \ReflectionClassConstant($class, 'RESOURCE_NAME');
+            $resourceName = $constant_reflex->getValue();
+        } catch (\ReflectionException $e) {
+            $resourceName = '';
+        }
+        $processors[$resourceName] = $instance;
+    }
+}
+
+array_map(function($item) {
+    echo $item . "<br />";
+}, array_keys($processors));
