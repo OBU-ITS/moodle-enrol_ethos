@@ -9,7 +9,7 @@ $processors = array();
 
 $directory = realpath(__DIR__ . "/classes/processors");
 
-echo "Dir: $directory . "/" <br />";
+echo "Dir: $directory <br />";
 
 if(!is_dir($directory . "/")) {
     return;
