@@ -7,15 +7,15 @@ require_once($CFG->libdir.'/weblib.php');
 
 $processors = array();
 
-$directory = realpath(__DIR__ . "/classes/processors/");
+$directory = realpath(__DIR__ . "/classes/processors");
 
-echo "Dir: $directory <br />";
+echo "Dir: $directory . "/" <br />";
 
-if(!is_dir($directory)) {
+if(!is_dir($directory . "/")) {
     return;
 }
 
-foreach (array_filter(glob($directory . "\*.php"), 'is_file') as $file)
+foreach (array_filter(glob($directory . "/*.php"), 'is_file') as $file)
 {
     echo "File: $file <br />";
     include $file;
