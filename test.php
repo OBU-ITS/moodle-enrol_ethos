@@ -7,10 +7,7 @@ require_once($CFG->libdir.'/weblib.php');
 
 $processors = array();
 
-$directory = realpath(__DIR__ . "\classes\\" . "processors");
-
-echo __DIR__;
-echo __DIR__ . "\classes\\" . "processors";
+$directory = realpath(__DIR__ . "/classes/processors");
 
 echo "Dir: $directory <br />";
 
