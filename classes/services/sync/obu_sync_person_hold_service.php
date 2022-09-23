@@ -37,6 +37,41 @@ class obu_sync_person_hold_service
     }
 
     /**
+     *
+     *
+     * @param progress_trace $trace
+     * @param string $username
+     * @return void
+     */
+    public function reSyncUser(progress_trace $trace, string $username) : bool {
+        $user = $this->userRepo->getByUsername($username);
+        if($user == null) {
+            $trace->output("User with username ($username) not found.");
+            return false;
+        }
+        if($user->getCustomData()->personGuid == '') {
+            $trace->output("User with username ($username) does not have a person guid.");
+            return false;
+        }
+
+        $user->getCustomData()->personHolds = '';
+
+        $updated = false;
+        $holds = $this->personHoldProvider->getByPersonGuid($user->getCustomData()->personGuid);
+        array_map(function ($hold) use ($user, &$updated) {
+            if($this->personHoldService->update($hold, $user)) {
+                $updated = true;
+            }
+        }, $holds);
+
+        if($updated) {
+            $this->saveUser($trace, $user);
+        }
+
+        return true;
+    }
+
+    /**
      * Synchronise a users person holds
      *
      * @param progress_trace $trace
@@ -51,12 +86,14 @@ class obu_sync_person_hold_service
 
         $user = $this->userRepo->getUserWhereProfileFieldEquals("person_guid", $hold->getPersonId());
         if($user == null) {
-            $trace->output("User with hold ($id) not found.");
+            $trace->output("User ({$hold->getPersonId()}) with hold ($id) not found.");
             return;
         }
+
         $trace->output("Updating user ($user->email) with hold ($id)");
-        $this->personHoldService->update($hold, $user);
-        $this->saveUser($trace, $user);
+        if($this->personHoldService->update($hold, $user)) {
+            $this->saveUser($trace, $user);
+        }
     }
 
     /**

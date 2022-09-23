@@ -53,6 +53,9 @@ if ($ADMIN->fulltree) {
 
  $settings->add('ethosenrolsettingscat', $settingsethos);
 
+$settings->add('ethosenrolsettingscat', new admin_externalpage('ethosenroltoolsholdresync', get_string('page_resyncuser', 'enrol_ethos'),
+    "$CFG->wwwroot/enrol/ethos/tools/resyncuser.php", "moodle/role:manage"));
+
 //$settings->add('ethosenrolsettingscat', new admin_category('ethosenroltoolsscat',
 //        get_string('tools', 'enrol_ethos'), false));
 //

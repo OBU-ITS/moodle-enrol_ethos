@@ -65,6 +65,10 @@ class mdl_user_service
                 $this->userRepo->update($updatedUser);
                 $trace->output("User updated : $data->username ($data->email)");
             }
+            else {
+                $trace->output("No updates detected : $data->username ($data->email)");
+            }
+
         }
         else {
             $this->userRepo->create($data);

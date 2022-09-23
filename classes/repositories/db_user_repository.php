@@ -28,7 +28,7 @@ class db_user_repository extends \enrol_plugin
         return $dbuser;
     }
 
-    public function getByUsername($username) : mdl_user
+    public function getByUsername($username) : ?mdl_user
     {
         $sql  = 'select u.id AS userid, u.* ';
         $sql .= 'from {user} u ';
@@ -114,7 +114,11 @@ class db_user_repository extends \enrol_plugin
         return $user;
     }
 
-    private function convertToMoodleUser($dbUser) : mdl_user {
+    private function convertToMoodleUser($dbUser) : ?mdl_user {
+        if(!property_exists($dbUser, "id")) {
+            return null;
+        }
+
         $moodleUser = new mdl_user();
         $moodleUser->id = $dbUser->userid;
         $moodleUser->username = $dbUser->username ?? '';
@@ -234,17 +238,17 @@ class db_user_repository extends \enrol_plugin
         return $customDataRaw;
     }
 
-    public function getUserWhereProfileFieldContains(string $profileFieldShortName, string $profileFieldValue) {
+    public function  getUserWhereProfileFieldContains(string $profileFieldShortName, string $profileFieldValue) : ?mdl_user {
         $condition = $this->db->sql_like('uind.data', ':value');
         $value = '%'.$this->db->sql_like_escape($profileFieldValue).'%';
         return $this->userWhereProfileField($profileFieldShortName, $condition, $value);
     }
 
-    public function getUserWhereProfileFieldEquals(string $profileFieldShortName, string $profileFieldValue) {
+    public function getUserWhereProfileFieldEquals(string $profileFieldShortName, string $profileFieldValue) : ?mdl_user {
         return $this->userWhereProfileField($profileFieldShortName, "uind.data = :value", $profileFieldValue);
     }
 
-    private function userWhereProfileField(string $shortname, string $condition, string $value) {
+    private function userWhereProfileField(string $shortname, string $condition, string $value) : ?mdl_user {
         $sql  = 'select u.id AS userid, u.*, uind.id AS hasuserdata ';
         $sql .= 'from {user} u ';
         $sql .= 'join {user_info_data} uind on uind.userid = u.id ';
@@ -281,7 +285,7 @@ class db_user_repository extends \enrol_plugin
 
         $dbUsers = $this->db->get_records_sql($sql, ['shortname' => $profileFieldShortName, 'value' => $profileFieldValue, 'authtype' => $authType]);
 
-        return array_map(array($this, 'convertToMoodleUser'), $dbUsers);
+        return array_filter(array_map(array($this, 'convertToMoodleUser'), $dbUsers), function ($item) { return $item != null; });
     }
 
     public function getUsersWithoutProfileFieldData(string $profileFieldShortName, string $authType = null) {

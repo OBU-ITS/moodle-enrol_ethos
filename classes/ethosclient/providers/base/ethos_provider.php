@@ -55,9 +55,6 @@ abstract class ethos_provider
         if ($this->cacheable && $valueFromCache = $this->cacheService->getFromCache($id, $this->cacheSettings->collection)) {
             return $valueFromCache;
         }
-        else if(!$this->cacheable) {
-            echo "Not cachable : $this->path <br />";
-        }
 
         $result = $this->getFromEthosClient($id, null, $paged, $maxResults);
 

@@ -14,15 +14,13 @@ class obu_person_hold_processor implements obu_processor {
 
     private progress_trace $trace;
 
-    public function __construct($trace)
-    {
+    public function __construct($trace) {
         $this->syncService = obu_sync_person_hold_service::getInstance();
 
         $this->trace = $trace;
     }
 
-    function process(ethos_notification $message)
-    {
+    function process(ethos_notification $message) {
         $this->trace->output("Processing Person hold ($message->resourceId)");
 
         if($message->operation == "deleted") {

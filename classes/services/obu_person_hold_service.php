@@ -72,19 +72,30 @@ class obu_person_hold_service
      */
     private function serializeHolds(array $holds) : string
     {
-        return json_encode($holds);
+        return count($holds) == 0
+            ? ""
+            : json_encode($holds);
     }
 
     /**
      * @param ethos_person_hold_info $ethosHold
      * @param mdl_user $user
+     * @param bool $cleanHolds Default true
+     * @return bool
      */
-    public function update(ethos_person_hold_info $ethosHold, mdl_user $user) {
+    public function update(ethos_person_hold_info $ethosHold, mdl_user $user, bool $cleanHolds = true) : bool {
+        if (strtotime($ethosHold->endOn) < time()){
+            return false;
+        }
+
         $personHoldsJson = $user->getCustomData()->personHolds;
         $personHoldsArray = $this->deserializeHolds($personHoldsJson);
-        $personHoldsArray = $this->cleanHolds($personHoldsArray);
-        $updated = false;
 
+        if($cleanHolds) {
+            $personHoldsArray = $this->cleanHolds($personHoldsArray);
+        }
+
+        $updated = false;
         foreach ($personHoldsArray as $personHold){
             if ($personHold->id === $ethosHold->id){
                 $personHold->populateObjectByEthosPersonHold($ethosHold);
@@ -101,6 +112,8 @@ class obu_person_hold_service
 
         $updatedHolds = $this->serializeHolds($personHoldsArray);
         $user->getCustomData()->personHolds = $updatedHolds;
+
+        return true;
     }
 
     /**
