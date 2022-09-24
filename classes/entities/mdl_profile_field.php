@@ -13,6 +13,12 @@ class mdl_profile_field {
     public bool $signup;
     public bool $visible;
     public int $categoryid;
+    public string $defaultdata;
+    public string $param1;
+    public string $param2;
+    public string $param3;
+    public string $param4;
+    public string $param5;
 
     public function populateObject(object $data) {
         if(!isset($data)) {
@@ -30,6 +36,12 @@ class mdl_profile_field {
         $this->signup = $data->signup;
         $this->visible = $data->visible;
         $this->id = $data->id;
+        $this->defaultdata = $data->defaultdata;
+        $this->param1 = $data->param1;
+        $this->param2 = $data->param2;
+        $this->param3 = $data->param3;
+        $this->param4 = $data->param4;
+        $this->param5 = $data->param5;
     }
 
     public function populateObjectByArray(array $data) {
@@ -48,5 +60,11 @@ class mdl_profile_field {
         $this->signup = $data["signup"];
         $this->visible = $data["visible"];
         $this->id = $data["id"];
+        $this->defaultdata = $data["defaultdata"];
+        $this->param1 = $data["param1"];
+        $this->param2 = $data["param2"];
+        $this->param3 = $data["param3"];
+        $this->param4 = $data["param4"];
+        $this->param5 = $data["param5"];
     }
 }
