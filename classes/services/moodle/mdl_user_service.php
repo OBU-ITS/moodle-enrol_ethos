@@ -65,6 +65,10 @@ class mdl_user_service
                 $this->userRepo->update($updatedUser);
                 $trace->output("User updated : $data->username ($data->email)");
             }
+            else {
+                $trace->output("No updates detected : $data->username ($data->email)");
+            }
+
         }
         else {
             $this->userRepo->create($data);
@@ -105,7 +109,12 @@ class mdl_user_service
             $hasChanges = true;
         }
 
-        if($new->userType === "staff"){
+        if($current->getCustomData()->userType !== $new->getCustomData()->userType) {
+            $current->getCustomData()->userType = $new->getCustomData()->userType;
+            $hasChanges = true;
+        }
+
+        if($new->getCustomData()->userType == "staff"){
             if($current->getCustomData()->isAdviserFlag !== $new->getCustomData()->isAdviserFlag) {
                 $current->getCustomData()->isAdviserFlag = $new->getCustomData()->isAdviserFlag;
                 $hasChanges = true;
@@ -116,14 +125,9 @@ class mdl_user_service
                 $hasChanges = true;
             }
         }
-        elseif ($new->userType === "student"){
-            if($current->getCustomData()->financeHold !== $new->getCustomData()->financeHold) {
-                $current->getCustomData()->financeHold = $new->getCustomData()->financeHold;
-                $hasChanges = true;
-            }
-
-            if($current->getCustomData()->academicHold !== $new->getCustomData()->academicHold) {
-                $current->getCustomData()->academicHold = $new->getCustomData()->academicHold;
+        elseif (strcasecmp($new->getCustomData()->userType, "student") == 0){
+            if($current->getCustomData()->personHolds !== $new->getCustomData()->personHolds) {
+                $current->getCustomData()->personHolds = $new->getCustomData()->personHolds;
                 $hasChanges = true;
             }
 

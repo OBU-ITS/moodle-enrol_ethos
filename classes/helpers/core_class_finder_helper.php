@@ -7,9 +7,7 @@ class core_class_finder_helper {
      * @param string $path sub-folder path
      */
     public static function includeFilesInFolder(string $path = "") {
-        $directory = $path == ""
-            ? realpath(__DIR__ . "/../classes")
-            : realpath(__DIR__ . "/classes/" . $path);
+        $directory = realpath(__DIR__ . "/../" . $path);
 
         if(!is_dir($directory)) {
             return;

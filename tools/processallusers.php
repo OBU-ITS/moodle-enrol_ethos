@@ -1,5 +1,5 @@
 <?php
-
+//
 //    require_once('../../../config.php');
 //    require_once($CFG->libdir.'/adminlib.php');
 //    require_once($CFG->libdir.'/authlib.php');
@@ -23,8 +23,8 @@
 //
 //        $trace = new html_progress_trace();
 //
-//        $processingService= new \enrol_ethos\services\processing_service($trace);
-//        $processingService->process_all_users();
+////        $processingService= new \enrol_ethos\services\processing_service($trace);
+////        $processingService->process_all_users();
 //    }
 //
 //    // Carry on with the user listing

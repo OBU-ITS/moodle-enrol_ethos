@@ -8,19 +8,16 @@ class ethos_notification {
     public string $resourceId;
     public string $operation;
 
-    public function __construct(object $data) {
-        $this->populateObject($data);
+    public function __construct() {
     }
 
     public function populateObject(object $data) {
         if(!isset($data)) {
             return;
         }
-        if(!isset($data->resource)) {
-            $this->resourceName = $data->resource->name;
-            $this->resourceId = $data->resource->id;
-        }
 
+        $this->resourceName = $data->resource->name;
+        $this->resourceId = $data->resource->id;
         $this->id = $data->id;
         $this->published = $data->published;
         $this->operation = $data->operation;

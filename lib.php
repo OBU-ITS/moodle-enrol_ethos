@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 defined('MOODLE_INTERNAL') || die();
+require_once($CFG->dirroot.'/user/profile/lib.php');
 
 class enrol_ethos_plugin extends enrol_plugin {
 
@@ -181,4 +182,41 @@ class enrol_ethos_plugin extends enrol_plugin {
         return parent::update_instance($instance, $data);
     }
 
+}
+
+
+function enrol_ethos_myprofile_navigation(core_user\output\myprofile\tree $tree, $user, $iscurrentuser, $course){
+
+    $category = new core_user\output\myprofile\category('profilefieldscat',get_string('profilefields', 'enrol_ethos') , null);
+    $tree->add_category($category);
+    $profileFields = profile_get_user_fields_with_data($user->id);
+    global $USER;
+    $userType = $USER->profile["user_type"];
+
+    foreach ($profileFields as $field){
+        $shortname = $field->field->shortname;
+        $data = $field->data;
+        $name = $field->field->name;
+        $fieldcatname = $field->get_category_name();
+
+        if (strpos($fieldcatname, 'Hidden') !== false || empty($data)){
+            continue;
+        }
+
+        if ($shortname === "student_completion_date"){
+            $data = date('d-m-Y', $data);
+        }
+
+        if (strcasecmp($userType, "STAFF") == 0){
+            $node = new core_user\output\myprofile\node('profilefieldscat', $shortname, $name, null, null, $data);
+            $tree->add_node($node);
+        }
+
+        elseif(strcasecmp($userType, "STUDENT") == 0){
+            if (strpos($fieldcatname, 'Student') !== false){
+                $node = new core_user\output\myprofile\node('profilefieldscat', $shortname, $name, null, null, $data);
+                $tree->add_node($node);
+            }
+        }
+    }
 }

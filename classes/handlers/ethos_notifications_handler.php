@@ -1,6 +1,8 @@
 <?php
 namespace enrol_ethos\handlers;
 
+use enrol_ethos\ethosclient\entities\consume\ethos_notification;
+use enrol_ethos\ethosclient\entities\consume\ethos_notifications;
 use enrol_ethos\ethosclient\services\ethos_notification_service;
 use enrol_ethos\helpers\core_class_finder_helper;
 use enrol_ethos\processors\base\obu_processor;
@@ -32,13 +34,18 @@ class ethos_notifications_handler {
         foreach(get_declared_classes() as $class) {
             $interfaces = class_implements($class);
 
-            if (!isset($interfaces['enrol_ethos\processors\base\obu_processor']) || !defined($class::RESOURCE_NAME)) {
+            if (!isset($interfaces['enrol_ethos\processors\base\obu_processor'])) {
                 continue;
             }
 
             $instance = new $class($this->trace);
             if ($instance instanceof obu_processor) {
-                $resourceName = constant($class::RESOURCE_NAME);
+                try {
+                    $constant_reflex = new \ReflectionClassConstant($class, 'RESOURCE_NAME');
+                    $resourceName = $constant_reflex->getValue();
+                } catch (\ReflectionException $e) {
+                    $resourceName = '';
+                }
                 $this->processors[$resourceName] = $instance;
             }
         }
@@ -58,16 +65,28 @@ class ethos_notifications_handler {
     private function processNotifications(?int $max) {
         $lastProcessId = 0; // TODO : Get last consumed from ethos audit
 
-        $messages = $this->consumeService->consumeMessages($lastProcessId, $max);
-        foreach($messages->getNotificationGroupKeys() as $messageGroupKey) {
-            if(!array_key_exists($messageGroupKey, $this->processors)) {
-                continue;
-            }
+        $messages = isset($max)
+            ? $this->consumeService->consumeMessages($lastProcessId, $max)
+            : $this->consumeService->consumeMessages($lastProcessId);
 
-            $processor = $this->processors[$messageGroupKey];
-            foreach($messages->getNotificationsByResource($messageGroupKey) as $message) {
-                $processor->process($message);
-            }
+        foreach($messages->getNotificationGroupKeys() as $messageGroupKey) {
+            $this->processNotificationGroup($messageGroupKey, $messages);
         }
+    }
+
+    public function processNotificationGroup(string $messageGroupKey, ethos_notifications $messages) {
+        if(!array_key_exists($messageGroupKey, $this->processors)) {
+            $this->trace->output("No Processor found for $messageGroupKey");
+            return;
+        }
+
+        $processor = $this->processors[$messageGroupKey];
+        foreach($messages->getNotificationsByResource($messageGroupKey) as $message) {
+            $this->processNotificationResource($processor, $message);
+        }
+    }
+
+    private function processNotificationResource(obu_processor $processor, ethos_notification $message) {
+        $processor->process($message);
     }
 }

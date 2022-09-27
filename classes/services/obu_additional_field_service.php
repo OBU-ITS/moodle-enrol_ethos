@@ -96,22 +96,22 @@ class obu_additional_field_service
         require_once($CFG->dirroot . '/user/profile/lib.php');
 
         $visibleUserCategory = $this->userProfileFieldService->ensureCustomFieldCategory("Student Data");
-        $this->userProfileFieldService->ensureCustomField($visibleUserCategory, "Adviser", "student_adviser", "text", 30, 200, PROFILE_VISIBLE_TEACHERS);
-        $this->userProfileFieldService->ensureCustomField($visibleUserCategory, "Completion Date", "student_completion_date", "datetime", 30, 200, PROFILE_VISIBLE_TEACHERS);
-        $this->userProfileFieldService->ensureCustomField($visibleUserCategory, "Status", "student_status", "text", 30, 200, PROFILE_VISIBLE_TEACHERS);
+        $this->userProfileFieldService->ensureCustomField($visibleUserCategory, "Adviser", "student_adviser", "text", 30, 200, PROFILE_VISIBLE_NONE);
+        $this->userProfileFieldService->ensureCustomField($visibleUserCategory, "Completion Date", "student_completion_date", "datetime", 30, 200, PROFILE_VISIBLE_NONE);
+        $this->userProfileFieldService->ensureCustomField($visibleUserCategory, "Status", "student_status", "text", 30, 200, PROFILE_VISIBLE_NONE);
 
         $hiddenUserCategory = $this->userProfileFieldService->ensureCustomFieldCategory("Student Data (Hidden)");
-        $this->userProfileFieldService->ensureCustomField($hiddenUserCategory, "Finance Hold", "finance_hold", "text", 30, 200, PROFILE_VISIBLE_NONE);
-        $this->userProfileFieldService->ensureCustomField($hiddenUserCategory, "Academic Hold", "academic_hold", "text", 30, 200, PROFILE_VISIBLE_NONE);
+        $this->userProfileFieldService->ensureCustomField($hiddenUserCategory, "Person Holds", "person_holds", "text", 30, 200, PROFILE_VISIBLE_NONE);
         $this->userProfileFieldService->ensureCustomField($hiddenUserCategory, "Service Needs", "service_needs", "text", 30, 200, PROFILE_VISIBLE_NONE);
         $this->userProfileFieldService->ensureCustomField($hiddenUserCategory, "Guid", "student_guid", "text", 30, 200, PROFILE_VISIBLE_NONE);
         $this->userProfileFieldService->ensureCustomField($hiddenUserCategory, "Academic Programs", "student_academic_programs", "text", 30, 200, PROFILE_VISIBLE_NONE);
 
         $visibleUserCategory = $this->userProfileFieldService->ensureCustomFieldCategory("Staff Data");
-        $this->userProfileFieldService->ensureCustomField($visibleUserCategory, "Is Adviser", "is_adviser_flag", "text", 30, 200, PROFILE_VISIBLE_TEACHERS);
-        $this->userProfileFieldService->ensureCustomField($visibleUserCategory, "Is Module Lead", "is_module_lead_flag", "text", 30, 200, PROFILE_VISIBLE_TEACHERS);
+        $this->userProfileFieldService->ensureCustomField($visibleUserCategory, "Is Adviser", "is_adviser_flag", "text", 30, 200, PROFILE_VISIBLE_NONE);
+        $this->userProfileFieldService->ensureCustomField($visibleUserCategory, "Is Module Lead", "is_module_lead_flag", "text", 30, 200, PROFILE_VISIBLE_NONE);
 
         $hiddenUserCategory = $this->userProfileFieldService->ensureCustomFieldCategory("All Persons Data (Hidden)");
+        $this->userProfileFieldService->ensureCustomField($hiddenUserCategory, "User Type", "user_type", "text", 30, 200, PROFILE_VISIBLE_NONE);
         $this->userProfileFieldService->ensureCustomField($hiddenUserCategory, "Person Id", "person_guid", "text", 30, 200, PROFILE_VISIBLE_NONE);
         $this->userProfileFieldService->ensureCustomField($hiddenUserCategory, "PIDM", "pidm", "text", 30, 200, PROFILE_VISIBLE_NONE);
     }

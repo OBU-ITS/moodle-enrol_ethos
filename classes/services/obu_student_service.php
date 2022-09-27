@@ -78,8 +78,6 @@ class obu_student_service
         $profile = new mdl_user_profile();
         $profile->personGuid = $person->id;
         $profile->pidm = $person->pidm;
-        $profile->financeHold = ""; // TODO Jock
-        $profile->academicHold = ""; // TODO Jock
         $profile->serviceNeeds = $person->serviceNeeds;
         $profile->studentGuid = $person->getStudent()->id;
         $profile->studentAdviser = join(',', array_map(function($advisorRelationship) {
@@ -88,13 +86,13 @@ class obu_student_service
             return $officialName->fullName;
         }, $person->getAdvisors()));
         $profile->studentStatus = $person->getStudent()->status;
+        $profile->userType = "student";
 
         $user = new mdl_user();
         $user->username = $username;
         $user->firstname = $officialName->firstName;
         $user->lastname = $officialName->lastName;
-        $user->email = $username . 'brookes.ac.uk';
-        $user->userType = "student";
+        $user->email = $username . '@brookes.ac.uk';
         $user->setCustomData($profile);
 
         $users->addUser($user);

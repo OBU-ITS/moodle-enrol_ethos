@@ -3,6 +3,7 @@ namespace enrol_ethos\repositories;
 
 use enrol_ethos\entities\mdl_user;
 use profile_field_base;
+use stdClass;
 
 require_once($CFG->dirroot.'/user/lib.php');
 require_once($CFG->dirroot.'/user/profile/lib.php');
@@ -18,7 +19,7 @@ class db_user_repository extends \enrol_plugin
 
     public function get($id)
     {
-        $sql  = 'select u.id AS userid, username ';
+        $sql  = 'select u.id AS userid, u.* ';
         $sql .= 'from {user} u ';
         $sql .=  'where u.id = :id';
 
@@ -27,13 +28,13 @@ class db_user_repository extends \enrol_plugin
         return $dbuser;
     }
 
-    public function getByUsername($username)
+    public function getByUsername($username) : ?mdl_user
     {
-        $sql  = 'select u.id AS userid, username ';
+        $sql  = 'select u.id AS userid, u.* ';
         $sql .= 'from {user} u ';
         $sql .= 'where u.username = :username';
 
-        return $this->db->get_record_sql($sql, ['username' => $username]);
+        return $this->convertToMoodleUser($this->db->get_record_sql($sql, ['username' => $username]));
     }
 
     public function getAllUsers($authType=null, $includeDeleted=true, int $limit = 0, int $offset = 0) {
@@ -73,26 +74,38 @@ class db_user_repository extends \enrol_plugin
         $user->confirmed  = 1;
         $user->auth       = 'ldap';
         $user->suspended = 0;
+        $user->mnethostid = 1;
 
-        $dbUser = user_create_user($user, false, false);
+        $dbUserId = user_create_user($user, false, false);
+        $dbUser = $this->get($dbUserId);
 
-        // TODO : Create profile field data
+        $newMoodleUser = $this->convertToMoodleUser($dbUser);
 
-        return $this->convertToMoodleUser($dbUser);
+        $customData = $moodleUser
+            ->getCustomData()
+            ->getStandardClass($newMoodleUser->id);
+
+        profile_save_data($customData);
+
+        return $newMoodleUser;
     }
 
     public function update(mdl_user $moodleUser) {
         $dbUser = $this->convertFromMoodleUser($moodleUser);
 
-        // TODO : Update profile field data
-
         user_update_user($dbUser, false, true);
 
+        $customData = $moodleUser
+            ->getCustomData()
+            ->getStandardClass($moodleUser->id);
+
+        profile_save_data($customData);
     }
 
-    private function convertFromMoodleUser(mdl_user $moodleUser) {
+    private function convertFromMoodleUser(mdl_user $moodleUser) : stdClass {
         $user = new \stdClass();
 
+        $user->id = $moodleUser->id;
         $user->username = trim(\core_text::strtolower($moodleUser->username));
         $user->firstname = $moodleUser->firstname;
         $user->lastname = $moodleUser->lastname;
@@ -101,14 +114,17 @@ class db_user_repository extends \enrol_plugin
         return $user;
     }
 
-    private function convertToMoodleUser($dbUser) : mdl_user {
-        $moodleUser = new mdl_user();
-        $moodleUser->id = $dbUser->id;
-        $moodleUser->username = $dbUser->username;
-        $moodleUser->firstname = $dbUser->firstname;
-        $moodleUser->lastname = $dbUser->lastname;
-        $moodleUser->email = $dbUser->email;
+    private function convertToMoodleUser($dbUser) : ?mdl_user {
+        if(!property_exists($dbUser, "id")) {
+            return null;
+        }
 
+        $moodleUser = new mdl_user();
+        $moodleUser->id = $dbUser->userid;
+        $moodleUser->username = $dbUser->username ?? '';
+        $moodleUser->firstname = $dbUser->firstname ?? '';
+        $moodleUser->lastname = $dbUser->lastname ?? '';
+        $moodleUser->email = $dbUser->email ?? '';
         return $moodleUser;
     }
 
@@ -214,31 +230,66 @@ class db_user_repository extends \enrol_plugin
     public function getUserProfileData(int $id) : array {
         $customDataRaw = array();
 
-        array_map(function($item) use ($customDataRaw) {
-            $customDataRaw[$item->field["shortname"]] = $item->data;
-        }, profile_get_user_fields_with_data($id));
+        $fields = profile_get_user_fields_with_data($id);
+        foreach ($fields as $formField) {
+            $customDataRaw[$formField->field->shortname] = $formField->data;
+        }
 
         return $customDataRaw;
     }
 
-    public function getAllUsersWithProfileFieldData(string $profileFieldShortName, string $profileFieldValue = null, string $authType = null) {
-        $sql  = 'select u.id AS userid, username, data, uind.id AS hasuserdata ';
+    public function  getUserWhereProfileFieldContains(string $profileFieldShortName, string $profileFieldValue) : ?mdl_user {
+        $condition = $this->db->sql_like('uind.data', ':value');
+        $value = '%'.$this->db->sql_like_escape($profileFieldValue).'%';
+        return $this->userWhereProfileField($profileFieldShortName, $condition, $value);
+    }
+
+    public function getUserWhereProfileFieldEquals(string $profileFieldShortName, string $profileFieldValue) : ?mdl_user {
+        return $this->userWhereProfileField($profileFieldShortName, "uind.data = :value", $profileFieldValue);
+    }
+
+    private function userWhereProfileField(string $shortname, string $condition, string $value) : ?mdl_user {
+        $sql  = 'select u.id AS userid, u.*, uind.id AS hasuserdata ';
+        $sql .= 'from {user} u ';
+        $sql .= 'join {user_info_data} uind on uind.userid = u.id ';
+        $sql .= 'join {user_info_field} uif on uind.fieldid = uif.id ';
+        $sql .=  'where uif.shortname = :shortname ';
+        $sql .=  'and ' . $condition;
+
+        $record = $this->db->get_record_sql($sql, ['shortname' => $shortname, 'value' => $value]);
+
+        return $this->convertToMoodleUser($record);
+    }
+
+    /**
+     * @param string $profileFieldShortName
+     * @param string|null $profileFieldValue
+     * @param string|null $authType
+     * @return mdl_user[]
+     */
+    public function getAllUsersWithProfileFieldData(string $profileFieldShortName, string $profileFieldValue = null, string $authType = null) : array {
+        $sql  = 'select u.id AS userid, u.*, uind.id AS hasuserdata ';
         $sql .= 'from {user} u ';
         $sql .= 'join {user_info_data} uind on uind.userid = u.id ';
         $sql .= 'join {user_info_field} uif on uind.fieldid = uif.id ';
         $sql .=  'where uif.shortname = :shortname';
         if ($profileFieldValue) {
-            $sql .=  ' and uind.data = :value';
+            $sql .= ' and uind.data = :value';
+        }
+        else {
+            $sql .= ' and uind.data is not null and uind.data <> \'\'';
         }
         if ($authType) {
-            $sql .=  ' and u.auth = :authtype ';
+            $sql .= ' and u.auth = :authtype';
         }
 
-        return $this->db->get_records_sql($sql, ['shortname' => $profileFieldShortName, 'value' => $profileFieldValue, 'authtype' => $authType]);
+        $dbUsers = $this->db->get_records_sql($sql, ['shortname' => $profileFieldShortName, 'value' => $profileFieldValue, 'authtype' => $authType]);
+
+        return array_filter(array_map(array($this, 'convertToMoodleUser'), $dbUsers), function ($item) { return $item != null; });
     }
 
     public function getUsersWithoutProfileFieldData(string $profileFieldShortName, string $authType = null) {
-        $sql  = 'select u.id AS userid, username ';
+        $sql  = 'select u.id AS userid, u.* ';
         $sql .= 'from {user} u ';
         $sql .= 'join {user_info_data} uind on uind.userid = u.id ';
         $sql .= 'join {user_info_field} uif on uind.fieldid = uif.id ';
@@ -248,7 +299,9 @@ class db_user_repository extends \enrol_plugin
             $sql .=  'and u.auth = :authtype ';
         }
 
-        return $this->db->get_records_sql($sql, ['shortname' => $profileFieldShortName, 'authtype' => $authType]);
+        $dbUsers = $this->db->get_records_sql($sql, ['shortname' => $profileFieldShortName, 'authtype' => $authType]);
+
+        return array_map(array($this, 'convertToMoodleUser'), $dbUsers);
     }
 
     public function getUsersByProfileField(string $profileFieldShortName, array $dataArray) {
@@ -302,7 +355,7 @@ class db_user_repository extends \enrol_plugin
             $dbusers = array_merge($dbusersBatch, $dbusers);
         }
 
-        return $dbusers;
+        return array_map(array($this, 'convertToMoodleUser'), $dbusers);
     }
 
     /**

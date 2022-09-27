@@ -53,6 +53,7 @@ $string['page_processallusers'] = 'Process all users';
 $string['page_processnewusers'] = 'Process new users';
 $string['page_createpsuedocourses'] = 'Create psuedo courses';
 $string['page_checkmessages'] = 'Check for Ethos updates';
+$string['page_resyncuser'] = 'Re-sync a user';
 
 $string['processuser'] = 'Process';
 $string['processallusers'] = 'Process all users';
@@ -64,3 +65,11 @@ $string['ethos:enrol'] = 'Enrol users';
 $string['ethos:unenrol'] = 'Unenrol users from the course';
 $string['ethos:unenrolself'] = 'Unenrol self from the course';
 $string['ethos:manage'] = 'Manage user enrolments';
+
+$string['profilefields'] = 'Profile Fields';
+$string['profilefields2'] = 'Profile Fields The Second';
+
+$string['resyncheader'] = "Re-sync a user with Banner";
+$string['tool_resyncuser_username_label'] = "Username";
+$string['tool_resyncuser_username_defaultvalue'] = "Please enter a username...";
+$string['tool_resyncuser_button_label'] = "Re-Sync";

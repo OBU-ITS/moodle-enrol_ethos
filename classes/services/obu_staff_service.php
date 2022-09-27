@@ -82,13 +82,13 @@ class obu_staff_service
         $profile->isAdviserFlag = (count($person->getAdvisors()) > 0);
         $currentOrFutureInstructors = $this->sectionInstructorService->getCurrentOrFutureInstructors($person->getInstructorSections());
         $profile->isModuleLeadFlag = (count($currentOrFutureInstructors) > 0);
+        $profile->userType = "staff";
 
         $user = new mdl_user();
         $user->username = $username;
         $user->firstname = $officialName->firstName;
         $user->lastname = $officialName->lastName;
-        $user->email = $username . 'brookes.ac.uk';
-        $user->userType = "staff";
+        $user->email = $username . '@brookes.ac.uk';
         $user->setCustomData($profile);
 
         $users->addUser($user);

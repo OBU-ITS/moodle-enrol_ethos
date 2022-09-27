@@ -55,10 +55,10 @@ class obu_sync_person_service
             $this->staffService->get($users, $ethosPerson);
         }
         else {
-            $moodleUser = $this->userService->getUserByPersonGuid($id);
-            if($moodleUser) {
+//            $moodleUser = $this->userService->getUserByPersonGuid($id);
+//            if($moodleUser) {
                 $this->studentService->get($users, $ethosPerson);
-            }
+//            }
         }
 
         $this->userService->handleUserCreation($trace, $users);

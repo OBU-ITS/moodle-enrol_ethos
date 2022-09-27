@@ -20,7 +20,7 @@ class obu_users_info
         return $this->users;
     }
 
-    public function addUser(mdl_user $user) : array {
+    public function addUser(mdl_user $user){
         $this->users[] = $user;
     }
 }
