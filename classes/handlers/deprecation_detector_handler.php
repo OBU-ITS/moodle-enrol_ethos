@@ -2,22 +2,30 @@
 namespace enrol_ethos\handlers;
 
 use enrol_ethos\services\deprecation_detector_service;
+use enrol_ethos\services\obu_email_service;
+use progress_trace;
 
 class deprecation_detector_handler
 {
     private deprecation_detector_service $deprecationDetectorService;
-    private available_resources_service $availableResourcesService;
-    private email_service $emailService;
+    private obu_email_service $emailService;
+    private progress_trace $trace;
 
-
-    public function __construct()
+    public function __construct($trace)
     {
-        $this->deprecationDetectorService = new deprecation_detector_service();
-        $this->availableResourcesService = new available_resources_service();
-        $this->emailService = new email_service();
+        $this->deprecationDetectorService = deprecation_detector_service::getInstance();
+        $this->emailService = obu_email_service::getInstance();
+
+        $this->trace = $trace;
     }
 
-    private function getAvailableResources(){
-        $this->availableResourcesService->getAvailableResourcesService();
+    public function handleDetectingDeprecations(){
+        $relevantResources = $this->deprecationDetectorService->getRelevantAvailableResources();
+        $deprecatedResources = $this->deprecationDetectorService->getDeprecatedResources($relevantResources);
+
+        if (count($deprecatedResources) == 0){
+            $this->trace->output("No deprecated resources detected");
+            return;
+        }
     }
 }

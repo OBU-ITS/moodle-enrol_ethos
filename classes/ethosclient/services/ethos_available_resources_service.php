@@ -11,7 +11,6 @@ class ethos_available_resources_service {
         $this->ethosClient = ethos_client::getInstance();
     }
 
-
     private static ?ethos_available_resources_service $instance = null;
     public static function getInstance() : ethos_available_resources_service
     {
@@ -23,14 +22,15 @@ class ethos_available_resources_service {
         return self::$instance;
     }
 
-    public function getAvailableResources() {
+    public function getAvailableResources() : array {
         $url = ethos_client::API_URL . "/admin/available-resources";
-        $availableResources = $this->ethosClient->getJson($url, null);
+        $availableResources = $this->ethosClient->getJson($url, '');
         $resourcesList = array();
 
         foreach ($availableResources as $availableResource){
             $resourcesList = $availableResource->resources;
         }
+
         return $resourcesList;
     }
 }
