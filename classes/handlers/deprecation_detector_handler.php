@@ -19,13 +19,18 @@ class deprecation_detector_handler
         $this->trace = $trace;
     }
 
-    public function handleDetectingDeprecations(){
+    public function handleDetectingDeprecations() {
         $relevantResources = $this->deprecationDetectorService->getRelevantAvailableResources();
         $deprecatedResources = $this->deprecationDetectorService->getDeprecatedResources($relevantResources);
 
-        if (count($deprecatedResources) == 0){
+        if (count($deprecatedResources) == 0) {
             $this->trace->output("No deprecated resources detected");
             return;
+        }
+
+        else{
+            $this->emailService->createEmailMessage($deprecatedResources);
+            $this->emailService->sendEmail();
         }
     }
 }

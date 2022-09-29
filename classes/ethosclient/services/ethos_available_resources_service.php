@@ -28,6 +28,11 @@ class ethos_available_resources_service {
         $resourcesList = array();
 
         foreach ($availableResources as $availableResource){
+            if(!property_exists($availableResource, "about")
+                || ($availableResource->about[0]->name != "StudentApi"
+                    && $availableResource->about[0]->name != "IntegrationApi")){
+                continue;
+            }
             $resourcesList = $availableResource->resources;
         }
 

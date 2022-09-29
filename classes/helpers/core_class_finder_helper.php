@@ -8,7 +8,6 @@ class core_class_finder_helper {
      */
     public static function includeFilesInFolder(string $path = "") {
         $directory = realpath(__DIR__ . "/../" . $path);
-
         if(!is_dir($directory)) {
             return;
         }

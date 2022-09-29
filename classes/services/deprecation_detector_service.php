@@ -2,6 +2,7 @@
 namespace enrol_ethos\services;
 
 use enrol_ethos\entities\deprecation\deprecated_resource;
+use enrol_ethos\ethosclient\providers\base\ethos_provider;
 use enrol_ethos\ethosclient\services\ethos_available_resources_service;
 use enrol_ethos\helpers\core_class_finder_helper;
 
@@ -30,17 +31,17 @@ class deprecation_detector_service {
 
     private function populateProviders() {
         $this->providers = array();
-        core_class_finder_helper::includeFilesInFolder("providers");
+        core_class_finder_helper::includeFilesInFolder("ethosclient\providers");
 
         foreach(get_declared_classes() as $class) {
-            $interfaces = class_implements($class);
-
-            if (!isset($interfaces['enrol_ethos\ethosclient\providers\base\ethos_provider']) || !defined($class::VERSION) || !defined($class::PATH) ) {
+            if (!is_subclass_of($class, "enrol_ethos\\ethosclient\\providers\\base\\ethos_provider")
+                || !defined($class . "::VERSION")
+                || !defined($class . "::PATH")) {
                 continue;
             }
 
-            $path = constant($class::PATH);
-            $this->providers[$path] = constant($class::VERSION);
+            $path = constant($class . "::PATH");
+            $this->providers[$path] = constant($class . "::VERSION");
         }
     }
 
@@ -59,6 +60,10 @@ class deprecation_detector_service {
         return $relevantResourcesList;
     }
 
+    /**
+     * @param array $relevantResources
+     * @return deprecated_resource[]
+     */
     public function getDeprecatedResources(array $relevantResources) : array {
         $deprecatedResourcesList = array();
         foreach ($relevantResources as $relevantResource) {
@@ -89,6 +94,7 @@ class deprecation_detector_service {
                     ? $deprecatedResourcesList[$relevantResource->name]
                     : new deprecated_resource();
                 $item->newVersionAvailable = $highestRepresentationVersion;
+                $item->currentVersion = $providerVersion;
                 $deprecatedResourcesList[$relevantResource->name] = $item;
             }
         }

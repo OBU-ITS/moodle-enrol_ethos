@@ -15,4 +15,11 @@ $service = deprecation_detector_service::getInstance();
 
 $relevantResources = $service->getRelevantAvailableResources();
 $deprecatedResources = $service->getDeprecatedResources($relevantResources);
-var_dump($deprecatedResources);
+foreach($deprecatedResources as $key=>$resource) {
+    if($resource->deprecatedOn != ""){
+        echo($key . " deprecated <br>");
+    }
+    if($resource->newVersionAvailable != ""){
+        echo($key . " new version available: $resource->currentVersion > $resource->newVersionAvailable <br>");
+    }
+};
