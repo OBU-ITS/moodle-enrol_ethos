@@ -29,8 +29,16 @@ class deprecation_detector_handler
         }
 
         else{
-            $this->emailService->createEmailMessage($deprecatedResources);
-            $this->emailService->sendEmail();
+//            $this->emailService->createEmailMessage($deprecatedResources);
+//            $this->emailService->sendEmail();
+            foreach($deprecatedResources as $key=>$resource) {
+                if($resource->deprecatedOn != ""){
+                    $this->trace->output($key . " deprecated");
+                }
+                if($resource->newVersionAvailable != ""){
+                    $this->trace->output($key . " new version available: $resource->currentVersion > $resource->newVersionAvailable");
+                }
+            };
         }
     }
 }
