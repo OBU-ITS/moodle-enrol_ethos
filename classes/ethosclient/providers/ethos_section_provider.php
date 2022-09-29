@@ -6,7 +6,7 @@ use enrol_ethos\ethosclient\providers\base\ethos_provider;
 
 class ethos_section_provider extends ethos_provider
 {
-    const VERSION = 'v16';
+    const VERSION = 'v16.0.0';
     const PATH = 'sections';
 
     private function __construct()

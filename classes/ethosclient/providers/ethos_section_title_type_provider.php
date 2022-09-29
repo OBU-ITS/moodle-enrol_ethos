@@ -6,7 +6,7 @@ use enrol_ethos\ethosclient\providers\base\ethos_provider;
 
 class ethos_section_title_type_provider extends ethos_provider
 {
-    const VERSION = 'v1';
+    const VERSION = 'v1.0.0';
     const PATH = 'section-title-types';
 
     private function __construct()

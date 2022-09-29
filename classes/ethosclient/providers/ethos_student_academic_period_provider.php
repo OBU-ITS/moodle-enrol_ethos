@@ -6,7 +6,7 @@ use enrol_ethos\ethosclient\providers\base\ethos_provider;
 
 class ethos_student_academic_period_provider extends ethos_provider
 {
-    const VERSION = 'v1';
+    const VERSION = 'v1.0.0';
     const PATH = 'student-academic-periods';
 
     private function __construct()
