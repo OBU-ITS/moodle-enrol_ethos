@@ -84,7 +84,7 @@ class obu_person_hold_service
      * @return bool
      */
     public function update(ethos_person_hold_info $ethosHold, mdl_user $user, bool $cleanHolds = true) : bool {
-        if (strtotime($ethosHold->endOn) < time()){
+        if (strtotime($ethosHold->endOn) < strtotime(date('Y-m-d', time()))){
             return false;
         }
 

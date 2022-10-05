@@ -53,18 +53,15 @@ class obu_sync_person_hold_service
             $trace->output("User with username ($username) does not have a person guid.");
             return false;
         }
-
+        $oldHolds = $user->getCustomData()->personHolds;
         $user->getCustomData()->personHolds = '';
 
-        $updated = false;
         $holds = $this->personHoldProvider->getByPersonGuid($user->getCustomData()->personGuid);
         array_map(function ($hold) use ($user, &$updated) {
-            if($this->personHoldService->update($hold, $user)) {
-                $updated = true;
-            }
+            $this->personHoldService->update($hold, $user);
         }, $holds);
 
-        if($updated) {
+        if(strcasecmp($oldHolds, $user->getCustomData()->personHolds) != 0) {
             $this->saveUser($trace, $user);
         }
 
