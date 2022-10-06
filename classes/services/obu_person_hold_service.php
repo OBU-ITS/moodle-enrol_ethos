@@ -40,7 +40,7 @@ class obu_person_hold_service
         $newPersonHoldsArray = array();
 
         foreach ($personHoldsArray as $personHold){
-            if (strtotime($personHold->endOn) > time()){
+            if (strtotime($personHold->endOn) > strtotime(date('Y-m-d', time()))){
                 $newPersonHoldsArray[] = $personHold;
             }
         }
@@ -84,16 +84,8 @@ class obu_person_hold_service
      * @return bool
      */
     public function update(ethos_person_hold_info $ethosHold, mdl_user $user, bool $cleanHolds = true) : bool {
-        if (strtotime($ethosHold->endOn) < time()){
-            return false;
-        }
-
         $personHoldsJson = $user->getCustomData()->personHolds;
         $personHoldsArray = $this->deserializeHolds($personHoldsJson);
-
-        if($cleanHolds) {
-            $personHoldsArray = $this->cleanHolds($personHoldsArray);
-        }
 
         $updated = false;
         foreach ($personHoldsArray as $personHold){
@@ -104,7 +96,15 @@ class obu_person_hold_service
             }
         }
 
+        if($cleanHolds) {
+            $personHoldsArray = $this->cleanHolds($personHoldsArray);
+        }
+
         if (!$updated){
+            if (strtotime($ethosHold->endOn) <= strtotime(date('Y-m-d', time()))){
+                return false;
+            }
+
             $hold = new obu_person_hold();
             $hold->populateObjectByEthosPersonHold($ethosHold);
             $personHoldsArray[] = $hold;
