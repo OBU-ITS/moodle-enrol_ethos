@@ -22,16 +22,8 @@ class resyncuser_form extends moodleform {
 
         $mform->addElement('text', 'userid', get_string('tool_resyncuser_username_label', 'enrol_ethos'));
         $mform->setType('userid', PARAM_NOTAGS);
-//        $mform->setDefault('userid', get_string('tool_resyncuser_username_defaultvalue', 'enrol_ethos'));
+        $mform->addRule('userid', null, 'required', null, 'client');
         $mform->addElement('submit', 'resyncbutton', get_string('tool_resyncuser_button_label', 'enrol_ethos'));
-    }
-    //Custom validation should be added here
-    function validation($data, $files) {
-        $errors = array();
-        if (empty($data["userid"]) || $data["userid"] === get_string('tool_resyncuser_username_defaultvalue', 'enrol_ethos')){
-            $errors[] = "error";
-        }
-        return $errors;
     }
 }
 
@@ -40,14 +32,16 @@ $mform = new resyncuser_form();
 if ($fromform = $mform->get_data()) {
     //In this case you process validated data. $mform->get_data() returns data posted in form.
     $sync = \enrol_ethos\services\sync\obu_sync_person_hold_service::getInstance();
-    $trace = new \null_progress_trace();
+    $internalTrace = new \html_progress_trace();
+    $trace = new \progress_trace_buffer($internalTrace, false);
+    $trace->output("Starting Re-sync of user ($fromform->userid)");
     if($sync->reSyncUser($trace, $fromform->userid)) {
-        $notification = "Form Submitted";
+        $notification = $trace->get_buffer();
         \core\notification::info($notification);
     }
     else {
-        $notification2 = "User could not be found, please try again";
-        \core\notification::error($notification2);
+        $notification = $trace->get_buffer();
+        \core\notification::warning($notification);
     }
 
 } else{
@@ -55,8 +49,7 @@ if ($fromform = $mform->get_data()) {
     // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
     // or on the first display of the form.
     if ($mform->is_submitted() && !$mform->is_validated()){
-        $notification2 = "User could not be found, please try again";
-        \core\notification::error($notification2);
+        \core\notification::error("Username is required.");
     }
 }
 

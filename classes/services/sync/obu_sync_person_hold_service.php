@@ -37,7 +37,7 @@ class obu_sync_person_hold_service
     }
 
     /**
-     *
+     * Re-sync user
      *
      * @param progress_trace $trace
      * @param string $username
@@ -53,16 +53,28 @@ class obu_sync_person_hold_service
             $trace->output("User with username ($username) does not have a person guid.");
             return false;
         }
+
         $oldHolds = $user->getCustomData()->personHolds;
+        $trace->output("Existing holds:");
+        $trace->output("$oldHolds");
+
         $user->getCustomData()->personHolds = '';
 
         $holds = $this->personHoldProvider->getByPersonGuid($user->getCustomData()->personGuid);
+        $trace->output("Holds from Ethos:");
+        $trace->output(json_encode($holds));
+
         array_map(function ($hold) use ($user, &$updated) {
             $this->personHoldService->update($hold, $user);
         }, $holds);
 
         if(strcasecmp($oldHolds, $user->getCustomData()->personHolds) != 0) {
+            $trace->output("New holds:");
+            $trace->output($user->getCustomData()->personHolds);
             $this->saveUser($trace, $user);
+        }
+        else {
+            $trace->output("No changes required for user.");
         }
 
         return true;
