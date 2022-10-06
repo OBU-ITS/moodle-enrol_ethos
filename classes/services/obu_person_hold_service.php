@@ -40,7 +40,7 @@ class obu_person_hold_service
         $newPersonHoldsArray = array();
 
         foreach ($personHoldsArray as $personHold){
-            if (strtotime($personHold->endOn) > time()){
+            if (strtotime($personHold->endOn) > strtotime(date('Y-m-d', time()))){
                 $newPersonHoldsArray[] = $personHold;
             }
         }
