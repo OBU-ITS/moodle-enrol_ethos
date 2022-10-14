@@ -11,7 +11,6 @@ class ethos_person_info_alternative_credential
         $this->populateObject($data);
     }
 
-    public string $id;
     public string $value;
 
 
@@ -44,7 +43,6 @@ class ethos_person_info_alternative_credential
             $this->setTypeId($data->type->id);
         }
 
-        $this->id = $data->id;
         $this->value = $data->value;
 
     }

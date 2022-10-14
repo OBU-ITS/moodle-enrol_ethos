@@ -23,6 +23,6 @@ class obu_section_instructor_processor implements obu_processor {
 
     function process(ethos_notification $message)
     {
-        $this->syncSectionInstructorService->sync($this->trace, $message->id);
+        $this->syncSectionInstructorService->sync($this->trace, $message->resourceId);
     }
 }
