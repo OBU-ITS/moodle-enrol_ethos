@@ -52,13 +52,14 @@ class obu_sync_person_service
 
         $users = new obu_users_info();
         if($this->alternativeCredentialService->hasAlternativeCredentialOfType($ethosPerson, $this->employeeAlternativeCredentialType)) {
+            $trace->output("Start re-sync for person id:" . $id);
             $this->staffService->get($users, $ethosPerson);
         }
         else {
-//            $moodleUser = $this->userService->getUserByPersonGuid($id);
-//            if($moodleUser) {
+            $moodleUser = $this->userService->getUserByPersonGuid($id);
+            if($moodleUser) {
                 $this->studentService->get($users, $ethosPerson);
-//            }
+            }
         }
 
         $this->userService->handleUserCreation($trace, $users);
