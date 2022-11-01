@@ -23,6 +23,6 @@ class obu_student_academic_program_processor implements obu_processor {
 
     function process(ethos_notification $message)
     {
-        $this->syncService->sync($this->trace, $message->id);
+        $this->syncService->sync($this->trace, $message->resourceId);
     }
 }
