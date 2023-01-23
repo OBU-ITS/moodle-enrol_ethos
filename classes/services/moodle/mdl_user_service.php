@@ -50,7 +50,14 @@ class mdl_user_service
     }
 
     public function handleUserCreation(progress_trace $trace, obu_users_info $users) {
-        foreach($users->getUsers() as $user) {
+        $users = $users->getUsers();
+
+        if(count($users) == 0) {
+            $trace->output("No details to be upserted.");
+            return;
+        }
+
+        foreach($users as $user) {
             $this->upsertUser($trace, $user);
         }
     }

@@ -7,6 +7,7 @@ class ethos_notification {
     public string $resourceName;
     public string $resourceId;
     public string $operation;
+    public string $content;
 
     public function __construct() {
     }
@@ -21,5 +22,6 @@ class ethos_notification {
         $this->id = $data->id;
         $this->published = $data->published;
         $this->operation = $data->operation;
+        $this->content = $data->content;
     }
 }

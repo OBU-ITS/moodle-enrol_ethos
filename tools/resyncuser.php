@@ -27,20 +27,31 @@ class resyncuser_form extends moodleform {
     }
 }
 
+function reSyncUser(\progress_trace $trace, ?object $data) : bool {
+    $personSync = \enrol_ethos\services\sync\obu_sync_person_service::getInstance();
+    $personHoldSync = \enrol_ethos\services\sync\obu_sync_person_hold_service::getInstance();
+
+    $success = true;
+
+    if(!$personSync->reSyncUser($trace, $data->userid)) $success = false;
+    if(!$personHoldSync->reSyncUser($trace, $data->userid)) $success = false;
+
+    return $success;
+}
+
 $mform = new resyncuser_form();
 
-if ($fromform = $mform->get_data()) {
-    //In this case you process validated data. $mform->get_data() returns data posted in form.
-    $sync = \enrol_ethos\services\sync\obu_sync_person_hold_service::getInstance();
+if ($data = $mform->get_data()) {
     $internalTrace = new \html_progress_trace();
     $trace = new \progress_trace_buffer($internalTrace, false);
-    $trace->output("Starting Re-sync of user ($fromform->userid)");
-    if($sync->reSyncUser($trace, $fromform->userid)) {
-        $notification = $trace->get_buffer();
+    $trace->output("Starting Re-sync of user ($data->userid)");
+
+    $isSuccess = reSyncUser($trace, $data);
+    $notification = $trace->get_buffer();
+
+    if($isSuccess) {
         \core\notification::info($notification);
-    }
-    else {
-        $notification = $trace->get_buffer();
+    } else {
         \core\notification::warning($notification);
     }
 

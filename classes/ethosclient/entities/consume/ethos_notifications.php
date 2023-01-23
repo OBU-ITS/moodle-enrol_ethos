@@ -6,42 +6,54 @@ class ethos_notifications {
     public function __construct()
     {
         $this->notifications = array();
+        $this->retrievedCount = 0;
     }
 
     /**
-     * @var ethos_notification[][]
+     * @var int[][]
+     */
+    private array $notificationKeys;
+
+    /**
+     * @var ethos_notification[]
      */
     private array $notifications;
 
     /**
      * @return string[]
      */
-    public function getNotificationGroupKeys() : array {
-        return array_keys($this->notifications);
+    public function getNotifications() : array {
+        ksort($this->notifications);
+        return $this->notifications;
     }
 
-    /**
-     * @param string $resourceName
-     * @return ethos_notification[]
-     */
-    public function getNotificationsByResource(string $resourceName) : array {
-        if(array_key_exists($resourceName, $this->notifications)) {
-            return $this->notifications[$resourceName];
-        }
-
-        return array();
+    private int $retrievedCount;
+    public function getRetrievedCount() : int {
+        return $this->retrievedCount;
     }
 
     /**
      * @param ethos_notification $notification
      */
     public function addNotification(ethos_notification $notification) {
-        if(!array_key_exists($notification->resourceName, $this->notifications)) {
-            $this->notifications[$notification->resourceName] = array();
-        }
+        $this->retrievedCount++;
 
-        if(!array_key_exists($notification->resourceId, $this->notifications[$notification->resourceName])) {
-            $this->notifications[$notification->resourceName][$notification->operation . "_" . $notification->resourceId] = $notification;
+        $this->ensureResourceNameGroupExists($notification->resourceName);
+
+        $groupItemKey = $notification->operation . "_" . $notification->resourceId;
+        if(!array_key_exists($groupItemKey, $this->notifications[$notification->resourceName])) {
+            $this->notificationKeys[$notification->resourceName][$groupItemKey] = $notification->resourceId;
+            $this->notifications[$notification->resourceId] = $notification;
+        }
+    }
+
+    /**
+     * @param $resourceName
+     * @return void
+     */
+    private function ensureResourceNameGroupExists($resourceName) {
+        if(!array_key_exists($resourceName, $this->notifications)) {
+            $this->notificationKeys[$resourceName] = array();
         }
     }
 }

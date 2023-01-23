@@ -2,6 +2,7 @@
 namespace enrol_ethos\services;
 
 use enrol_ethos\ethosclient\entities\ethos_alternative_credential_type_info;
+use enrol_ethos\ethosclient\entities\ethos_person_info;
 use enrol_ethos\ethosclient\providers\ethos_alternative_credential_type_provider;
 
 class obu_alternative_credential_service
@@ -27,15 +28,13 @@ class obu_alternative_credential_service
         return $this->alternativeCredentialService->getEmployeeNumberAlternativeCredentialType();
     }
 
-    public function getAlternativeCredentialOfType($peron, $alternativeCredentialType) : string {
-        if(!isset($peron) || !isset($peron->alternativeCredentials) || !isset($alternativeCredentialType) || !isset($alternativeCredentialType->id)) {
+    public function getAlternativeCredentialOfType(ethos_person_info $person, ethos_alternative_credential_type_info $alternativeCredentialType) : string {
+        if(!isset($person, $person->alternativeCredentials, $alternativeCredentialType, $alternativeCredentialType->id)) {
             return '';
         }
 
-        foreach ($peron->alternativeCredentials as $alternativeCredential) {
-            if(!isset($alternativeCredential->type)
-                || !isset($alternativeCredential->type->id)
-                || $alternativeCredential->type->id != $alternativeCredentialType->id) {
+        foreach ($person->alternativeCredentials as $alternativeCredential) {
+            if($alternativeCredential->getTypeId() != $alternativeCredentialType->id) {
                 continue;
             }
             return $alternativeCredential->value;
