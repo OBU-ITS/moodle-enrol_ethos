@@ -35,8 +35,6 @@ class obu_sync_student_academic_program_service
         $ethosStudentAcademicProgram = $this->studentAcademicProgramProvider->get($id);
 
         if($ethosStudentAcademicProgram) {
-            // TODO : Create student
-
             $enrolments = new obu_user_enrolments_info();
             $this->programEnrolmentService->get($enrolments, $ethosStudentAcademicProgram);
             $this->userEnrolService->handleEnrolment($trace, $enrolments);

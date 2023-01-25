@@ -29,7 +29,7 @@ class db_ethos_audit_repository
     public function createRecordRequest(int $lastProcessedID, int $limit) : int {
         // TODO : table which records the request for a collection of messages
         // Start timestamp
-        // Default "status" as success
+        // Default status as success
     }
 
     public function updateRecordRequestElapsedTime(int $id, int $time) {
