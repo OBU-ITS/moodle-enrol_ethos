@@ -22,6 +22,6 @@ class ethos_notification {
         $this->id = $data->id;
         $this->published = $data->published;
         $this->operation = $data->operation;
-        $this->content = $data->content;
+        $this->content = json_encode($data->content);
     }
 }

@@ -1,8 +1,6 @@
 <?php
 namespace enrol_ethos\ethosclient\repositories;
 
-use enrol_ethos\entities\ethos_message;
-
 class db_ethos_audit_repository
 {
     private $db;
@@ -30,6 +28,8 @@ class db_ethos_audit_repository
         // TODO : table which records the request for a collection of messages
         // Start timestamp
         // Default status as success
+
+        return 1;
     }
 
     public function updateRecordRequestElapsedTime(int $id, int $time) {
@@ -41,7 +41,7 @@ class db_ethos_audit_repository
     }
 
     public function createRecord(object $message) {
-        $this->db->insert_record('ethos_message', $this->messageToRecord($message));
+        //$this->db->insert_record('ethos_message', $this->messageToRecord($message));
     }
 
     private function messageToRecord(object $message) : object {
