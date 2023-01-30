@@ -73,7 +73,7 @@ class obu_student_service
     private function addPersonToUsers(obu_users_info $users, ethos_person_info $person)
     {
         $username = $this->personNameService->getUserName($person->credentials);
-        $officialName = $this->personNameService->getOfficialName($person->names);
+        $officialName = $this->personNameService->getPreferredName($person->names);
 
         $profile = new mdl_user_profile();
         $profile->personGuid = $person->id;
@@ -82,7 +82,7 @@ class obu_student_service
         $profile->studentGuid = $person->getStudent()->id;
         $profile->studentAdviser = join(',', array_map(function($advisorRelationship) {
             $advisor = $advisorRelationship->getAdvisor();
-            $officialName = $this->personNameService->getOfficialName($advisor->names);
+            $officialName = $this->personNameService->getPreferredName($advisor->names);
             return $officialName->fullName;
         }, $person->getAdvisors()));
         $profile->studentStatus = $person->getStudent()->status;

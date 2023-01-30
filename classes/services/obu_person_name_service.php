@@ -56,8 +56,12 @@ class obu_person_name_service
      * @return ethos_person_info_name
      */
     public function getPreferredName(array $names) : ethos_person_info_name {
-        return array_values(array_filter($names, function ($a) {
+        $preferredNameValue = array_filter($names, function ($a) {
             return ((isset($a->type)) && ($a->type->category == "favored"));
-        }))[0];
+        })[0];
+        if (!$preferredNameValue){
+            $preferredNameValue = $this->getOfficialName($names);
+        }
+        return $preferredNameValue;
     }
 }
