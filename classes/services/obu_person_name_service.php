@@ -46,8 +46,8 @@ class obu_person_name_service
      * @return ethos_person_info_name
      */
     public function getOfficialName(array $names) : ethos_person_info_name {
-        return array_filter($names, function ($a) {
-            return !isset($a->type);
+        return array_filter($names, function ($name) {
+            return ($name->category == '');
         })[0];
     }
 
@@ -56,12 +56,14 @@ class obu_person_name_service
      * @return ethos_person_info_name
      */
     public function getPreferredName(array $names) : ethos_person_info_name {
-        $preferredNameValue = array_filter($names, function ($a) {
-            return ((isset($a->type)) && ($a->type->category == "favored"));
-        })[0];
+        $preferredNameValue = array_values(array_filter($names, function ($name) {
+            return ($name->category == "favored");
+        }))[0];
+
         if (!$preferredNameValue){
             $preferredNameValue = $this->getOfficialName($names);
         }
+
         return $preferredNameValue;
     }
 }

@@ -74,7 +74,7 @@ class obu_staff_service
     private function addPersonToUsers(obu_users_info $users, ethos_person_info $person)
     {
         $username = $this->personNameService->getUserName($person->credentials);
-        $officialName = $this->personNameService->getPreferredName($person->names);
+        $preferredName = $this->personNameService->getPreferredName($person->names);
 
         $profile = new mdl_user_profile();
         $profile->personGuid = $person->id;
@@ -86,8 +86,8 @@ class obu_staff_service
 
         $user = new mdl_user();
         $user->username = $username;
-        $user->firstname = $officialName->firstName;
-        $user->lastname = $officialName->lastName;
+        $user->firstname = $preferredName->firstName;
+        $user->lastname = $preferredName->lastName;
         $user->email = $username . '@brookes.ac.uk';
         $user->setCustomData($profile);
 

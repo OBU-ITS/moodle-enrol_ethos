@@ -88,83 +88,99 @@ class mdl_user_service
 
         if($current->username !== $new->username) {
             $current->username = $new->username;
+            echo "username changed";
             $hasChanges = true;
         }
 
         if($current->firstname !== $new->firstname) {
             $current->firstname = $new->firstname;
+            echo "firstname changed";
             $hasChanges = true;
         }
 
         if($current->lastname !== $new->lastname) {
             $current->lastname = $new->lastname;
+            echo "lastname changed";
             $hasChanges = true;
         }
 
         if($current->email !== $new->email) {
             $current->email = $new->email;
+            echo "email changed";
             $hasChanges = true;
         }
 
         if($current->getCustomData()->personGuid !== $new->getCustomData()->personGuid) {
             $current->getCustomData()->personGuid = $new->getCustomData()->personGuid;
+            echo "personGuid changed";
             $hasChanges = true;
         }
 
         if($current->getCustomData()->pidm !== $new->getCustomData()->pidm) {
             $current->getCustomData()->pidm = $new->getCustomData()->pidm;
+            echo "pidm changed";
             $hasChanges = true;
         }
 
         if($current->getCustomData()->userType !== $new->getCustomData()->userType) {
             $current->getCustomData()->userType = $new->getCustomData()->userType;
+            echo "userType changed";
             $hasChanges = true;
         }
 
         if($new->getCustomData()->userType == "staff"){
             if($current->getCustomData()->isAdviserFlag !== $new->getCustomData()->isAdviserFlag) {
                 $current->getCustomData()->isAdviserFlag = $new->getCustomData()->isAdviserFlag;
+                echo "isAdviserFlag changed";
                 $hasChanges = true;
             }
 
             if($current->getCustomData()->isModuleLeadFlag !== $new->getCustomData()->isModuleLeadFlag) {
                 $current->getCustomData()->isModuleLeadFlag = $new->getCustomData()->isModuleLeadFlag;
+                echo "isModuleLeadFlag changed";
                 $hasChanges = true;
             }
         }
         elseif (strcasecmp($new->getCustomData()->userType, "student") == 0){
             if($current->getCustomData()->personHolds !== $new->getCustomData()->personHolds) {
                 $current->getCustomData()->personHolds = $new->getCustomData()->personHolds;
+                echo "personHolds changed";
                 $hasChanges = true;
             }
 
             if($current->getCustomData()->serviceNeeds !== $new->getCustomData()->serviceNeeds) {
                 $current->getCustomData()->serviceNeeds = $new->getCustomData()->serviceNeeds;
+                echo "serviceNeeds changed";
                 $hasChanges = true;
             }
 
             if($current->getCustomData()->studentGuid !== $new->getCustomData()->studentGuid) {
                 $current->getCustomData()->studentGuid = $new->getCustomData()->studentGuid;
+                echo "studentGuid changed";
                 $hasChanges = true;
             }
 
             if($current->getCustomData()->studentAdviser !== $new->getCustomData()->studentAdviser) {
                 $current->getCustomData()->studentAdviser = $new->getCustomData()->studentAdviser;
+                echo "studentAdviser changed";
                 $hasChanges = true;
             }
 
-            if($current->getCustomData()->studentCompletionDate !== $new->getCustomData()->studentCompletionDate) {
+            if($current->getCustomData()->studentCompletionDate != $new->getCustomData()->studentCompletionDate) {
+                echo "studentCompletionDate changed";
                 $current->getCustomData()->studentCompletionDate = $new->getCustomData()->studentCompletionDate;
                 $hasChanges = true;
             }
 
             if($current->getCustomData()->studentAcademicPrograms !== $new->getCustomData()->studentAcademicPrograms) {
                 $current->getCustomData()->studentAcademicPrograms = $new->getCustomData()->studentAcademicPrograms;
+                echo "studentAcademicPrograms changed";
                 $hasChanges = true;
             }
 
             if($current->getCustomData()->studentStatus !== $new->getCustomData()->studentStatus) {
                 $current->getCustomData()->studentStatus = $new->getCustomData()->studentStatus;
+                echo "studentStatus changed";
                 $hasChanges = true;
             }
         }

@@ -86,6 +86,7 @@ class obu_student_service
             return $advisorPreferredName->fullName;
         }, $person->getAdvisors()));
         $profile->studentStatus = $person->getStudent()->status;
+        $profile->studentCompletionDate = 0; // TODO : Must set
         $profile->userType = "student";
 
         $user = new mdl_user();
