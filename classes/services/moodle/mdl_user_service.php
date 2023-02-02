@@ -166,6 +166,9 @@ class mdl_user_service
                 $hasChanges = true;
             }
 
+            if($new->getCustomData()->studentCompletionDate == '') {
+                $new->getCustomData()->studentCompletionDate = 0;
+            }
             if($current->getCustomData()->studentCompletionDate != $new->getCustomData()->studentCompletionDate) {
                 echo "studentCompletionDate changed";
                 $current->getCustomData()->studentCompletionDate = $new->getCustomData()->studentCompletionDate;
