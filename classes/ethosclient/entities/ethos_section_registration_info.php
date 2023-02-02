@@ -26,11 +26,13 @@ class ethos_section_registration_info
         $this->registrantId = $id;
         $this->registrant = null;
     }
-    public function getRegistrant() : ethos_person_info
+    public function getRegistrant() : ?ethos_person_info
     {
         if(!$this->registrant) {
             $provider = ethos_person_provider::getInstance();
-            $this->registrant = $provider->get($this->registrantId);
+            if($registrant = $provider->get($this->registrantId)) {
+                $this->registrant = $registrant;
+            }
         }
 
         return $this->registrant;
@@ -49,7 +51,9 @@ class ethos_section_registration_info
     {
         if(!$this->section) {
             $provider = ethos_section_provider::getInstance();
-            $this->section = $provider->get($this->sectionId);
+            if($section = $provider->get($this->sectionId)) {
+                $this->section = $section;
+            }
         }
 
         return $this->section;

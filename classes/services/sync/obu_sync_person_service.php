@@ -92,6 +92,10 @@ class obu_sync_person_service
     public function sync(progress_trace $trace, $id)
     {
         $ethosPerson = $this->personProvider->get($id);
+        if($ethosPerson == null) {
+            $trace->output("Person ($id) not found to update.");
+            return;
+        }
 
         $users = new obu_users_info();
         if($this->alternativeCredentialService->hasAlternativeCredentialOfType($ethosPerson, $this->employeeAlternativeCredentialType)) {
@@ -118,6 +122,10 @@ class obu_sync_person_service
         $trace->output("Start re-sync for person id:" . $customData->personGuid);
 
         $ethosPerson = $this->personProvider->get($customData->personGuid);
+        if($ethosPerson == null) {
+            $trace->output("Person ($customData->personGuid) not found to update.");
+            return;
+        }
 
         $users = new obu_users_info();
         if($this->alternativeCredentialService->hasAlternativeCredentialOfType($ethosPerson, $this->employeeAlternativeCredentialType)) {

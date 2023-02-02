@@ -88,7 +88,7 @@ class obu_staff_service
         $profile = new mdl_user_profile();
         $profile->personGuid = $person->id;
         $profile->pidm = $person->pidm;
-        $profile->isAdviserFlag = (count($person->getAdvisors()) > 0);
+        $profile->isAdviserFlag = (count($person->getAdvisorStudents()) > 0);
         $currentOrFutureInstructors = $this->sectionInstructorService->getCurrentOrFutureInstructors($person->getInstructorSections());
         $profile->isModuleLeadFlag = (count($currentOrFutureInstructors) > 0);
         $profile->userType = "staff";

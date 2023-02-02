@@ -39,9 +39,9 @@ class obu_program_service
      * @param string $id
      */
     public function get(obu_course_hierarchy_info $hierarchy, string $id) {
-        $program = $this->academicProgramProvider->get($id);
-
-        $this->addProgramToHierarchy($hierarchy, $program);
+        if($program = $this->academicProgramProvider->get($id)) {
+            $this->addProgramToHierarchy($hierarchy, $program);
+        }
     }
 
     /**

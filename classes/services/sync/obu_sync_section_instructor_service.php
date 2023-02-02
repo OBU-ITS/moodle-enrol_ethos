@@ -34,6 +34,10 @@ class obu_sync_section_instructor_service
     public function sync(progress_trace $trace, $id)
     {
         $ethosSectionInstructor = $this->sectionInstructorProvider->get($id);
+        if($ethosSectionInstructor == null) {
+            $trace->output("Section Instructor ($id) not found to update.");
+            return;
+        }
 
         $users = new obu_users_info();
         $this->staffService->get($users, $ethosSectionInstructor->getInstructor());

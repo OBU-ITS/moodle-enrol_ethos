@@ -42,8 +42,16 @@ class obu_sync_student_advisor_service
         }
 
         $users = new obu_users_info();
-        $this->staffService->get($users, $ethosStudentAdvisor->getAdvisor());
-        $this->studentService->get($users, $ethosStudentAdvisor->getStudent());
+
+        $trace->output("Start Academic Advisor Staff update");
+        if($advisor = $ethosStudentAdvisor->getAdvisor()) {
+            $this->staffService->get($users,$advisor);
+        }
+
+        $trace->output("Start Academic Advisor Student update");
+        if($student = $ethosStudentAdvisor->getStudent()) {
+            $this->studentService->get($users, $student);
+        }
 
         $this->userService->handleUserCreation($trace, $users);
     }

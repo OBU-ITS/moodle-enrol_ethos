@@ -25,11 +25,13 @@ class ethos_student_advisor_relationship_info
         $this->advisorId = $id;
         $this->advisor = null;
     }
-    public function getAdvisor() : ethos_person_info
+    public function getAdvisor() : ?ethos_person_info
     {
         if(!$this->advisor) {
             $provider = ethos_person_provider::getInstance();
-            $this->advisor = $provider->get($this->advisorId);
+            if($advisor = $provider->get($this->advisorId)) {
+                $this->advisor = $advisor;
+            }
         }
 
         return $this->advisor;
@@ -44,11 +46,14 @@ class ethos_student_advisor_relationship_info
         $this->advisorTypeId = $id;
         $this->advisorType = null;
     }
-    public function getAdvisorType() : ethos_advisor_type_info
+    public function getAdvisorType() : ?ethos_advisor_type_info
     {
         if(!$this->advisorType) {
             $provider = ethos_advisor_type_provider::getInstance();
-            $this->advisorType = $provider->get($this->advisorTypeId);
+            if($advisorType = $provider->get($this->advisorTypeId))
+            {
+                $this->advisorType = $advisorType;
+            }
         }
 
         return $this->advisorType;
@@ -63,11 +68,13 @@ class ethos_student_advisor_relationship_info
         $this->studentId = $id;
         $this->student = null;
     }
-    public function getStudent() : ethos_person_info
+    public function getStudent() : ?ethos_person_info
     {
         if(!$this->student) {
             $provider = ethos_person_provider::getInstance();
-            $this->student = $provider->get($this->studentId);
+            if($student = $provider->get($this->studentId)) {
+                $this->student = $student;
+            }
         }
 
         return $this->student;

@@ -25,11 +25,13 @@ class ethos_student_academic_program_info
         $this->studentId = $id;
         $this->student = null;
     }
-    public function getStudent() : ethos_student_info
+    public function getStudent() : ?ethos_student_info
     {
         if(!$this->student) {
             $provider = ethos_student_provider::getInstance();
-            $this->student = $provider->get($this->studentId);
+            if($student = $provider->get($this->studentId)) {
+                $this->student = $student;
+            }
         }
 
         return $this->student;
@@ -44,11 +46,14 @@ class ethos_student_academic_program_info
         $this->programId = $id;
         $this->program = null;
     }
-    public function getProgram() : ethos_academic_program_info
+    public function getProgram() : ?ethos_academic_program_info
     {
         if(!$this->program) {
             $provider = ethos_academic_program_provider::getInstance();
             $this->program = $provider->get($this->programId);
+            if($program = $provider->get($this->programId)) {
+                $this->program = $program;
+            }
         }
 
         return $this->program;

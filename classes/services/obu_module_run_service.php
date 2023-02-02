@@ -45,10 +45,11 @@ class obu_module_run_service
      * @param string $id ethos guid
      */
     public function get(obu_course_hierarchy_info $hierarchy, string $id) {
-        $moduleRun = $this->sectionProvider->get($id);
-        $moduleRuns = array($moduleRun);
+        if($moduleRun = $this->sectionProvider->get($id)) {
+            $moduleRuns = array($moduleRun);
 
-        $this->addToCourseHierarchy($hierarchy, $moduleRuns);
+            $this->addToCourseHierarchy($hierarchy, $moduleRuns);
+        }
     }
 
     /**

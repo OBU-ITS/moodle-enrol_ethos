@@ -26,7 +26,9 @@ class ethos_section_info_owning_institution_unit
     {
         if(!$this->institutionUnit) {
             $provider = ethos_educational_institution_unit_provider::getInstance();
-            $this->institutionUnit = $provider->get($this->institutionUnitId);
+            if($institutionUnit = $provider->get($this->institutionUnitId)) {
+                $this->institutionUnit = $institutionUnit;
+            }
         }
 
         return $this->institutionUnit;

@@ -87,8 +87,9 @@ class ethos_person_info
     {
         if ($this->advisors == null){
             $provider = ethos_student_advisor_relationship_provider::getInstance();
-            $this->advisors = $provider->getByAdvisorPersonGuid($this->id);
+            $this->advisors = $provider->getByStudentPersonGuid($this->id);
         }
+
         return $this->advisors;
     }
 

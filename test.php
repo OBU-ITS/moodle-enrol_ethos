@@ -8,4 +8,4 @@ use enrol_ethos\services\sync\obu_sync_student_advisor_service;
 $service = obu_sync_student_advisor_service::getInstance();
 $trace = new \html_progress_trace();
 
-$service->sync($trace,"4408b376-4d47-42f8-929d-5ed51e14bed1");
+$service->sync($trace,"cd6581c0-2f9d-4cf7-9363-ad86b6b52f78");

@@ -23,11 +23,13 @@ class ethos_student_info
         $this->personId = $id;
         $this->person = null;
     }
-    public function getPerson() : ethos_person_info
+    public function getPerson() : ?ethos_person_info
     {
         if(!$this->person) {
             $provider = ethos_person_provider::getInstance();
-            $this->person = $provider->get($this->personId);
+            if($person = $provider->get($this->personId)) {
+                $this->person = $person;
+            }
         }
 
         return $this->person;

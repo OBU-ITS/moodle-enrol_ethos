@@ -49,6 +49,10 @@ class obu_sync_student_academic_program_service
 
             $personId = $ethosStudentAcademicProgram->getStudentId();
             $ethosPerson = $this->personProvider->get($personId);
+            if($ethosPerson == null) {
+                $trace->output("Person ($personId) not found to update.");
+                return;
+            }
             $this->studentService->get($users, $ethosPerson);
 
             $this->userService->handleUserCreation($trace, $users);
