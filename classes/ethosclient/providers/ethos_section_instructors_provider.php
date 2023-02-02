@@ -30,6 +30,10 @@ class ethos_section_instructors_provider extends ethos_provider
     public function get($id) : ?ethos_section_instructors_info {
         $item = $this->getFromEthosById($id);
 
+        if(!$item || isset($item->errors)) {
+            return null;
+        }
+
         return $this->convert($item);
     }
 

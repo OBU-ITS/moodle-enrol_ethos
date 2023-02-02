@@ -29,13 +29,13 @@ class ethos_person_provider extends ethos_provider
     }
 
     public function get($id) : ?ethos_person_info {
-        $person = $this->getFromEthosById($id);
+        $item = $this->getFromEthosById($id);
 
-        if(!$person || isset($person->errors)) {
+        if(!$item || isset($item->errors)) {
             return null;
         }
 
-        return $this->convert($person);
+        return $this->convert($item);
     }
 
     /**

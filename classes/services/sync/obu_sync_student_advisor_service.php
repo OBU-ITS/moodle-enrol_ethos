@@ -36,6 +36,10 @@ class obu_sync_student_advisor_service
     public function sync(progress_trace $trace, $id)
     {
         $ethosStudentAdvisor = $this->studentAdvisorProvider->get($id);
+        if(!$ethosStudentAdvisor) {
+            $trace->output("Student Advisor Relationship ($id) not found.");
+            return;
+        }
 
         $users = new obu_users_info();
         $this->staffService->get($users, $ethosStudentAdvisor->getAdvisor());

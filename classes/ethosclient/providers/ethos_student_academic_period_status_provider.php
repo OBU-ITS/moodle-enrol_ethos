@@ -30,6 +30,10 @@ class ethos_student_academic_period_status_provider extends ethos_provider
     public function get($id) : ?ethos_student_academic_period_status_info {
         $item = $this->getFromEthosById($id);
 
+        if(!$item || isset($item->errors)) {
+            return null;
+        }
+
         return $this->convert($item);
     }
 
