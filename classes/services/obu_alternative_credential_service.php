@@ -43,8 +43,8 @@ class obu_alternative_credential_service
         return '';
     }
 
-    public function hasAlternativeCredentialOfType($peron, $alternativeCredentialType) : bool {
-        $value = $this->getAlternativeCredentialOfType($peron, $alternativeCredentialType);
+    public function hasAlternativeCredentialOfType($person, $alternativeCredentialType) : bool {
+        $value = $this->getAlternativeCredentialOfType($person, $alternativeCredentialType);
 
         return $value != '';
     }

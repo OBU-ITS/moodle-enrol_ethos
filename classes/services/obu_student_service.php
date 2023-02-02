@@ -6,6 +6,7 @@ use enrol_ethos\entities\mdl_user_profile;
 use enrol_ethos\entities\obu_users_info;
 use enrol_ethos\ethosclient\entities\ethos_alternative_credential_type_info;
 use enrol_ethos\ethosclient\entities\ethos_person_info;
+use enrol_ethos\ethosclient\entities\ethos_person_info_credential;
 use enrol_ethos\ethosclient\providers\ethos_person_provider;
 
 class obu_student_service
@@ -72,7 +73,7 @@ class obu_student_service
      */
     private function addPersonToUsers(obu_users_info $users, ethos_person_info $person)
     {
-        $username = $this->personNameService->getUserName($person->credentials);
+        $username = $this->getUserName($person->credentials);
         $preferredName = $this->personNameService->getPreferredName($person->names);
 
         $profile = new mdl_user_profile();
@@ -96,5 +97,24 @@ class obu_student_service
         $user->setCustomData($profile);
 
         $users->addUser($user);
+    }
+
+    /**
+     * @param ethos_person_info_credential[] $credentials
+     * @return string
+     */
+    private function getUserName(array $credentials) : string {
+        if(!$credentials) return '';
+
+        $bannerId = '';
+        foreach($credentials as $credential) {
+            $type = $credential->type;
+            if($type == 'bannerId') {
+                $bannerId = $credential->value;
+                break;
+            }
+        }
+
+        return $bannerId;
     }
 }

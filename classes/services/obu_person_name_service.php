@@ -23,25 +23,6 @@ class obu_person_name_service
     }
 
     /**
-     * @param ethos_person_info_credential[] $credentials
-     * @return string
-     */
-    public function getUserName(array $credentials) : string {
-        if(!$credentials) return '';
-
-        $bannerId = '';
-        foreach($credentials as $credential) {
-            $type = $credential->type;
-            if($type == 'bannerId') {
-                $bannerId = $credential->value;
-                break;
-            }
-        }
-
-        return $bannerId;
-    }
-
-    /**
      * @param ethos_person_info_name[] $names
      * @return ethos_person_info_name
      */
