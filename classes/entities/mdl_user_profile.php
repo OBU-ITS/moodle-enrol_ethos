@@ -17,6 +17,7 @@ class mdl_user_profile
     public string $studentAdviser = '';
     public string $studentCompletionDate = '';
     public string $studentAcademicPrograms = '';
+    public string $studentAdvisers = '';
     public string $studentStatus = '';
 
     // Staff
@@ -33,6 +34,7 @@ class mdl_user_profile
         $this->studentAdviser = $customData['student_adviser'] ?? '';
         $this->studentCompletionDate = $customData['student_completion_date'] ?? '';
         $this->studentAcademicPrograms = $customData['student_academic_programs'] ?? '';
+        $this->studentAdvisers = $customData['student_advisers'] ?? '';
         $this->studentStatus = $customData['student_status'] ?? '';
         $this->isAdviserFlag = $customData['is_adviser_flag'] ?? '';
         $this->isModuleLeadFlag = $customData['is_module_lead_flag'] ?? '';
@@ -51,6 +53,7 @@ class mdl_user_profile
         $rtn->profile_field_student_adviser = $this->studentAdviser;
         $rtn->profile_field_student_completion_date = $this->studentCompletionDate;
         $rtn->profile_field_student_academic_programs = $this->studentAcademicPrograms;
+        $rtn->profile_field_student_advisers = $this->studentAdvisers;
         $rtn->profile_field_student_status = $this->studentStatus;
         $rtn->profile_field_is_adviser_flag = $this->isAdviserFlag;
         $rtn->profile_field_is_module_lead_flag = $this->isModuleLeadFlag;

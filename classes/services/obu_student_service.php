@@ -4,6 +4,7 @@ namespace enrol_ethos\services;
 use enrol_ethos\entities\mdl_user;
 use enrol_ethos\entities\mdl_user_profile;
 use enrol_ethos\entities\obu_users_info;
+use enrol_ethos\entities\profileFields\obu_student_advisor_relationship;
 use enrol_ethos\ethosclient\entities\ethos_alternative_credential_type_info;
 use enrol_ethos\ethosclient\entities\ethos_person_info;
 use enrol_ethos\ethosclient\entities\ethos_person_info_credential;
@@ -13,6 +14,7 @@ class obu_student_service
 {
     private ethos_person_provider $personProvider;
     private obu_person_name_service $personNameService;
+    private obu_student_advisor_relationship_service $studentAdvisorRelationshipService;
 
     private ethos_alternative_credential_type_info $employeeAlternativeCredentialType;
 
@@ -20,6 +22,7 @@ class obu_student_service
     {
         $this->personProvider = ethos_person_provider::getInstance();
         $this->personNameService = obu_person_name_service::getInstance();
+        $this->studentAdvisorRelationshipService = obu_student_advisor_relationship_service::getInstance();
     }
 
     private static ?obu_student_service $instance = null;
@@ -81,11 +84,21 @@ class obu_student_service
         $profile->pidm = $person->pidm;
         $profile->serviceNeeds = $person->serviceNeeds;
         $profile->studentGuid = $person->getStudent()->id;
-        $profile->studentAdviser = join(',', array_map(function($advisorRelationship) {
-            $advisor = $advisorRelationship->getAdvisor();
-            $advisorPreferredName = $this->personNameService->getPreferredName($advisor->names);
-            return $advisorPreferredName->fullName;
-        }, $person->getAdvisors()));
+
+//        $advisorNames = array_map(function($advisorRelationship) {
+//            $advisor = $advisorRelationship->getAdvisor();
+//            $advisorPreferredName = $this->personNameService->getPreferredName($advisor->names);
+//            return $advisorPreferredName->fullName;
+//        }, $person->getAdvisors());
+//        $profile->studentAdviser = join(', ', $advisorNames);
+
+        $obuAdvisorDatum = array_map(function($advisorRelationship) {
+            $obuAdvisorData = new obu_student_advisor_relationship();
+            $obuAdvisorData->populateObjectByEthosInfo($advisorRelationship);
+            return $obuAdvisorData;
+        }, $person->getAdvisors());
+        $profile->studentAdvisers = $this->studentAdvisorRelationshipService->serialize($obuAdvisorDatum);
+
         $profile->studentStatus = $person->getStudent()->status;
         $profile->userType = "student";
 

@@ -180,6 +180,12 @@ class mdl_user_service
                 $hasChanges = true;
             }
 
+            if($current->getCustomData()->studentAdvisers !== $new->getCustomData()->studentAdvisers) {
+                $trace->output("studentAdvisers changed (old: {$current->getCustomData()->studentAdvisers}, new: {$new->getCustomData()->studentAdvisers})");
+                $current->getCustomData()->studentAdvisers = $new->getCustomData()->studentAdvisers;
+                $hasChanges = true;
+            }
+
             if($current->getCustomData()->studentStatus !== $new->getCustomData()->studentStatus) {
                 $trace->output("studentStatus changed (old: {$current->getCustomData()->studentStatus}, new: {$new->getCustomData()->studentStatus})");
                 $current->getCustomData()->studentStatus = $new->getCustomData()->studentStatus;

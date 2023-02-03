@@ -74,11 +74,11 @@ class ethos_student_advisor_relationship_provider extends ethos_provider
         $studentAdvisorRelationships = array_map(array($this, 'convert'), $items);
 
         return array_filter($studentAdvisorRelationships, function ($studentAdvisorRelationship) {
-            return $studentAdvisorRelationship && $studentAdvisorRelationship->endOn == '';
+            return $studentAdvisorRelationship->endOn == '';
         });
     }
 
-    private function convert(object $item) : ?ethos_student_advisor_relationship_info {
+    private function convert(object $item) : ethos_student_advisor_relationship_info {
         return new ethos_student_advisor_relationship_info($item);
     }
 }

@@ -90,7 +90,7 @@ class obu_person_hold_service
         $updated = false;
         foreach ($personHoldsArray as $personHold){
             if ($personHold->id === $ethosHold->id){
-                $personHold->populateObjectByEthosPersonHold($ethosHold);
+                $personHold->populateObjectByEthosInfo($ethosHold);
                 $updated = true;
                 break;
             }
@@ -106,7 +106,7 @@ class obu_person_hold_service
             }
 
             $hold = new obu_person_hold();
-            $hold->populateObjectByEthosPersonHold($ethosHold);
+            $hold->populateObjectByEthosInfo($ethosHold);
             $personHoldsArray[] = $hold;
         }
 

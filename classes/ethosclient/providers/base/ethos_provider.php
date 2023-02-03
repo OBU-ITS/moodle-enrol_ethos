@@ -68,6 +68,7 @@ abstract class ethos_provider
     protected function getFromEthos(string $urlOverride=null, bool $paged=null, int $maxResults=0, int $offset=0) : ?array {
         return $this->getFromEthosClient(null, $urlOverride, $paged, $maxResults, $offset);
 
+        // TODO
 //        if ($this->cacheable) {
 //            foreach ($result as $res) {
 //                $this->cacheService->addToCache($res->id, $res, $this->cacheSettings);
