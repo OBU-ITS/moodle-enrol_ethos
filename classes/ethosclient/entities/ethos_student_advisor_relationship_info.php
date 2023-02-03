@@ -15,6 +15,7 @@ class ethos_student_advisor_relationship_info
     public string $id;
     public string $assignedPriority;
     public string $startOn;
+    public string $endOn;
 
     private string $advisorId;  // required
     private ?ethos_person_info $advisor = null;
@@ -88,6 +89,7 @@ class ethos_student_advisor_relationship_info
         $this->id = $data->id;
         $this->assignedPriority = $data->assignedPriority;
         $this->startOn = $data->startOn;
+        $this->endOn = $data->endOn ?? '';
 
         if(isset($data->advisor)) {
             $this->setAdvisorId($data->advisor->id);

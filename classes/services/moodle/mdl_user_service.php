@@ -87,103 +87,102 @@ class mdl_user_service
         $hasChanges = false;
 
         if($current->username !== $new->username) {
-            $current->username = $new->username;
             $trace->output("username changed (old: $current->username, new: $new->username)");
+            $current->username = $new->username;
             $hasChanges = true;
         }
 
         if($current->firstname !== $new->firstname) {
-            $current->firstname = $new->firstname;
             $trace->output("firstname changed (old: $current->firstname, new: $new->firstname)");
+            $current->firstname = $new->firstname;
             $hasChanges = true;
         }
 
         if($current->lastname !== $new->lastname) {
-            $current->lastname = $new->lastname;
             $trace->output("lastname changed (old: $current->lastname, new: $new->lastname)");
+            $current->lastname = $new->lastname;
             $hasChanges = true;
         }
 
         if($current->email !== $new->email) {
-            $current->email = $new->email;
             $trace->output("email changed (old: $current->email, new: $new->email)");
+            $current->email = $new->email;
             $hasChanges = true;
         }
 
         if($current->getCustomData()->personGuid !== $new->getCustomData()->personGuid) {
-            $current->getCustomData()->personGuid = $new->getCustomData()->personGuid;
             $trace->output("personGuid changed (old: {$current->getCustomData()->personGuid}, new: {$new->getCustomData()->personGuid})");
+            $current->getCustomData()->personGuid = $new->getCustomData()->personGuid;
             $hasChanges = true;
         }
 
         if($current->getCustomData()->pidm !== $new->getCustomData()->pidm) {
-            $current->getCustomData()->pidm = $new->getCustomData()->pidm;
             $trace->output("pidm changed (old: {$current->getCustomData()->pidm}, new: {$new->getCustomData()->pidm})");
+            $current->getCustomData()->pidm = $new->getCustomData()->pidm;
             $hasChanges = true;
         }
 
         if($current->getCustomData()->userType !== $new->getCustomData()->userType) {
-            $current->getCustomData()->userType = $new->getCustomData()->userType;
             $trace->output("userType changed (old: {$current->getCustomData()->userType}, new: {$new->getCustomData()->userType})");
+            $current->getCustomData()->userType = $new->getCustomData()->userType;
             $hasChanges = true;
         }
 
         if($new->getCustomData()->userType == "staff"){
             if($current->getCustomData()->isAdviserFlag !== $new->getCustomData()->isAdviserFlag) {
-                $current->getCustomData()->isAdviserFlag = $new->getCustomData()->isAdviserFlag;
                 $trace->output("isAdviserFlag changed (old: {$current->getCustomData()->isAdviserFlag}, new: {$new->getCustomData()->isAdviserFlag})");
+                $current->getCustomData()->isAdviserFlag = $new->getCustomData()->isAdviserFlag;
                 $hasChanges = true;
             }
 
             if($current->getCustomData()->isModuleLeadFlag !== $new->getCustomData()->isModuleLeadFlag) {
-                $current->getCustomData()->isModuleLeadFlag = $new->getCustomData()->isModuleLeadFlag;
                 $trace->output("isModuleLeadFlag changed (old: {$current->getCustomData()->isModuleLeadFlag}, new: {$new->getCustomData()->isModuleLeadFlag})");
+                $current->getCustomData()->isModuleLeadFlag = $new->getCustomData()->isModuleLeadFlag;
                 $hasChanges = true;
             }
         }
         elseif (strcasecmp($new->getCustomData()->userType, "student") == 0){
             if($current->getCustomData()->personHolds !== $new->getCustomData()->personHolds) {
-                $current->getCustomData()->personHolds = $new->getCustomData()->personHolds;
                 $trace->output("personHolds changed (old: {$current->getCustomData()->personHolds}, new: {$new->getCustomData()->personHolds})");
+                $current->getCustomData()->personHolds = $new->getCustomData()->personHolds;
                 $hasChanges = true;
             }
 
             if($current->getCustomData()->serviceNeeds !== $new->getCustomData()->serviceNeeds) {
-                $current->getCustomData()->serviceNeeds = $new->getCustomData()->serviceNeeds;
                 $trace->output("serviceNeeds changed (old: {$current->getCustomData()->serviceNeeds}, new: {$new->getCustomData()->serviceNeeds})");
+                $current->getCustomData()->serviceNeeds = $new->getCustomData()->serviceNeeds;
                 $hasChanges = true;
             }
 
             if($current->getCustomData()->studentGuid !== $new->getCustomData()->studentGuid) {
-                $current->getCustomData()->studentGuid = $new->getCustomData()->studentGuid;
                 $trace->output("studentGuid changed (old: {$current->getCustomData()->studentGuid}, new: {$new->getCustomData()->studentGuid})");
+                $current->getCustomData()->studentGuid = $new->getCustomData()->studentGuid;
                 $hasChanges = true;
             }
 
             if($current->getCustomData()->studentAdviser !== $new->getCustomData()->studentAdviser) {
-                $current->getCustomData()->studentAdviser = $new->getCustomData()->studentAdviser;
                 $trace->output("studentAdviser changed (old: {$current->getCustomData()->studentAdviser}, new: {$new->getCustomData()->studentAdviser})");
+                $current->getCustomData()->studentAdviser = $new->getCustomData()->studentAdviser;
                 $hasChanges = true;
             }
 
-            if($new->getCustomData()->studentCompletionDate == '') {
-                $new->getCustomData()->studentCompletionDate = 0;
-            }
-            if($current->getCustomData()->studentCompletionDate != $new->getCustomData()->studentCompletionDate) {
-                $current->getCustomData()->studentCompletionDate = $new->getCustomData()->studentCompletionDate;
+            if( $new->getCustomData()->studentCompletionDate != ''
+                && $new->getCustomData()->studentCompletionDate != 0
+                && $current->getCustomData()->studentCompletionDate != $new->getCustomData()->studentCompletionDate) {
                 $trace->output("studentCompletionDate changed (old: {$current->getCustomData()->studentCompletionDate}, new: {$new->getCustomData()->studentCompletionDate})");
+                $current->getCustomData()->studentCompletionDate = $new->getCustomData()->studentCompletionDate;
                 $hasChanges = true;
             }
 
             if($current->getCustomData()->studentAcademicPrograms !== $new->getCustomData()->studentAcademicPrograms) {
-                $current->getCustomData()->studentAcademicPrograms = $new->getCustomData()->studentAcademicPrograms;
                 $trace->output("studentAcademicPrograms changed (old: {$current->getCustomData()->studentAcademicPrograms}, new: {$new->getCustomData()->studentAcademicPrograms})");
+                $current->getCustomData()->studentAcademicPrograms = $new->getCustomData()->studentAcademicPrograms;
                 $hasChanges = true;
             }
 
             if($current->getCustomData()->studentStatus !== $new->getCustomData()->studentStatus) {
-                $current->getCustomData()->studentStatus = $new->getCustomData()->studentStatus;
                 $trace->output("studentStatus changed (old: {$current->getCustomData()->studentStatus}, new: {$new->getCustomData()->studentStatus})");
+                $current->getCustomData()->studentStatus = $new->getCustomData()->studentStatus;
                 $hasChanges = true;
             }
         }

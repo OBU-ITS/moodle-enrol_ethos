@@ -105,6 +105,7 @@ class obu_additional_field_service
         $this->userProfileFieldService->ensureCustomField($hiddenUserCategory, "Service Needs", "service_needs", "text", 30, 65000, PROFILE_VISIBLE_NONE);
         $this->userProfileFieldService->ensureCustomField($hiddenUserCategory, "Guid", "student_guid", "text", 30, 200, PROFILE_VISIBLE_NONE);
         $this->userProfileFieldService->ensureCustomField($hiddenUserCategory, "Academic Programs", "student_academic_programs", "text", 30, 65000, PROFILE_VISIBLE_NONE);
+        $this->userProfileFieldService->ensureCustomField($hiddenUserCategory, "Advisors", "student_advisors", "text", 30, 65000, PROFILE_VISIBLE_NONE);
 
         $visibleUserCategory = $this->userProfileFieldService->ensureCustomFieldCategory("Staff Data");
         $this->userProfileFieldService->ensureCustomField($visibleUserCategory, "Is Adviser", "is_adviser_flag", "text", 30, 200, PROFILE_VISIBLE_NONE);
