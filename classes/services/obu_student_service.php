@@ -104,7 +104,7 @@ class obu_student_service
 
         $user = new mdl_user();
         $user->username = $username;
-        $user->firstname = $preferredName->firstName; //not working because of this bit in both services
+        $user->firstname = $preferredName->firstName;
         $user->lastname = $preferredName->lastName;
         $user->email = $username . '@brookes.ac.uk';
         $user->setCustomData($profile);

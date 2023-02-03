@@ -5,12 +5,14 @@ use enrol_ethos\entities\obu_users_info;
 use enrol_ethos\repositories\db_user_repository;
 use enrol_ethos\services\moodle\mdl_user_service;
 use enrol_ethos\services\obu_person_hold_service;
+use enrol_ethos\services\obu_student_advisor_relationship_service;
 use progress_trace;
 
 class house_keeping_handler {
     private mdl_user_service $userService;
     private db_user_repository $userRepo;
     private obu_person_hold_service $personHoldsService;
+    private obu_student_advisor_relationship_service $studentAdvisorRelationshipService;
     private progress_trace $trace;
 
     public function __construct($trace)
@@ -19,6 +21,7 @@ class house_keeping_handler {
         $this->userRepo = new db_user_repository($DB);
         $this->userService = mdl_user_service::getInstance();
         $this->personHoldsService = obu_person_hold_service::getInstance();
+        $this->studentAdvisorRelationshipService = obu_student_advisor_relationship_service::getInstance();
         $this->trace = $trace;
     }
 
@@ -32,5 +35,28 @@ class house_keeping_handler {
         }
 
         $this->userService->handleUserCreation($this->trace, $updatedUsers);
+    }
+
+    //look at json in new profile field for student_advisers,
+    //find anything with a start on date less than 60 days in the future, ensure that student_adviser field has a comma seperated name
+    public function handleStudentAdviserRelationships()
+    {
+        $users = $this->userRepo->getAllUsersWithProfileFieldData("student_advisers"); //TODO is this too much
+
+        foreach ($users as $user) {
+            $studentAdvisersJsons = $this->studentAdvisorRelationshipService->deserialize($user->getCustomData()->studentAdvisers);
+            foreach ($studentAdvisersJsons as $studentAdvisersJson) {
+                //convert start on for each studentadviserjson to date and check how many days till start on
+                $startDate = strtotime($studentAdvisersJson->startOn);
+                $daysToStartDate = ceil(($startDate - time()) / 60 / 60 / 24);
+                //if less than 60 days till start on then add studentadvisor to profilefield for user
+                if ($daysToStartDate < 60) {
+                    //still working on this bit
+                    $this->studentAdvisorRelationshipService->replaceStudentAdvisorRelationships($studentAdvisersJson);
+                }
+
+            }
+
+        }
     }
 }

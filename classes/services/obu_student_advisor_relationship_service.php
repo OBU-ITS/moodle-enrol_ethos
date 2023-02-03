@@ -30,7 +30,7 @@ class obu_student_advisor_relationship_service
      * @param string $items
      * @return obu_student_advisor_relationship[]
      */
-    private function deserialize(string $items) : array {
+    public function deserialize(string $items) : array {
         $data = json_decode($items);
 
         if(!is_array($data)) {
