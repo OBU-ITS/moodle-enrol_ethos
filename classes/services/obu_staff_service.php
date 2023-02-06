@@ -18,6 +18,7 @@ class obu_staff_service
     private obu_person_name_service $personNameService;
     private obu_section_instructor_service $sectionInstructorService;
     private obu_alternative_credential_service $alternativeCredentialService;
+    private obu_student_advisor_relationship_service $studentAdvisorRelationshipService;
 
     private ethos_alternative_credential_type_info $employeeAlternativeCredentialType;
 
@@ -27,6 +28,7 @@ class obu_staff_service
         $this->personNameService = obu_person_name_service::getInstance();
         $this->sectionInstructorService = obu_section_instructor_service::getInstance();
         $this->alternativeCredentialService = obu_alternative_credential_service::getInstance();
+        $this->studentAdvisorRelationshipService = obu_student_advisor_relationship_service::getInstance();
 
         $this->employeeAlternativeCredentialType = $this->alternativeCredentialService->getEmployeeNumberAlternativeCredentialType();
     }
@@ -88,7 +90,7 @@ class obu_staff_service
         $profile = new mdl_user_profile();
         $profile->personGuid = $person->id;
         $profile->pidm = $person->pidm;
-        $profile->isAdviserFlag = (count($person->getAdvisorStudents()) > 0);
+        $profile->isAdviserFlag = $this->studentAdvisorRelationshipService->anyStudentAdvisorRelationshipsActive($person->getAdvisorStudents());
         $currentOrFutureInstructors = $this->sectionInstructorService->getCurrentOrFutureInstructors($person->getInstructorSections());
         $profile->isModuleLeadFlag = (count($currentOrFutureInstructors) > 0);
         $profile->userType = "staff";

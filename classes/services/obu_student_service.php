@@ -4,8 +4,6 @@ namespace enrol_ethos\services;
 use enrol_ethos\entities\mdl_user;
 use enrol_ethos\entities\mdl_user_profile;
 use enrol_ethos\entities\obu_users_info;
-use enrol_ethos\entities\profileFields\obu_student_advisor_relationship;
-use enrol_ethos\ethosclient\entities\ethos_alternative_credential_type_info;
 use enrol_ethos\ethosclient\entities\ethos_person_info;
 use enrol_ethos\ethosclient\entities\ethos_person_info_credential;
 use enrol_ethos\ethosclient\providers\ethos_person_provider;
@@ -15,8 +13,6 @@ class obu_student_service
     private ethos_person_provider $personProvider;
     private obu_person_name_service $personNameService;
     private obu_student_advisor_relationship_service $studentAdvisorRelationshipService;
-
-    private ethos_alternative_credential_type_info $employeeAlternativeCredentialType;
 
     private function __construct()
     {
@@ -84,21 +80,6 @@ class obu_student_service
         $profile->pidm = $person->pidm;
         $profile->serviceNeeds = $person->serviceNeeds;
         $profile->studentGuid = $person->getStudent()->id;
-
-//        $advisorNames = array_map(function($advisorRelationship) {
-//            $advisor = $advisorRelationship->getAdvisor();
-//            $advisorPreferredName = $this->personNameService->getPreferredName($advisor->names);
-//            return $advisorPreferredName->fullName;
-//        }, $person->getAdvisors());
-//        $profile->studentAdviser = join(', ', $advisorNames);
-
-        $obuAdvisorDatum = array_map(function($advisorRelationship) {
-            $obuAdvisorData = new obu_student_advisor_relationship();
-            $obuAdvisorData->populateObjectByEthosInfo($advisorRelationship);
-            return $obuAdvisorData;
-        }, $person->getAdvisors());
-        $profile->studentAdvisers = $this->studentAdvisorRelationshipService->serialize($obuAdvisorDatum);
-
         $profile->studentStatus = $person->getStudent()->status;
         $profile->userType = "student";
 
@@ -108,6 +89,8 @@ class obu_student_service
         $user->lastname = $preferredName->lastName;
         $user->email = $username . '@brookes.ac.uk';
         $user->setCustomData($profile);
+
+        $this->studentAdvisorRelationshipService->setStudentAdvisorRelationships($user, $person->getAdvisors());
 
         $users->addUser($user);
     }

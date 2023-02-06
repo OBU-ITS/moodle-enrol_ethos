@@ -7,6 +7,8 @@ use enrol_ethos\ethosclient\entities\ethos_student_advisor_relationship_info;
 
 class obu_student_advisor_relationship_service
 {
+    const ACTIVATION_ADVANCE = "Today +60 days";
+
     private function __construct()
     {
     }
@@ -20,22 +22,63 @@ class obu_student_advisor_relationship_service
 
         return self::$instance;
     }
+
     /**
-     * @param obu_student_advisor_relationship[] $studentAdvisorRelationships
+     * @param mdl_user $user
      */
-    public function replaceStudentAdvisorRelationships(array $studentAdvisorRelationships) : string{
-        foreach ($studentAdvisorRelationships as $studentAdvisersJson) {
-            //convert start on for each studentadviserjson to date and check how many days till start on
-            $startDate = strtotime($studentAdvisersJson->startOn);
-            $daysToStartDate = ceil(($startDate - time()) / 60 / 60 / 24);
-            //if less than 60 days till start on then add studentadvisor to profilefield for user
-            if ($daysToStartDate < 60) {
-                //still working on this bit
-                $this->replaceStudentAdvisorRelationships($studentAdvisersJson);
+    public function cleanStudentAdvisorProfileField(mdl_user $user) {
+        $pendingStudentAdvisorRelationships = $this->deserialize($user->getCustomData()->studentAdvisers);
+        $activeAdvisorRelationships = $this->deserialize($user->getCustomData()->studentAdviser);
+
+        $newPendingStudentAdvisorRelationships = array();
+        foreach($pendingStudentAdvisorRelationships as $pendingStudentAdvisorRelationship) {
+            if($this->isStudentAdvisorRelationshipActive($pendingStudentAdvisorRelationship)) {
+                $activeAdvisorRelationships[] = $pendingStudentAdvisorRelationship;
+            }
+            else {
+                $newPendingStudentAdvisorRelationships[] = $pendingStudentAdvisorRelationship;
             }
         }
 
-        return "";
+        $user->getCustomData()->studentAdvisers = $this->serialize($newPendingStudentAdvisorRelationships);
+        $user->getCustomData()->studentAdviser = $this->serialize($activeAdvisorRelationships);
+    }
+
+    /**
+     * @param ethos_student_advisor_relationship_info[] $studentAdvisorRelationshipInfos
+     */
+    public function setStudentAdvisorRelationships(mdl_user $user, array $studentAdvisorRelationshipInfos) {
+        $pendingStudentAdvisorRelationships = array();
+        $activeStudentAdvisorRelationships = array();
+        foreach($studentAdvisorRelationshipInfos as $studentAdvisorRelationshipInfo) {
+            $studentAdvisorRelationship = new obu_student_advisor_relationship();
+            $studentAdvisorRelationship->populateObjectByEthosInfo($studentAdvisorRelationshipInfo);
+            if($this->isStudentAdvisorRelationshipActive($studentAdvisorRelationship)) {
+                $activeStudentAdvisorRelationships[] = $studentAdvisorRelationship;
+            }
+            else {
+                $pendingStudentAdvisorRelationships[] = $studentAdvisorRelationship;
+            }
+        }
+
+        $user->getCustomData()->studentAdvisers = $this->serialize($pendingStudentAdvisorRelationships);
+        $user->getCustomData()->studentAdviser = $this->serialize($activeStudentAdvisorRelationships);
+    }
+
+    /**
+     * @param ethos_student_advisor_relationship_info[] $studentAdvisorRelationshipInfos
+     * @return bool
+     */
+    public function anyStudentAdvisorRelationshipsActive(array $studentAdvisorRelationshipInfos) : bool {
+        foreach($studentAdvisorRelationshipInfos as $studentAdvisorRelationshipInfo) {
+            $studentAdvisorRelationship = new obu_student_advisor_relationship();
+            $studentAdvisorRelationship->populateObjectByEthosInfo($studentAdvisorRelationshipInfo);
+            if($this->isStudentAdvisorRelationshipActive($studentAdvisorRelationship)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -60,7 +103,7 @@ class obu_student_advisor_relationship_service
      * @param obu_student_advisor_relationship[] $items
      * @return string
      */
-    public function serialize(array $items) : string
+    private function serialize(array $items) : string
     {
         return count($items) == 0
             ? ""
@@ -68,11 +111,13 @@ class obu_student_advisor_relationship_service
     }
 
     /**
-     * @param string $studentAdvisers
-     * @return string
+     * @param obu_student_advisor_relationship $studentAdvisorRelationship
+     * @return bool
      */
-    public function cleanStudentAdvisorProfileField(string $studentAdvisers) : string {
-        $studentAdvisersJsons = $this->deserialize($studentAdvisers);
-        return $this->replaceStudentAdvisorRelationships($studentAdvisersJsons);
+    private function isStudentAdvisorRelationshipActive(obu_student_advisor_relationship $studentAdvisorRelationship) : bool {
+        $startDate = strtotime($studentAdvisorRelationship->startOn);
+        $activeDate = strtotime(self::ACTIVATION_ADVANCE);
+
+        return ($startDate < $activeDate);
     }
 }
