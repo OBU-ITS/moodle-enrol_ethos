@@ -1,6 +1,7 @@
 <?php
 namespace enrol_ethos\services;
 
+use enrol_ethos\entities\mdl_user;
 use enrol_ethos\entities\profileFields\obu_student_advisor_relationship;
 use enrol_ethos\ethosclient\entities\ethos_student_advisor_relationship_info;
 
@@ -30,7 +31,7 @@ class obu_student_advisor_relationship_service
      * @param string $items
      * @return obu_student_advisor_relationship[]
      */
-    public function deserialize(string $items) : array {
+    private function deserialize(string $items) : array {
         $data = json_decode($items);
 
         if(!is_array($data)) {
@@ -53,5 +54,19 @@ class obu_student_advisor_relationship_service
         return count($items) == 0
             ? ""
             : json_encode($items);
+    }
+
+    public function cleanStudentAdvisorProfileField(mdl_user $user){
+        $studentAdvisersJsons = $this->deserialize($user->getCustomData()->studentAdvisers);
+        foreach ($studentAdvisersJsons as $studentAdvisersJson) {
+            //convert start on for each studentadviserjson to date and check how many days till start on
+            $startDate = strtotime($studentAdvisersJson->startOn);
+            $daysToStartDate = ceil(($startDate - time()) / 60 / 60 / 24);
+            //if less than 60 days till start on then add studentadvisor to profilefield for user
+            if ($daysToStartDate < 60) {
+                //still working on this bit
+                $this->replaceStudentAdvisorRelationships($studentAdvisersJson);
+            }
+        }
     }
 }

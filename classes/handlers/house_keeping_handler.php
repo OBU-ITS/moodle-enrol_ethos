@@ -43,20 +43,12 @@ class house_keeping_handler {
     {
         $users = $this->userRepo->getAllUsersWithProfileFieldData("student_advisers"); //TODO is this too much
 
+        $updatedUsers = new obu_users_info();
         foreach ($users as $user) {
-            $studentAdvisersJsons = $this->studentAdvisorRelationshipService->deserialize($user->getCustomData()->studentAdvisers);
-            foreach ($studentAdvisersJsons as $studentAdvisersJson) {
-                //convert start on for each studentadviserjson to date and check how many days till start on
-                $startDate = strtotime($studentAdvisersJson->startOn);
-                $daysToStartDate = ceil(($startDate - time()) / 60 / 60 / 24);
-                //if less than 60 days till start on then add studentadvisor to profilefield for user
-                if ($daysToStartDate < 60) {
-                    //still working on this bit
-                    $this->studentAdvisorRelationshipService->replaceStudentAdvisorRelationships($studentAdvisersJson);
-                }
-
-            }
-
+            $user->getCustomData()->studentAdviser = $this->studentAdvisorRelationshipService->cleanStudentAdvisorProfileField($user);
+            $updatedUsers->addUser($user);
         }
+
+        $this->userService->handleUserCreation($this->trace, $updatedUsers);
     }
 }
