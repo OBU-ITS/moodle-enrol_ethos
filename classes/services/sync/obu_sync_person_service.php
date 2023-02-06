@@ -98,19 +98,27 @@ class obu_sync_person_service
         }
 
         $users = new obu_users_info();
-        if($this->alternativeCredentialService->hasAlternativeCredentialOfType($ethosPerson, $this->employeeAlternativeCredentialType)) {
-            $trace->output("Start upsert for staff id:" . $id);
-            $this->staffService->get($users, $ethosPerson);
-        }
-        else {
-            $moodleUser = $this->userService->getUserByPersonGuid($id);
-            if($moodleUser) {
+        $moodleUser = $this->userService->getUserByPersonGuid($id);
+
+        if($moodleUser){
+            if((strtoupper($moodleUser->getCustomData()->userType) == "STAFF")) {
+                $trace->output("Start upsert for staff id:" . $id);
+                $this->staffService->get($users, $ethosPerson);
+            }
+            elseif($this->alternativeCredentialService->hasAlternativeCredentialOfType($ethosPerson, $this->employeeAlternativeCredentialType)) {
+                $trace->output("Skip insert for student id with EMPN:" . $id);
+                }
+            else{
                 $trace->output("Start update for student id:" . $id);
                 $this->studentService->get($users, $ethosPerson);
             }
-            else {
-                $trace->output("Skip insert for student id:" . $id);
-            }
+        }
+        elseif ($this->alternativeCredentialService->hasAlternativeCredentialOfType($ethosPerson, $this->employeeAlternativeCredentialType)){
+            $trace->output("Start upsert for staff id:" . $id);
+            $this->staffService->get($users, $ethosPerson);
+        }
+        else{
+            $trace->output("Skip insert for student id:" . $id);
         }
 
         $this->userService->handleUserCreation($trace, $users);
