@@ -21,10 +21,21 @@ class obu_student_advisor_relationship_service
         return self::$instance;
     }
     /**
-     * @param ethos_student_advisor_relationship_info[] $studentAdvisorRelationships
+     * @param obu_student_advisor_relationship[] $studentAdvisorRelationships
      */
-    public function replaceStudentAdvisorRelationships(array $studentAdvisorRelationships) {
+    public function replaceStudentAdvisorRelationships(array $studentAdvisorRelationships) : string{
+        foreach ($studentAdvisorRelationships as $studentAdvisersJson) {
+            //convert start on for each studentadviserjson to date and check how many days till start on
+            $startDate = strtotime($studentAdvisersJson->startOn);
+            $daysToStartDate = ceil(($startDate - time()) / 60 / 60 / 24);
+            //if less than 60 days till start on then add studentadvisor to profilefield for user
+            if ($daysToStartDate < 60) {
+                //still working on this bit
+                $this->replaceStudentAdvisorRelationships($studentAdvisersJson);
+            }
+        }
 
+        return "";
     }
 
     /**
@@ -56,17 +67,12 @@ class obu_student_advisor_relationship_service
             : json_encode($items);
     }
 
-    public function cleanStudentAdvisorProfileField(mdl_user $user){
-        $studentAdvisersJsons = $this->deserialize($user->getCustomData()->studentAdvisers);
-        foreach ($studentAdvisersJsons as $studentAdvisersJson) {
-            //convert start on for each studentadviserjson to date and check how many days till start on
-            $startDate = strtotime($studentAdvisersJson->startOn);
-            $daysToStartDate = ceil(($startDate - time()) / 60 / 60 / 24);
-            //if less than 60 days till start on then add studentadvisor to profilefield for user
-            if ($daysToStartDate < 60) {
-                //still working on this bit
-                $this->replaceStudentAdvisorRelationships($studentAdvisersJson);
-            }
-        }
+    /**
+     * @param string $studentAdvisers
+     * @return string
+     */
+    public function cleanStudentAdvisorProfileField(string $studentAdvisers) : string {
+        $studentAdvisersJsons = $this->deserialize($studentAdvisers);
+        return $this->replaceStudentAdvisorRelationships($studentAdvisersJsons);
     }
 }

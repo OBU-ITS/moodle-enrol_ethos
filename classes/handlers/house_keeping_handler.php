@@ -45,7 +45,7 @@ class house_keeping_handler {
 
         $updatedUsers = new obu_users_info();
         foreach ($users as $user) {
-            $user->getCustomData()->studentAdviser = $this->studentAdvisorRelationshipService->cleanStudentAdvisorProfileField($user);
+            $user->getCustomData()->studentAdviser = $this->studentAdvisorRelationshipService->cleanStudentAdvisorProfileField($user->getCustomData()->studentAdviser);
             $updatedUsers->addUser($user);
         }
 
