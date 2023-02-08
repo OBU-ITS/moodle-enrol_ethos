@@ -10,7 +10,7 @@ use progress_trace;
 
 class ethos_notifications_handler {
 
-    private const PROCESS_LIMIT = 50;
+    private const PROCESS_LIMIT = 500;
 
     private ethos_notification_service $consumeService;
 

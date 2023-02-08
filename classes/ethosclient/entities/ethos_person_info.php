@@ -19,7 +19,7 @@ class ethos_person_info
 
     public string $id;
     public string $pidm;
-    public string $serviceNeeds = "XX"; //TODO
+    public string $serviceNeeds;
 
     /**
      * @var ethos_person_info_name[]
@@ -161,7 +161,8 @@ class ethos_person_info
         }
 
         $this->id = $data->id;
-        $this->pidm = $data->pidm;
+        $this->pidm = $data->pidm ?? "";
+        $this->serviceNeeds = json_encode($data->obu_StudentSupportNeeds ?? "");
         $this->setNames($data->names);
         $this->setCredentials($data->credentials);
         if (isset($data->alternativeCredentials)){
