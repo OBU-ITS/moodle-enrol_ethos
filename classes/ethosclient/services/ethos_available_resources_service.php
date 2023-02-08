@@ -24,7 +24,7 @@ class ethos_available_resources_service {
 
     public function getAvailableResources() : array {
         $url = ethos_client::API_URL . "/admin/available-resources";
-        $availableResources = $this->ethosClient->getJson($url, '');
+        $availableResources = $this->ethosClient->getJson($url, '')->messages;
         $resourcesList = array();
 
         foreach ($availableResources as $availableResource){

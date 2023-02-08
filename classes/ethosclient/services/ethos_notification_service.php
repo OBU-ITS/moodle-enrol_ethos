@@ -42,25 +42,35 @@ class ethos_notification_service
      */
     public function consumeMessages(string $lastProcessedId = "0", int $limit = self::CONSUME_LIMIT) : ethos_notifications {
 
-        $recordRequest = $this->ethosAuditRepo->createRecordRequest($lastProcessedId, $limit);
-
+        $recordRequest = $this->ethosAuditRepo->createRecordRequest();
         $notifications = new ethos_notifications();
 
         $url = ethos_client::API_URL . "/consume?limit=". $limit ."&lastProcessedID=" . $lastProcessedId;
 
         try {
-            $messages = $this->ethosClient->getJson($url, "");
+            $ethosResponse = $this->ethosClient->getJson($url, "");
+            $messages = $ethosResponse->messages;
+            $recordRequest->received_count = count($messages);
+            $recordRequest->remaining_count = $ethosResponse->remainingCount;
         }
         catch(Exception $e) {
+            $this->ethosAuditRepo->updateRecordRequestAsFailed($recordRequest);
             return $notifications;
         }
 
         foreach ($messages as $message) {
-            $this->ethosAuditRepo->createRecord($message);
+            $this->ethosAuditRepo->createRecord($recordRequest, $message);
 
             $notification = new ethos_notification();
             $notification->populateObject($message);
             $notifications->addNotification($notification);
+        }
+
+        if($ethosResponse->remainingCount == 0) {
+            $this->ethosAuditRepo->updateRecordRequestAsDone($recordRequest);
+        }
+        else {
+            $this->ethosAuditRepo->updateRecordRequestAsComplete($recordRequest);
         }
 
         return $notifications;

@@ -58,7 +58,7 @@ abstract class ethos_provider
 
         $result = $this->getFromEthosClient($id, null, $paged, $maxResults);
 
-        if ($this->cacheable) {
+        if ($result && $this->cacheable) {
             $this->cacheService->addToCache($id, $result, $this->cacheSettings);
         }
 
@@ -90,7 +90,7 @@ abstract class ethos_provider
         }
 
         return !$paged
-            ? $this->ethosClient->getJson($url, $this->acceptHeader)
-            : $this->ethosClient->getJson($url, $this->acceptHeader,$maxResults,500, $offset);
+            ? $this->ethosClient->getJson($url, $this->acceptHeader)->messages
+            : $this->ethosClient->getJson($url, $this->acceptHeader, $maxResults, 500, $offset)->messages;
     }
 }

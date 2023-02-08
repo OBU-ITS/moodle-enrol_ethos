@@ -93,7 +93,7 @@ class obu_sync_person_service
     {
         $ethosPerson = $this->personProvider->get($id);
         if($ethosPerson == null) {
-            $trace->output("Person ($id) not found to update.");
+            $trace->output("Person ($id) not found to update. obu_sync_person_service->sync");
             return;
         }
 
@@ -131,7 +131,7 @@ class obu_sync_person_service
 
         $ethosPerson = $this->personProvider->get($customData->personGuid);
         if($ethosPerson == null) {
-            $trace->output("Person ($customData->personGuid) not found to update.");
+            $trace->output("Person ($customData->personGuid) not found to update. obu_sync_person_service->syncByUser");
             return;
         }
 

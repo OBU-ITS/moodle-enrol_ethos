@@ -4,6 +4,7 @@ namespace enrol_ethos\ethosclient\client;
 
 require_once(dirname(__FILE__) . '/../vendor/autoload.php');
 
+use enrol_ethos\ethosclient\entities\request\ethos_response;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -43,7 +44,6 @@ class ethos_client
      * @param int $maxResults maximum results returned by API
      * @param int $resultsPerPage results per page
      * @return array|mixed Response contents
-     * @throws Exception
      */
     public function getJson(string $url, string $accept, int $maxResults = 0, int $resultsPerPage = 0, int $initialOffset = 0) {
         if ((!$resultsPerPage) || ($maxResults && ($maxResults <= $resultsPerPage))) {
@@ -60,7 +60,11 @@ class ethos_client
                 }
             }
 
-            return json_decode($this->get($url1, $accept));
+            try {
+                return $this->get($url1, $accept);
+            } catch (Exception $e) {
+                return null;
+            }
         }
 
         $maxResults = $maxResults ?: 100000;
@@ -70,15 +74,21 @@ class ethos_client
         for ($offset = $initialOffset; $offset < ($initialOffset + $maxResults); $offset+=$resultsPerPage) {
             $qJoin = strpos($url,'?') ? '&' : '?';
             $url1 = "{$url}{$qJoin}limit=$resultsPerPage&offset=$offset";
-            $jsonResult = json_decode($this->get($url1, $accept));
-            $results = array_merge($jsonResult,$results);
 
-            if (count($jsonResult) < $resultsPerPage) {
+            try {
+                $jsonResult = $this->get($url1, $accept);
+            } catch (Exception $e) {
+                break;
+            }
+
+            $results = array_merge($jsonResult->messages,$results);
+
+            if (count($jsonResult->messages) < $resultsPerPage) {
                 break;
             }
         }
 
-        return $results;
+        return new ethos_response($results);
     }
 
     /**
@@ -100,7 +110,7 @@ class ethos_client
      * @param string $accept Request accept Header
      * @throws Exception|RequestException if max retries are reached
      */
-    private function get(string $url, string $accept) {
+    private function get(string $url, string $accept) : ?ethos_response {
 
         $maxTries = 3;
         $tries = 0;
@@ -119,7 +129,15 @@ class ethos_client
                 ];
 
                 $response = $this->client->getAsync($url, $options)->wait();
-                return $response->getBody()->getContents();
+
+                $decodedMessages = json_decode($response->getBody()->getContents());
+                foreach ($response->getHeaders() as $name => $values) {
+                    if($name == "x-remaining") {
+                        return new ethos_response($decodedMessages, implode(', ', $values));
+                    }
+                }
+
+                return new ethos_response($decodedMessages);
 
             } catch (RequestException $e) {
                 // Handle non 200 responses - includes regenerating access token if necessary
@@ -132,7 +150,7 @@ class ethos_client
                         $this->prepareAccessToken();
                         break;
                     default:
-                        return $e->getResponse()->getBody()->getContents();
+                        throw $e;
                 }
 
                 if (++$tries == $maxTries) {
