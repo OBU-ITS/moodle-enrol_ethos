@@ -2,7 +2,6 @@
 namespace enrol_ethos\handlers;
 
 use enrol_ethos\ethosclient\entities\consume\ethos_notification;
-use enrol_ethos\ethosclient\entities\consume\ethos_notifications;
 use enrol_ethos\ethosclient\services\ethos_notification_service;
 use enrol_ethos\helpers\core_class_finder_helper;
 use enrol_ethos\processors\base\obu_processor;
@@ -10,7 +9,7 @@ use progress_trace;
 
 class ethos_notifications_handler {
 
-    private const PROCESS_LIMIT = 500;
+    private const PROCESS_LIMIT = 2001;
 
     private ethos_notification_service $consumeService;
 
