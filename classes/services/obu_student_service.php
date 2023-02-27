@@ -79,8 +79,8 @@ class obu_student_service
         $profile->personGuid = $person->id;
         $profile->pidm = $person->pidm;
         $profile->serviceNeeds = $person->serviceNeeds;
-        $profile->studentGuid = $person->getStudent()->id;
-        $profile->studentStatus = $person->getStudent()->status;
+        $profile->studentGuid = $person->getStudent()->id ?? '';
+        $profile->studentStatus = $person->getStudent()->status ?? '';
         $profile->userType = "student";
 
         $user = new mdl_user();

@@ -146,11 +146,13 @@ class ethos_person_info
 
     private ?ethos_student_info $student = null;
 
-    public function getStudent(): ethos_student_info
+    public function getStudent(): ?ethos_student_info
     {
         if ($this->student == null){
             $provider = ethos_student_provider::getInstance();
-            $this->student = $provider->getStudentByPersonId($this->id);
+            if($student = $provider->getStudentByPersonId($this->id)) {
+                $this->student = $student;
+            }
         }
         return $this->student;
     }
