@@ -9,7 +9,7 @@ use progress_trace;
 
 class ethos_notifications_handler {
 
-    private const PROCESS_LIMIT = 251;
+    private const PROCESS_LIMIT = 2001;
 
     private ethos_notification_service $consumeService;
 
@@ -74,7 +74,7 @@ class ethos_notifications_handler {
                 ? ($processLimit - $processedCount)
                 : ethos_notification_service::CONSUME_LIMIT;
 
-            $notifications = $this->consumeService->consumeMessages($lastProcessId, $limit);
+            $notifications = $this->consumeService->consumeMessages($this->trace, $lastProcessId, $limit);
             $resultsCount = $notifications->getRetrievedCount();
 
             foreach($notifications->getNotifications() as $notification) {

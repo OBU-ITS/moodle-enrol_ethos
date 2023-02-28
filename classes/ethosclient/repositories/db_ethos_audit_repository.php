@@ -3,6 +3,7 @@ namespace enrol_ethos\ethosclient\repositories;
 
 use enrol_ethos\ethosclient\entities\request\ethos_request;
 use Matrix\Exception;
+use progress_trace;
 
 class db_ethos_audit_repository
 {
@@ -80,11 +81,25 @@ class db_ethos_audit_repository
         }
     }
 
-    public function createRecord(ethos_request $ethosRequest, object $message) {
+    public function createRecord(progress_trace $trace, ethos_request $ethosRequest, object $message) {
         try {
-            $this->db->insert_record('obu_ethos_message', $this->messageToRecord($message, $ethosRequest->id));
+            $existingRecord = $this->db->get_record('obu_ethos_message', ['id' => $message->id]);
+            if(!$existingRecord) {
+                $sql  = 'INSERT INTO {obu_ethos_message} (id,request_id,published,resource_name,resource_id,operation,content_type,content) VALUES(?,?,?,?,?,?,?,?)';
+                $this->db->execute($sql, [
+                    'id' => $message->id,
+                    'request_id' => $ethosRequest->id,
+                    'published' => $message->published,
+                    'resource_name' => $message->resource->name,
+                    'resource_id' => $message->resource->id,
+                    'operation' => $message->operation,
+                    'content_type' => $message->contentType,
+                    'content' => \GuzzleHttp\json_encode($message->content),
+                ]);
+            }
         }
         catch (\moodle_exception $exception) {
+            $trace->output($exception->getMessage());
             return null;
         }
     }
@@ -95,11 +110,11 @@ class db_ethos_audit_repository
         $record->id = $message->id;
         $record->request_id = $requestId;
         $record->published = $message->published;
-        $record->resource_name = $message->resource_name;
-        $record->resource_id = $message->resource_id;
+        $record->resource_name = $message->resource->name;
+        $record->resource_id = $message->resource->id;
         $record->operation = $message->operation;
-        $record->content_type = $message->content_type;
-        $record->content = $message->content;
+        $record->content_type = $message->contentType;
+        $record->content = \GuzzleHttp\json_encode($message->content);
 
         return $record;
     }

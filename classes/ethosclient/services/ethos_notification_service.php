@@ -8,6 +8,7 @@ use enrol_ethos\ethosclient\entities\consume\ethos_notifications;
 use enrol_ethos\ethosclient\general\class_finder;
 use enrol_ethos\ethosclient\repositories\db_ethos_audit_repository;
 use Exception;
+use progress_trace;
 
 class ethos_notification_service
 {
@@ -40,7 +41,7 @@ class ethos_notification_service
      * @param int $limit
      * @return ethos_notifications
      */
-    public function consumeMessages(string $lastProcessedId = "0", int $limit = self::CONSUME_LIMIT) : ethos_notifications {
+    public function consumeMessages(progress_trace $trace, string $lastProcessedId = "0", int $limit = self::CONSUME_LIMIT) : ethos_notifications {
 
         $recordRequest = $this->ethosAuditRepo->createRecordRequest();
         $notifications = new ethos_notifications();
@@ -59,7 +60,7 @@ class ethos_notification_service
         }
 
         foreach ($messages as $message) {
-            $this->ethosAuditRepo->createRecord($recordRequest, $message);
+            $this->ethosAuditRepo->createRecord($trace, $recordRequest, $message);
 
             $notification = new ethos_notification();
             $notification->populateObject($message);

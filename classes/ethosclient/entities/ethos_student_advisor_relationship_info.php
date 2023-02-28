@@ -87,7 +87,7 @@ class ethos_student_advisor_relationship_info
         }
 
         $this->id = $data->id;
-        $this->assignedPriority = $data->assignedPriority;
+        $this->assignedPriority = $data->assignedPriority ?? '';
         $this->startOn = $data->startOn;
         $this->endOn = $data->endOn ?? '';
 
