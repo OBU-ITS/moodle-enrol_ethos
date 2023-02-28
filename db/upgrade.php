@@ -99,7 +99,7 @@ function xmldb_enrol_ethos_upgrade($oldversion) {
         $table = new xmldb_table('obu_ethos_message');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
         $table->add_field('request_id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
-        $table->add_field('published', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null, '');
+        $table->add_field('published', XMLDB_TYPE_CHAR, '29', null, XMLDB_NOTNULL, null, '');
         $table->add_field('resource_name', XMLDB_TYPE_CHAR, '50', null, XMLDB_NOTNULL, null, '');
         $table->add_field('resource_id', XMLDB_TYPE_CHAR, '36', null, XMLDB_NOTNULL, null, '');
         $table->add_field('operation', XMLDB_TYPE_CHAR, null, null, XMLDB_NOTNULL, null, '');
