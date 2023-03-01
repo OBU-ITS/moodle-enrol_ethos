@@ -17,7 +17,7 @@ class ethos_student_advisor_relationship_info
     public string $startOn;
     public string $endOn;
 
-    private string $advisorId;  // required
+    private string $advisorId = '';  // required
     private ?ethos_person_info $advisor = null;
     public function getAdvisorId() : string {
         return $this->advisorId;
@@ -38,7 +38,7 @@ class ethos_student_advisor_relationship_info
         return $this->advisor;
     }
 
-    private string $advisorTypeId;  // required
+    private string $advisorTypeId = '';  // required
     private ?ethos_advisor_type_info $advisorType = null;
     public function getAdvisorTypeId() : string {
         return $this->advisorTypeId;
@@ -60,7 +60,7 @@ class ethos_student_advisor_relationship_info
         return $this->advisorType;
     }
 
-    private string $studentId;  // required
+    private string $studentId = '';  // required
     private ?ethos_person_info $student = null;
     public function getStudentId() : string {
         return $this->studentId;
