@@ -61,7 +61,9 @@ abstract class ethos_provider
             return null;
         }
 
-        $result = $result[0];
+        if(gettype($result) == "array") {
+            $result = $result[0];
+        }
 
 //        if ($this->cacheable) {
 //            $this->cacheService->addToCache($id, $result, $this->cacheSettings);
