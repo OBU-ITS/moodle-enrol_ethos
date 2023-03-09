@@ -57,8 +57,13 @@ abstract class ethos_provider
         }
 
         $result = $this->getFromEthosClient($id, null, $paged, $maxResults);
+        if (!$result) {
+            return null;
+        }
 
-        if ($result && $this->cacheable) {
+        $result = $result[0];
+
+        if ($this->cacheable) {
             $this->cacheService->addToCache($id, $result, $this->cacheSettings);
         }
 
