@@ -52,9 +52,9 @@ abstract class ethos_provider
     }
 
     protected function getFromEthosById(string $id, bool $paged=null, int $maxResults=0) : ?object {
-        if ($this->cacheable && $valueFromCache = $this->cacheService->getFromCache($id, $this->cacheSettings->collection)) {
-            return $valueFromCache;
-        }
+//        if ($this->cacheable && $valueFromCache = $this->cacheService->getFromCache($id, $this->cacheSettings->collection)) {
+//            return $valueFromCache;
+//        }
 
         $result = $this->getFromEthosClient($id, null, $paged, $maxResults);
         if (!$result) {
@@ -63,9 +63,9 @@ abstract class ethos_provider
 
         $result = $result[0];
 
-        if ($this->cacheable) {
-            $this->cacheService->addToCache($id, $result, $this->cacheSettings);
-        }
+//        if ($this->cacheable) {
+//            $this->cacheService->addToCache($id, $result, $this->cacheSettings);
+//        }
 
         return $result;
     }
@@ -81,7 +81,7 @@ abstract class ethos_provider
 //        }
     }
 
-    private function getFromEthosClient(string $id=null, string $urlOverride=null, bool $paged=null, int $maxResults=0, int $offset=0)
+    private function getFromEthosClient(string $id=null, string $urlOverride=null, bool $paged=null, int $maxResults=0, int $offset=0) : array
     {
         $url = $urlOverride ?: ethos_client::API_URL . "/api/" . $this->path;
 
