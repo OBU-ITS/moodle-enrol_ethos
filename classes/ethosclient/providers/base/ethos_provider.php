@@ -83,7 +83,7 @@ abstract class ethos_provider
 //        }
     }
 
-    private function getFromEthosClient(string $id=null, string $urlOverride=null, bool $paged=null, int $maxResults=0, int $offset=0) : array
+    private function getFromEthosClient(string $id=null, string $urlOverride=null, bool $paged=null, int $maxResults=0, int $offset=0)
     {
         $url = $urlOverride ?: ethos_client::API_URL . "/api/" . $this->path;
 
