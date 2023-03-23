@@ -115,7 +115,7 @@ class db_user_repository extends \enrol_plugin
     }
 
     private function convertToMoodleUser($dbUser) : ?mdl_user {
-        if(!property_exists($dbUser, "id")) {
+        if(!property_exists($dbUser, "userid")) {
             return null;
         }
 

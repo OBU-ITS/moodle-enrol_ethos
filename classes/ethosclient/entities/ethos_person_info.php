@@ -19,7 +19,7 @@ class ethos_person_info
 
     public string $id;
     public string $pidm;
-    public string $serviceNeeds = "XX"; //TODO
+    public string $serviceNeeds;
 
     /**
      * @var ethos_person_info_name[]
@@ -87,8 +87,9 @@ class ethos_person_info
     {
         if ($this->advisors == null){
             $provider = ethos_student_advisor_relationship_provider::getInstance();
-            $this->advisors = $provider->getByAdvisorPersonGuid($this->id);
+            $this->advisors = $provider->getByStudentPersonGuid($this->id);
         }
+
         return $this->advisors;
     }
 
@@ -145,11 +146,13 @@ class ethos_person_info
 
     private ?ethos_student_info $student = null;
 
-    public function getStudent(): ethos_student_info
+    public function getStudent(): ?ethos_student_info
     {
         if ($this->student == null){
             $provider = ethos_student_provider::getInstance();
-            $this->student = $provider->getStudentByPersonId($this->id);
+            if($student = $provider->getStudentByPersonId($this->id)) {
+                $this->student = $student;
+            }
         }
         return $this->student;
     }
@@ -160,7 +163,8 @@ class ethos_person_info
         }
 
         $this->id = $data->id;
-        $this->pidm = $data->pidm;
+        $this->pidm = $data->pidm ?? "";
+        $this->serviceNeeds = json_encode($data->obu_StudentSupportNeeds ?? "");
         $this->setNames($data->names);
         $this->setCredentials($data->credentials);
         if (isset($data->alternativeCredentials)){

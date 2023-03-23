@@ -30,7 +30,9 @@ class ethos_academic_period_category_info
 
         if(!$this->parent) {
             $provider = ethos_academic_period_provider::getInstance();
-            $this->parent = $provider->get($this->parentId);
+            if($academicPeriod = $provider->get($this->parentId)) {
+                $this->parent = $academicPeriod;
+            }
         }
 
         return $this->parent;

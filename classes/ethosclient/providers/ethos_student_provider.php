@@ -6,7 +6,7 @@ use enrol_ethos\ethosclient\providers\base\ethos_provider;
 
 class ethos_student_provider extends ethos_provider
 {
-    const VERSION = 'v16';
+    const VERSION = 'v16.0.0';
     const PATH = 'students';
 
     private function __construct()
@@ -27,8 +27,12 @@ class ethos_student_provider extends ethos_provider
     }
 
 
-    public function get($id) : ethos_student_info {
+    public function get($id) : ?ethos_student_info {
         $item = $this->getFromEthosById($id);
+
+        if(!$item || isset($item->errors)) {
+            return null;
+        }
 
         return $this->convert($item);
     }
@@ -37,10 +41,14 @@ class ethos_student_provider extends ethos_provider
      * @param $personId
      * @return ethos_student_info
      */
-    public function getStudentByPersonId($personId) : ethos_student_info {
+    public function getStudentByPersonId($personId) : ?ethos_student_info {
         $url = $this->buildUrlWithCriteria('{"person": {"id": "'. $personId . '"}}');
         $items = $this->getFromEthos($url);
         $item = count($items)>0 ? $items[0] : null;
+
+        if(!$item || isset($item->errors)) {
+            return null;
+        }
 
         return $this->convert($item);
     }

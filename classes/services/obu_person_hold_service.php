@@ -23,13 +23,12 @@ class obu_person_hold_service
     }
 
     /**
-     * @param string $holds
-     * @return string
+     * @param mdl_user $user
      */
-    public function cleanHoldsProfileField(string $holds) : string {
-        $obuPersonHolds = $this->deserializeHolds($holds);
+    public function cleanHoldsProfileField(mdl_user $user) {
+        $obuPersonHolds = $this->deserializeHolds($user->getCustomData()->personHolds);
         $updatedData = $this->cleanHolds($obuPersonHolds);
-        return $this->serializeHolds($updatedData);
+        $user->getCustomData()->personHolds = $this->serializeHolds($updatedData);
     }
 
     /**
@@ -90,7 +89,7 @@ class obu_person_hold_service
         $updated = false;
         foreach ($personHoldsArray as $personHold){
             if ($personHold->id === $ethosHold->id){
-                $personHold->populateObjectByEthosPersonHold($ethosHold);
+                $personHold->populateObjectByEthosInfo($ethosHold);
                 $updated = true;
                 break;
             }
@@ -106,7 +105,7 @@ class obu_person_hold_service
             }
 
             $hold = new obu_person_hold();
-            $hold->populateObjectByEthosPersonHold($ethosHold);
+            $hold->populateObjectByEthosInfo($ethosHold);
             $personHoldsArray[] = $hold;
         }
 

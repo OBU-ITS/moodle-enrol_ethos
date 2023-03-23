@@ -6,18 +6,21 @@ use enrol_ethos\ethosclient\consumers\base\ethos_consumer;
 use enrol_ethos\ethosclient\entities\consume\ethos_notification;
 use enrol_ethos\ethosclient\entities\consume\ethos_notifications;
 use enrol_ethos\ethosclient\general\class_finder;
+use enrol_ethos\ethosclient\repositories\db_ethos_audit_repository;
 use Exception;
+use progress_trace;
 
 class ethos_notification_service
 {
-    private const CONSUME_LIMIT = 250;
-    private const PROCESS_LIMIT = 2000;
+    public const CONSUME_LIMIT = 250;
 
     private ethos_client $ethosClient;
+    private db_ethos_audit_repository $ethosAuditRepo;
 
     private function __construct()
     {
         $this->ethosClient = ethos_client::getInstance();
+        $this->ethosAuditRepo = db_ethos_audit_repository::getInstance();
     }
 
     private static ?ethos_notification_service $instance = null;
@@ -34,41 +37,42 @@ class ethos_notification_service
     /**
      * Consume Messages
      *
-     * @param string $previousLastProcessedId
-     * @param int $max
+     * @param string $lastProcessedId
+     * @param int $limit
      * @return ethos_notifications
      */
-    public function consumeMessages(string $previousLastProcessedId = "0", int $max = self::PROCESS_LIMIT) : ethos_notifications {
+    public function consumeMessages(progress_trace $trace, string $lastProcessedId = "0", int $limit = self::CONSUME_LIMIT) : ethos_notifications {
 
+        $recordRequest = $this->ethosAuditRepo->createRecordRequest();
         $notifications = new ethos_notifications();
-        $lastProcessedId = $previousLastProcessedId;
-        $processedCount = 0;
 
-        do {
-            $limit = ($max && ($max < ($processedCount + self::CONSUME_LIMIT)))
-                ? ($max - $processedCount)
-                : self::CONSUME_LIMIT;
-            $url = ethos_client::API_URL . "/consume?limit=". $limit ."&lastProcessedID=" . $lastProcessedId;
+        $url = ethos_client::API_URL . "/consume?limit=". $limit ."&lastProcessedID=" . $lastProcessedId;
 
-            try {
-                $messages = $this->ethosClient->getJson($url, "");
-            }
-            catch(Exception $e) {
-                breaK;
-            }
-
-            $resultsCount = count($messages);
-
-            foreach ($messages as $message) {
-                $lastProcessedId = $message->id;
-                $notification = new ethos_notification();
-                $notification->populateObject($message);
-                $notifications->addNotification($notification);
-            }
-
-            $processedCount += $resultsCount;
+        try {
+            $ethosResponse = $this->ethosClient->getJson($url, "");
+            $messages = $ethosResponse->messages;
+            $recordRequest->received_count = count($messages);
+            $recordRequest->remaining_count = $ethosResponse->remainingCount;
         }
-        while ($resultsCount > 0 && self::PROCESS_LIMIT > $processedCount);
+        catch(Exception $e) {
+            $this->ethosAuditRepo->updateRecordRequestAsFailed($recordRequest);
+            return $notifications;
+        }
+
+        foreach ($messages as $message) {
+            $this->ethosAuditRepo->createRecord($trace, $recordRequest, $message);
+
+            $notification = new ethos_notification();
+            $notification->populateObject($message);
+            $notifications->addNotification($notification);
+        }
+
+        if($ethosResponse->remainingCount == 0) {
+            $this->ethosAuditRepo->updateRecordRequestAsDone($recordRequest);
+        }
+        else {
+            $this->ethosAuditRepo->updateRecordRequestAsComplete($recordRequest);
+        }
 
         return $notifications;
     }

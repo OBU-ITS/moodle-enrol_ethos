@@ -80,5 +80,41 @@ function xmldb_enrol_ethos_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022060901, 'enrol', 'ethos');
     }
 
+    if($oldversion < 2023012401) {
+
+        $table = new xmldb_table('obu_ethos_request');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('requested', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, '');
+        $table->add_field('request_duration', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, '');
+        $table->add_field('status', XMLDB_TYPE_CHAR, '16', null, XMLDB_NOTNULL, null, '');
+        $table->add_field('received_count', XMLDB_TYPE_INTEGER, '7', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $table->add_field('remaining_count', XMLDB_TYPE_INTEGER, '7', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        $table = new xmldb_table('obu_ethos_message');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
+        $table->add_field('request_id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $table->add_field('published', XMLDB_TYPE_CHAR, '29', null, XMLDB_NOTNULL, null, '');
+        $table->add_field('resource_name', XMLDB_TYPE_CHAR, '50', null, XMLDB_NOTNULL, null, '');
+        $table->add_field('resource_id', XMLDB_TYPE_CHAR, '36', null, XMLDB_NOTNULL, null, '');
+        $table->add_field('operation', XMLDB_TYPE_CHAR, null, null, XMLDB_NOTNULL, null, '');
+        $table->add_field('content_type', XMLDB_TYPE_CHAR, null, null, XMLDB_NOTNULL, null, '');
+        $table->add_field('content', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, '');
+
+        $table->add_key('id', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('message_request_id', XMLDB_KEY_FOREIGN, array('request_id'), 'obu_ethos_request', array('id'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        upgrade_plugin_savepoint(true, 2023012401, 'enrol', 'ethos');
+    }
+
     return true;
 }

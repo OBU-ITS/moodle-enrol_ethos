@@ -5,7 +5,10 @@ use enrol_ethos\entities\mdl_profile_field;
 use enrol_ethos\entities\mdl_user;
 use enrol_ethos\entities\mdl_user_profile;
 use enrol_ethos\entities\obu_users_info;
+use enrol_ethos\ethosclient\entities\ethos_alternative_credential_type_info;
 use enrol_ethos\ethosclient\entities\ethos_person_info;
+use enrol_ethos\ethosclient\entities\ethos_person_info_alternative_credential;
+use enrol_ethos\ethosclient\entities\ethos_person_info_credential;
 use enrol_ethos\ethosclient\entities\ethos_section_instructors_info;
 use enrol_ethos\ethosclient\providers\ethos_person_provider;
 
@@ -14,12 +17,20 @@ class obu_staff_service
     private ethos_person_provider $personProvider;
     private obu_person_name_service $personNameService;
     private obu_section_instructor_service $sectionInstructorService;
+    private obu_alternative_credential_service $alternativeCredentialService;
+    private obu_student_advisor_relationship_service $studentAdvisorRelationshipService;
+
+    private ethos_alternative_credential_type_info $employeeAlternativeCredentialType;
 
     private function __construct()
     {
         $this->personProvider = ethos_person_provider::getInstance();
         $this->personNameService = obu_person_name_service::getInstance();
         $this->sectionInstructorService = obu_section_instructor_service::getInstance();
+        $this->alternativeCredentialService = obu_alternative_credential_service::getInstance();
+        $this->studentAdvisorRelationshipService = obu_student_advisor_relationship_service::getInstance();
+
+        $this->employeeAlternativeCredentialType = $this->alternativeCredentialService->getEmployeeNumberAlternativeCredentialType();
     }
 
     private static ?obu_staff_service $instance = null;
@@ -73,24 +84,34 @@ class obu_staff_service
      */
     private function addPersonToUsers(obu_users_info $users, ethos_person_info $person)
     {
-        $username = $this->personNameService->getUserName($person->credentials);
-        $officialName = $this->personNameService->getOfficialName($person->names);
+        $username = $this->getUserName($person);
+        $preferredName = $this->personNameService->getPreferredName($person->names);
 
         $profile = new mdl_user_profile();
         $profile->personGuid = $person->id;
         $profile->pidm = $person->pidm;
-        $profile->isAdviserFlag = (count($person->getAdvisors()) > 0);
+        $profile->isAdviserFlag = $this->studentAdvisorRelationshipService->anyStudentAdvisorRelationshipsActive($person->getAdvisorStudents());
         $currentOrFutureInstructors = $this->sectionInstructorService->getCurrentOrFutureInstructors($person->getInstructorSections());
         $profile->isModuleLeadFlag = (count($currentOrFutureInstructors) > 0);
         $profile->userType = "staff";
 
         $user = new mdl_user();
         $user->username = $username;
-        $user->firstname = $officialName->firstName;
-        $user->lastname = $officialName->lastName;
+        $user->firstname = $preferredName->firstName;
+        $user->lastname = $preferredName->lastName;
         $user->email = $username . '@brookes.ac.uk';
         $user->setCustomData($profile);
 
         $users->addUser($user);
+    }
+
+    /**
+     * @param ethos_person_info $person
+     * @return string
+     */
+    private function getUserName(ethos_person_info $person) : string {
+        $staffNumber = $this->alternativeCredentialService->getAlternativeCredentialOfType($person, $this->employeeAlternativeCredentialType);
+
+        return trim(\core_text::strtolower($staffNumber));
     }
 }

@@ -6,7 +6,7 @@ use enrol_ethos\ethosclient\providers\base\ethos_provider;
 
 class ethos_student_academic_program_provider extends ethos_provider
 {
-    const VERSION = 'v17';
+    const VERSION = 'v17.0.0';
     const PATH = 'student-academic-programs';
 
     private function __construct()
@@ -28,6 +28,10 @@ class ethos_student_academic_program_provider extends ethos_provider
 
     public function get($id) : ?ethos_student_academic_program_info {
         $item = $this->getFromEthosById($id);
+
+        if(!$item || isset($item->errors)) {
+            return null;
+        }
 
         return $this->convert($item);
     }

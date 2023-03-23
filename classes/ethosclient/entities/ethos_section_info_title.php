@@ -22,11 +22,13 @@ class ethos_section_info_title
         $this->typeId = $id;
         $this->type = null;
     }
-    public function getType() : ethos_section_title_type_info
+    public function getType() : ?ethos_section_title_type_info
     {
         if(!$this->type) {
             $provider = ethos_section_title_type_provider::getInstance();
-            $this->type = $provider->get($this->typeId);
+            if($type = $provider->get($this->typeId)) {
+                $this->type = $type;
+            }
         }
 
         return $this->type;

@@ -24,11 +24,13 @@ class ethos_academic_program_info_discipline
         $this->disciplineId = $id;
         $this->discipline = null;
     }
-    public function getDiscipline() : ethos_academic_discipline_info
+    public function getDiscipline() : ?ethos_academic_discipline_info
     {
         if(!$this->discipline) {
             $provider = ethos_academic_discipline_provider::getInstance();
-            $this->discipline = $provider->get($this->disciplineId);
+            if($discipline = $provider->get($this->disciplineId)) {
+                $this->discipline = $discipline;
+            }
         }
 
         return $this->discipline;

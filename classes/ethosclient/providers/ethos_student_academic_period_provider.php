@@ -6,7 +6,7 @@ use enrol_ethos\ethosclient\providers\base\ethos_provider;
 
 class ethos_student_academic_period_provider extends ethos_provider
 {
-    const VERSION = 'v1';
+    const VERSION = 'v1.0.0';
     const PATH = 'student-academic-periods';
 
     private function __construct()
@@ -39,6 +39,10 @@ class ethos_student_academic_period_provider extends ethos_provider
 
     public function get($id) : ?ethos_student_academic_period_info {
         $item = $this->getFromEthosById($id);
+
+        if(!$item || isset($item->errors)) {
+            return null;
+        }
 
         return $this->convert($item);
     }

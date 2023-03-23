@@ -39,11 +39,13 @@ class ethos_academic_program_info
         $this->academicLevelId = $id;
         $this->academicLevel = null;
     }
-    public function getAcademicLevel() : ethos_academic_level_info
+    public function getAcademicLevel() : ?ethos_academic_level_info
     {
         if(!$this->academicLevel) {
             $provider = ethos_academic_level_provider::getInstance();
-            $this->academicLevel = $provider->get($this->academicLevelId);
+            if($academicLevel = $provider->get($this->academicLevelId)) {
+                $this->academicLevel = $academicLevel;
+            }
         }
 
         return $this->academicLevel;
@@ -72,7 +74,9 @@ class ethos_academic_program_info
             $provider = ethos_academic_credential_provider::getInstance();
             $this->academicCredentials = array();
             foreach($this->academicCredentialIds as $academicCredentialId) {
-                $this->academicCredentials[] = $provider->get($academicCredentialId);
+                if($academicCredential = $provider->get($academicCredentialId)) {
+                    $this->academicCredentials[] = $academicCredential;
+                }
             }
         }
 
@@ -102,7 +106,9 @@ class ethos_academic_program_info
             $provider = ethos_educational_institution_unit_provider::getInstance();
             $this->programOwners = array();
             foreach($this->programOwnerIds as $programOwnerId) {
-                $this->programOwners[] = $provider->get($programOwnerId);
+                if($programOwner = $provider->get($programOwnerId)) {
+                    $this->programOwners[] = $programOwner;
+                }
             }
         }
 
@@ -132,7 +138,9 @@ class ethos_academic_program_info
             $provider = ethos_site_provider::getInstance();
             $this->sites = array();
             foreach($this->siteIds as $siteId) {
-                $this->sites[] = $provider->get($siteId);
+                if($site = $provider->get($siteId)) {
+                    $this->sites[] = $site;
+                }
             }
         }
 

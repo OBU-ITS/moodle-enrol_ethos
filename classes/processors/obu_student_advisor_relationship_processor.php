@@ -23,6 +23,6 @@ class obu_student_advisor_relationship_processor implements obu_processor {
 
     function process(ethos_notification $message)
     {
-        $this->syncStudentAdvisorService->sync($this->trace, $message->id);
+        $this->syncStudentAdvisorService->sync($this->trace, $message->resourceId);
     }
 }

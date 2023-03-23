@@ -25,11 +25,13 @@ class ethos_course_info
         $this->subjectId = $id;
         $this->subject = null;
     }
-    public function getSubject() : ethos_subject_info
+    public function getSubject() : ?ethos_subject_info
     {
         if(!$this->subject) {
             $provider = ethos_subject_provider::getInstance();
-            $this->subject = $provider->get($this->subjectId);
+            if($subject = $provider->get($this->subjectId)) {
+                $this->subject = $subject;
+            }
         }
 
         return $this->subject;

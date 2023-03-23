@@ -25,11 +25,13 @@ class ethos_person_hold_info
         $this->personId = $id;
         $this->person = null;
     }
-    public function getPerson() : ethos_person_info
+    public function getPerson() : ?ethos_person_info
     {
         if(!$this->person) {
             $provider = ethos_person_provider::getInstance();
-            $this->person = $provider->get($this->personId);
+            if($person = $provider->get($this->personId)) {
+                $this->person = $person;
+            }
         }
 
         return $this->person;
@@ -44,11 +46,13 @@ class ethos_person_hold_info
         $this->typeId = $id;
         $this->type = null;
     }
-    public function getType() : ethos_person_hold_type_info
+    public function getType() : ?ethos_person_hold_type_info
     {
         if(!$this->type) {
             $provider = ethos_person_hold_type_provider::getInstance();
-            $this->type = $provider->get($this->typeId);
+            if($type = $provider->get($this->typeId)) {
+                $this->type = $type;
+            }
         }
 
         return $this->type;

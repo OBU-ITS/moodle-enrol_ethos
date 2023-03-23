@@ -26,11 +26,13 @@ class ethos_section_instructors_info
         $this->instructorId = $id;
         $this->instructor = null;
     }
-    public function getInstructor() : ethos_person_info
+    public function getInstructor() : ?ethos_person_info
     {
         if(!$this->instructor) {
             $provider = ethos_person_provider::getInstance();
-            $this->instructor = $provider->get($this->instructorId);
+            if($instructor = $provider->get($this->instructorId)) {
+                $this->instructor = $instructor;
+            }
         }
 
         return $this->instructor;
@@ -49,7 +51,9 @@ class ethos_section_instructors_info
     {
         if(!$this->section) {
             $provider = ethos_section_provider::getInstance();
-            $this->section = $provider->get($this->sectionId);
+            if($section = $provider->get($this->sectionId)) {
+                $this->section = $section;
+            }
         }
 
         return $this->section;

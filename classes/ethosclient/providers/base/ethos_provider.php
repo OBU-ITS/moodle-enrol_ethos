@@ -52,15 +52,22 @@ abstract class ethos_provider
     }
 
     protected function getFromEthosById(string $id, bool $paged=null, int $maxResults=0) : ?object {
-        if ($this->cacheable && $valueFromCache = $this->cacheService->getFromCache($id, $this->cacheSettings->collection)) {
-            return $valueFromCache;
-        }
+//        if ($this->cacheable && $valueFromCache = $this->cacheService->getFromCache($id, $this->cacheSettings->collection)) {
+//            return $valueFromCache;
+//        }
 
         $result = $this->getFromEthosClient($id, null, $paged, $maxResults);
-
-        if ($this->cacheable) {
-            $this->cacheService->addToCache($id, $result, $this->cacheSettings);
+        if (!$result) {
+            return null;
         }
+
+        if(gettype($result) == "array") {
+            $result = $result[0];
+        }
+
+//        if ($this->cacheable) {
+//            $this->cacheService->addToCache($id, $result, $this->cacheSettings);
+//        }
 
         return $result;
     }
@@ -68,6 +75,7 @@ abstract class ethos_provider
     protected function getFromEthos(string $urlOverride=null, bool $paged=null, int $maxResults=0, int $offset=0) : ?array {
         return $this->getFromEthosClient(null, $urlOverride, $paged, $maxResults, $offset);
 
+        // TODO
 //        if ($this->cacheable) {
 //            foreach ($result as $res) {
 //                $this->cacheService->addToCache($res->id, $res, $this->cacheSettings);
@@ -89,7 +97,7 @@ abstract class ethos_provider
         }
 
         return !$paged
-            ? $this->ethosClient->getJson($url, $this->acceptHeader)
-            : $this->ethosClient->getJson($url, $this->acceptHeader,$maxResults,500, $offset);
+            ? $this->ethosClient->getJson($url, $this->acceptHeader)->messages
+            : $this->ethosClient->getJson($url, $this->acceptHeader, $maxResults, 500, $offset)->messages;
     }
 }

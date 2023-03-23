@@ -30,6 +30,10 @@ class ethos_student_advisor_relationship_provider extends ethos_provider
     public function get($id) : ?ethos_student_advisor_relationship_info {
         $item = $this->getFromEthosById($id);
 
+        if(!$item || isset($item->errors)) {
+            return null;
+        }
+
         return $this->convert($item);
     }
 
@@ -49,7 +53,7 @@ class ethos_student_advisor_relationship_provider extends ethos_provider
     public function getByStudentPersonGuid($studentId) : array {
         $url = $this->buildUrlWithCriteria('{"student":"' . $studentId . '"}');
         $items = $this->getFromEthos($url);
-        return array_map(array($this, 'convert'), $items);
+        return $this->convertStudentAdvisorRelationships($items);
     }
 
     /**
@@ -59,10 +63,22 @@ class ethos_student_advisor_relationship_provider extends ethos_provider
     public function getByAdvisorPersonGuid($advisorId) : array {
         $url = $this->buildUrlWithCriteria('{"advisor":"' . $advisorId . '"}');
         $items = $this->getFromEthos($url);
-        return array_map(array($this, 'convert'), $items);
+        return $this->convertStudentAdvisorRelationships($items);
     }
 
-    private function convert(object $item) : ?ethos_student_advisor_relationship_info {
+    private function convertStudentAdvisorRelationships(?array $items) : array {
+        if(!$items) {
+            return array();
+        }
+
+        $studentAdvisorRelationships = array_map(array($this, 'convert'), $items);
+
+        return array_filter($studentAdvisorRelationships, function ($studentAdvisorRelationship) {
+            return $studentAdvisorRelationship->endOn == '';
+        });
+    }
+
+    private function convert(object $item) : ethos_student_advisor_relationship_info {
         return new ethos_student_advisor_relationship_info($item);
     }
 }

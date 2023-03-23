@@ -25,7 +25,7 @@ class obu_academic_period_service
      * @param ethos_academic_period_info $subTerm
      * @return ethos_academic_period_info
      */
-    public function getTerm(ethos_academic_period_info $subTerm) : ethos_academic_period_info {
+    public function getTerm(ethos_academic_period_info $subTerm) : ?ethos_academic_period_info {
         return $subTerm->category->getParent();
     }
 
@@ -33,7 +33,7 @@ class obu_academic_period_service
      * @param ethos_academic_period_info $term
      * @return ethos_academic_period_info
      */
-    public function getYear(ethos_academic_period_info $term) : ethos_academic_period_info {
+    public function getYear(ethos_academic_period_info $term) : ?ethos_academic_period_info {
         return $term->category->getParent();
     }
 }

@@ -11,7 +11,7 @@ class cache_service {
 
     private static cache $cache;
 
-    private float $clearDownTime;
+    //private float $clearDownTime;
 
     private function __construct()
     {
@@ -80,15 +80,15 @@ class cache_service {
         return null;
     }
 
-    /**
-     * Remove expired data from the cache
-     *
-     * @param cache_data $data current cache data
-     * @return bool whether data should be removed from the cache
-     */
-    private function removeExpiredData(cache_data $data) : bool {
-        return $data->expires > $this->clearDownTime;
-    }
+//    /**
+//     * Remove expired data from the cache
+//     *
+//     * @param cache_data $data current cache data
+//     * @return bool whether data should be removed from the cache
+//     */
+//    private function removeExpiredData(cache_data $data) : bool {
+//        return $data->expires > $this->clearDownTime;
+//    }
 
     /**
      * @param string $key

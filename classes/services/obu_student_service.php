@@ -4,21 +4,21 @@ namespace enrol_ethos\services;
 use enrol_ethos\entities\mdl_user;
 use enrol_ethos\entities\mdl_user_profile;
 use enrol_ethos\entities\obu_users_info;
-use enrol_ethos\ethosclient\entities\ethos_alternative_credential_type_info;
 use enrol_ethos\ethosclient\entities\ethos_person_info;
+use enrol_ethos\ethosclient\entities\ethos_person_info_credential;
 use enrol_ethos\ethosclient\providers\ethos_person_provider;
 
 class obu_student_service
 {
     private ethos_person_provider $personProvider;
     private obu_person_name_service $personNameService;
-
-    private ethos_alternative_credential_type_info $employeeAlternativeCredentialType;
+    private obu_student_advisor_relationship_service $studentAdvisorRelationshipService;
 
     private function __construct()
     {
         $this->personProvider = ethos_person_provider::getInstance();
         $this->personNameService = obu_person_name_service::getInstance();
+        $this->studentAdvisorRelationshipService = obu_student_advisor_relationship_service::getInstance();
     }
 
     private static ?obu_student_service $instance = null;
@@ -72,29 +72,45 @@ class obu_student_service
      */
     private function addPersonToUsers(obu_users_info $users, ethos_person_info $person)
     {
-        $username = $this->personNameService->getUserName($person->credentials);
-        $officialName = $this->personNameService->getOfficialName($person->names);
+        $username = $this->getUserName($person->credentials);
+        $preferredName = $this->personNameService->getPreferredName($person->names);
 
         $profile = new mdl_user_profile();
         $profile->personGuid = $person->id;
         $profile->pidm = $person->pidm;
         $profile->serviceNeeds = $person->serviceNeeds;
-        $profile->studentGuid = $person->getStudent()->id;
-        $profile->studentAdviser = join(',', array_map(function($advisorRelationship) {
-            $advisor = $advisorRelationship->getAdvisor();
-            $officialName = $this->personNameService->getOfficialName($advisor->names);
-            return $officialName->fullName;
-        }, $person->getAdvisors()));
-        $profile->studentStatus = $person->getStudent()->status;
+        $profile->studentGuid = $person->getStudent()->id ?? '';
+        $profile->studentStatus = $person->getStudent()->status ?? '';
         $profile->userType = "student";
 
         $user = new mdl_user();
         $user->username = $username;
-        $user->firstname = $officialName->firstName;
-        $user->lastname = $officialName->lastName;
+        $user->firstname = $preferredName->firstName;
+        $user->lastname = $preferredName->lastName;
         $user->email = $username . '@brookes.ac.uk';
         $user->setCustomData($profile);
 
+        $this->studentAdvisorRelationshipService->setStudentAdvisorRelationships($user, $person->getAdvisors());
+
         $users->addUser($user);
+    }
+
+    /**
+     * @param ethos_person_info_credential[] $credentials
+     * @return string
+     */
+    private function getUserName(array $credentials) : string {
+        if(!$credentials) return '';
+
+        $bannerId = '';
+        foreach($credentials as $credential) {
+            $type = $credential->type;
+            if($type == 'bannerId') {
+                $bannerId = $credential->value;
+                break;
+            }
+        }
+
+        return $bannerId;
     }
 }

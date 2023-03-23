@@ -33,11 +33,13 @@ class ethos_section_info
         $this->courseId = $id;
         $this->course = null;
     }
-    public function getCourse() : ethos_course_info
+    public function getCourse() : ?ethos_course_info
     {
         if(!$this->course) {
             $provider = ethos_course_provider::getInstance();
-            $this->course = $provider->get($this->courseId);
+            if($course = $provider->get($this->courseId)) {
+                $this->course = $course;
+            }
         }
 
         return $this->course;
@@ -52,11 +54,13 @@ class ethos_section_info
         $this->siteId = $id;
         $this->site = null;
     }
-    public function getSite() : ethos_site_info
+    public function getSite() : ?ethos_site_info
     {
         if(!$this->site) {
             $provider = ethos_site_provider::getInstance();
-            $this->site = $provider->get($this->siteId);
+            if($site = $provider->get($this->siteId)) {
+                $this->site = $site;
+            }
         }
 
         return $this->site;
@@ -71,11 +75,13 @@ class ethos_section_info
         $this->academicPeriodId = $id;
         $this->academicPeriod = null;
     }
-    public function getAcademicPeriod() : ethos_academic_period_info
+    public function getAcademicPeriod() : ?ethos_academic_period_info
     {
         if(!$this->academicPeriod) {
             $provider = ethos_academic_period_provider::getInstance();
-            $this->academicPeriod = $provider->get($this->academicPeriodId);
+            if($academicPeriod = $provider->get($this->academicPeriodId)) {
+                $this->academicPeriod = $academicPeriod;
+            }
         }
 
         return $this->academicPeriod;
@@ -104,7 +110,9 @@ class ethos_section_info
             $provider = ethos_academic_level_provider::getInstance();
             $this->academicLevels = array();
             foreach($this->academicLevelIds as $academicLevelId) {
-                $this->academicLevels[] = $provider->get($academicLevelId);
+                if($academicLevel = $provider->get($academicLevelId)) {
+                    $this->academicLevels[] = $academicLevel;
+                }
             }
         }
 

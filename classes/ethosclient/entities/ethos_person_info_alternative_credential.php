@@ -11,7 +11,6 @@ class ethos_person_info_alternative_credential
         $this->populateObject($data);
     }
 
-    public string $id;
     public string $value;
 
 
@@ -25,11 +24,13 @@ class ethos_person_info_alternative_credential
         $this->typeId = $id;
         $this->type = null;
     }
-    public function getType() : ethos_alternative_credential_type_info
+    public function getType() : ?ethos_alternative_credential_type_info
     {
         if(!$this->type) {
             $provider = ethos_alternative_credential_type_provider::getInstance();
-            $this->type = $provider->get($this->typeId);
+            if($type = $provider->get($this->typeId)) {
+                $this->type =$type;
+            }
         }
 
         return $this->type;
@@ -44,7 +45,6 @@ class ethos_person_info_alternative_credential
             $this->setTypeId($data->type->id);
         }
 
-        $this->id = $data->id;
         $this->value = $data->value;
 
     }
