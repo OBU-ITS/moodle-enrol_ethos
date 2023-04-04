@@ -53,7 +53,7 @@ class ethos_notification_service
             $ethosResponse = $this->ethosClient->getJson($url, "");
             $messages = $ethosResponse->messages;
             $recordRequest->received_count = count($messages);
-            $recordRequest->remaining_count = $ethosResponse->remainingCount;
+            $recordRequest->remaining_count = $lastProcessedId; // TEMPORARY
         }
         catch(Exception $e) {
             $this->ethosAuditRepo->updateRecordRequestAsFailed($recordRequest);
@@ -68,12 +68,12 @@ class ethos_notification_service
             $notifications->addNotification($notification);
         }
 
-        if($ethosResponse->remainingCount == 0) {
+//        if($ethosResponse->remainingCount == 0) {
             $this->ethosAuditRepo->updateRecordRequestAsDone($recordRequest);
-        }
-        else {
-            $this->ethosAuditRepo->updateRecordRequestAsComplete($recordRequest);
-        }
+//        }
+//        else {
+//            $this->ethosAuditRepo->updateRecordRequestAsComplete($recordRequest);
+//        }
 
         return $notifications;
     }
