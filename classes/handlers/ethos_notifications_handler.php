@@ -56,11 +56,7 @@ class ethos_notifications_handler {
      * @param int|null $max Maximum number of messages to consume
      */
     public function handleNotifications(?int $max = null) {
-        //$reportRun = new report_run();
-
-        $this->processNotifications($max); //$reportActions = $this->processNotifications();
-
-        //$this->reportService->saveReport($reportRun, $reportActions);
+        $this->processNotifications($max);
     }
 
     private function processNotifications(?int $max) {

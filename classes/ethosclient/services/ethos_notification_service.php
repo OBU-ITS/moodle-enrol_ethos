@@ -47,6 +47,7 @@ class ethos_notification_service
         $notifications = new ethos_notifications();
 
         $url = ethos_client::API_URL . "/consume?limit=". $limit ."&lastProcessedID=" . $lastProcessedId;
+        $trace->output("ETHOS REQUEST: $url");
 
         try {
             $ethosResponse = $this->ethosClient->getJson($url, "");
