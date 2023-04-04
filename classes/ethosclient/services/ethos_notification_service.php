@@ -12,7 +12,7 @@ use progress_trace;
 
 class ethos_notification_service
 {
-    public const CONSUME_LIMIT = 250;
+    public const CONSUME_LIMIT = 200;
 
     private ethos_client $ethosClient;
     private db_ethos_audit_repository $ethosAuditRepo;

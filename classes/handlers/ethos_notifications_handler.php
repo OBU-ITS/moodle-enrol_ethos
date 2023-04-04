@@ -86,7 +86,7 @@ class ethos_notifications_handler {
 
             $processedCount += $resultsCount;
         }
-        while ($resultsCount > 0 && $processLimit > $processedCount);
+        while ($resultsCount == ethos_notification_service::CONSUME_LIMIT && $processLimit > $processedCount);
     }
 
     private function processNotification(ethos_notification $message) {
