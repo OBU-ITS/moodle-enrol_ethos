@@ -6,6 +6,7 @@ class ethos_notifications {
     public function __construct()
     {
         $this->notifications = array();
+        $this->notificationKeys = array();
         $this->retrievedCount = 0;
     }
 

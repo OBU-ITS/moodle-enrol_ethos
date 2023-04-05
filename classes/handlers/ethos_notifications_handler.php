@@ -101,7 +101,7 @@ class ethos_notifications_handler {
     }
 
     private function processNotificationResource(obu_processor $processor, ethos_notification $message) {
-        $this->trace->output($message->resourceName . " | " . $message->resourceId);
+        $this->trace->output("{$message->id} | {$message->resourceName} | {$message->resourceId}");
         $processor->process($message);
     }
 }
