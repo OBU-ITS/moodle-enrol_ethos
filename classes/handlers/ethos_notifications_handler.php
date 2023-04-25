@@ -56,11 +56,7 @@ class ethos_notifications_handler {
      * @param int|null $max Maximum number of messages to consume
      */
     public function handleNotifications(?int $max = null) {
-        //$reportRun = new report_run();
-
-        $this->processNotifications($max); //$reportActions = $this->processNotifications();
-
-        //$this->reportService->saveReport($reportRun, $reportActions);
+        $this->processNotifications($max);
     }
 
     private function processNotifications(?int $max) {
@@ -90,7 +86,7 @@ class ethos_notifications_handler {
 
             $processedCount += $resultsCount;
         }
-        while ($resultsCount > 0 && $processLimit > $processedCount);
+        while ($resultsCount == ethos_notification_service::CONSUME_LIMIT && $processLimit > $processedCount);
     }
 
     private function processNotification(ethos_notification $message) {
@@ -105,7 +101,7 @@ class ethos_notifications_handler {
     }
 
     private function processNotificationResource(obu_processor $processor, ethos_notification $message) {
-        $this->trace->output($message->resourceName . " | " . $message->resourceId);
+        $this->trace->output("{$message->id} | {$message->resourceName} | {$message->resourceId}");
         $processor->process($message);
     }
 }

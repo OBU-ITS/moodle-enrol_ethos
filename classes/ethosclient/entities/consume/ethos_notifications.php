@@ -6,6 +6,7 @@ class ethos_notifications {
     public function __construct()
     {
         $this->notifications = array();
+        $this->notificationKeys = array();
         $this->retrievedCount = 0;
     }
 
@@ -41,9 +42,9 @@ class ethos_notifications {
         $this->ensureResourceNameGroupExists($notification->resourceName);
 
         $groupItemKey = $notification->operation . "_" . $notification->resourceId;
-        if(!array_key_exists($groupItemKey, $this->notifications[$notification->resourceName])) {
+        if(!array_key_exists($groupItemKey, $this->notificationKeys[$notification->resourceName])) {
             $this->notificationKeys[$notification->resourceName][$groupItemKey] = $notification->resourceId;
-            $this->notifications[$notification->resourceId] = $notification;
+            $this->notifications[$notification->id] = $notification;
         }
     }
 
@@ -52,7 +53,7 @@ class ethos_notifications {
      * @return void
      */
     private function ensureResourceNameGroupExists($resourceName) {
-        if(!array_key_exists($resourceName, $this->notifications)) {
+        if(!array_key_exists($resourceName, $this->notificationKeys)) {
             $this->notificationKeys[$resourceName] = array();
         }
     }
