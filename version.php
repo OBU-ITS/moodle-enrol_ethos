@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 
-$plugin->version   = 2023040401;        // The current plugin version (Date: YYYYMMDDRR)
+$plugin->version   = 2023040402;        // The current plugin version (Date: YYYYMMDDRR)
 $plugin->requires  = 2018112800;        // Requires this Moodle version
 $plugin->component = 'enrol_ethos';  // Full name of the plugin (used for diagnostics)
 
@@ -34,4 +34,4 @@ $plugin->component = 'enrol_ethos';  // Full name of the plugin (used for diagno
  * Release Format : Major.Minor.Hotfix.Revision
  * Majors: 1 = Holds, 2 = Users, 3 = Courses, 4 = Enrolments
  */
-$plugin->release = '2.0.1.0';
+$plugin->release = '2.0.1.1';
