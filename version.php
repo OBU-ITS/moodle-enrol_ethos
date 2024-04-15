@@ -34,4 +34,4 @@ $plugin->component = 'enrol_ethos';  // Full name of the plugin (used for diagno
  * Release Format : Major.Minor.Hotfix.Revision
  * Majors: 1 = Holds, 2 = Users, 3 = Courses, 4 = Enrolments
  */
-$plugin->release = '2.0.1.1';
+$plugin->release = '2.0.1.2';
