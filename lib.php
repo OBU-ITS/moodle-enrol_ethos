@@ -153,7 +153,7 @@ class enrol_ethos_plugin extends enrol_plugin {
      * @param array|null instance fields
      * @return int|null id of new instance, null if can not be created
      */
-    public function add_instance(stdClass $course, ?array $fields = null) : ?int {
+    public function add_instance($course, array $fields = null) {
         global $DB;
 
         if ($DB->record_exists('enrol', array('courseid'=>$course->id, 'enrol'=>$this->get_name()))) {
@@ -169,7 +169,7 @@ class enrol_ethos_plugin extends enrol_plugin {
      * @param stdClass $data modified instance fields
      * @return boolean
      */
-    public function update_instance(stdClass $instance, stdClass $data) : bool {
+    public function update_instance($instance, $data) {
         global $DB;
 
         if ($instances = $DB->get_records('enrol', array('courseid' => $instance->courseid, 'enrol' => $this->get_name()), 'id ASC')) {
