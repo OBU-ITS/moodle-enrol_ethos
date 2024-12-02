@@ -199,4 +199,56 @@ class ethos_client
 
         return $this->accessToken;
     }
+
+    /**
+     * @param string $url
+     * @param string $accept
+     * @return ethos_response|null
+     * @throws Exception
+     */
+    public function put(string $url, string $accept, string $body) : ?ethos_response {
+
+        $maxTries = 3;
+        $tries = 0;
+
+        while ($tries < $maxTries) {
+
+            try {
+                $options = [
+                    'verify' => self::verify,
+                    'headers' => [
+                        'Content-Type'      => 'application/json',
+                        'Accept-Charset'    => 'UTF-8',
+                        'Accept'            => $accept,
+                        'Authorization'     => 'Bearer ' . $this->getAccessToken()
+                    ],
+                    'body' => $body,
+                ];
+
+                $response = $this->client->putAsync($url, $options)->wait();
+
+                $decodedMessages = json_decode($response->getBody()->getContents());
+
+                return new ethos_response($decodedMessages);
+
+            } catch (RequestException $e) {
+                $statusCode = $e->getResponse()->getStatusCode();
+
+                switch ($statusCode) {
+                    case '400':
+                    case '401':
+                        $this->prepareAccessToken();
+                        break;
+                    default:
+                        throw $e;
+                }
+
+                if (++$tries == $maxTries) {
+                    throw $e;
+                }
+            }
+        }
+
+        return null;
+    }
 }

@@ -100,4 +100,18 @@ abstract class ethos_provider
             ? $this->ethosClient->getJson($url, $this->acceptHeader)->messages
             : $this->ethosClient->getJson($url, $this->acceptHeader, $maxResults, 500, $offset)->messages;
     }
+
+    protected function putToEthos(object $obj)
+    {
+        $url = ethos_client::API_URL . "/api/" . $this->path;
+        $body = json_encode($obj);
+
+        $result = $this->ethosClient->put($url, $this->acceptHeader, $body)->messages;
+
+        if(gettype($result) == "array") {
+            $result = $result[0];
+        }
+
+        return $result;
+    }
 }
