@@ -24,9 +24,9 @@
 
 namespace enrol_ethos\ethosclient\providers;
 
-use enrol_ethos\ethosclient\entities\ethos_student_advisor_relationship_info;
 use enrol_ethos\ethosclient\entities\ethos_student_gradable_components_subcomponents_info;
 use enrol_ethos\ethosclient\providers\base\ethos_provider;
+use ethos_student_gradable_components_subcomponents_response;
 
 class ethos_student_gradable_components_subcomponents_provider extends ethos_provider
 {
@@ -64,7 +64,7 @@ class ethos_student_gradable_components_subcomponents_provider extends ethos_pro
         return $this->convert($item);
     }
 
-    private function convert(object $item) : ethos_student_advisor_relationship_info {
-        return new ethos_student_advisor_relationship_info($item);
+    private function convert(object $item) : ethos_student_gradable_components_subcomponents_response {
+        return new ethos_student_gradable_components_subcomponents_response($item);
     }
 }
