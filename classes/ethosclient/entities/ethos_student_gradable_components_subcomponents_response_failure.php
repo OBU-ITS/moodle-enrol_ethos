@@ -22,12 +22,12 @@ class ethos_student_gradable_components_subcomponents_response_failure
     }
 
     public string $bannerId;
-    public string $completedDate;
-    public string $currentReason;
-    public string $extensionDate;
-    public string $score;
     public string $grade;
+    public string $score;
+    public string $currentReason;
     public string $comment;
+    public string $completedDate;
+    public string $extensionDate;
     public string $failureMessage;
 
     public function populateObject(object $data) {
@@ -36,12 +36,12 @@ class ethos_student_gradable_components_subcomponents_response_failure
         }
 
         $this->bannerId = $data->bannerId;
-        $this->completedDate = $data->completedDate;
-        $this->currentReason = $data->currentReason;
-        $this->extensionDate = $data->extensionDate;
-        $this->score = $data->score;
         $this->grade = $data->grade;
+        $this->score = $data->score;
+        $this->currentReason = $data->currentReason;
         $this->comment = $data->comment;
+        $this->completedDate = $data->completedDate;
+        $this->extensionDate = $data->extensionDate;
         $this->failureMessage = $data->failureMessage;
     }
 }
