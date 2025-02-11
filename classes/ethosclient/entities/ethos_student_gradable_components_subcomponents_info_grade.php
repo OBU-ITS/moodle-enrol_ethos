@@ -19,10 +19,10 @@ namespace enrol_ethos\ethosclient\entities;
 class ethos_student_gradable_components_subcomponents_info_grade
 {
     public string $bannerId;
-    public string $completedDate;
     public string $currentReason;
-    public string $extensionDate;
-    public string $score;
-    public string $grade;
     public string $comment;
+    public string $score;
+    public string $completedDate;
+
+    public string $extensionDate;
 }

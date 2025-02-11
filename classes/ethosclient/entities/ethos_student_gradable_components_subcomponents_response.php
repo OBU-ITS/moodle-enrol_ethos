@@ -21,9 +21,8 @@ class ethos_student_gradable_components_subcomponents_response {
     }
 
     public string $assessmentType;
-    public string $crn;
-    public string $term;
     public string $componentId;
+    public string $crn;
 
     /**
      * @var ethos_student_gradable_components_subcomponents_response_success[]
@@ -55,6 +54,7 @@ class ethos_student_gradable_components_subcomponents_response {
         }
     }
 
+    public string $term;
 
     public function populateObject(object $data) {
         if(!isset($data)) {
@@ -62,15 +62,14 @@ class ethos_student_gradable_components_subcomponents_response {
         }
 
         $this->assessmentType = $data->assessmentType;
-        $this->crn = $data->crn;
-        $this->term = $data->term;
         $this->componentId = $data->componentId;
-
+        $this->crn = $data->crn;
         if(isset($data->successList)) {
             $this->setSuccesses($data->setSuccesses);
         }
         if(isset($data->failureList)) {
             $this->setFailures($data->failureList);
         }
+        $this->term = $data->term;
     }
 }
