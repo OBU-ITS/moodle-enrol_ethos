@@ -114,4 +114,18 @@ abstract class ethos_provider
 
         return $result;
     }
+
+    protected function putGradesToEthos(object $obj)
+    {
+        $url = ethos_client::API_URL . "/api/" . $this->path . "/1";
+        $body = json_encode($obj);
+
+        $result = $this->ethosClient->put($url, $this->acceptHeader, $body)->messages;
+
+        if(gettype($result) == "array") {
+            $result = $result[0];
+        }
+
+        return $result;
+    }
 }

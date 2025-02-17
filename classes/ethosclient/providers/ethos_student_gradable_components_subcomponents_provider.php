@@ -55,7 +55,7 @@ class ethos_student_gradable_components_subcomponents_provider extends ethos_pro
             return null;
         }
 
-        $item = $this->putToEthos($obj);
+        $item = $this->putGradesToEthos($obj);
 
         if(!$item || isset($item->errors)) {
             return null;
