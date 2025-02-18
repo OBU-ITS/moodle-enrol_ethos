@@ -31,7 +31,7 @@ use ethos_student_gradable_components_subcomponents_response;
 class ethos_student_gradable_components_subcomponents_provider extends ethos_provider
 {
     const VERSION = 'v1.0.0';
-    const PATH = 'student-gradable-components-subcomponents';
+    const PATH = 'student-gradable-components-subcomponents/1';
 
     private function __construct()
     {

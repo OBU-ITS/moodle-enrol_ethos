@@ -105,7 +105,6 @@ abstract class ethos_provider
     {
         $url = ethos_client::API_URL . "/api/" . $this->path;
         $body = json_encode($obj);
-
         $result = $this->ethosClient->put($url, $this->acceptHeader, $body)->messages;
 
         if(gettype($result) == "array") {
