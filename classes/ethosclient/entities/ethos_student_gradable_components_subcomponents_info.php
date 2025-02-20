@@ -26,7 +26,7 @@ class ethos_student_gradable_components_subcomponents_info
     public string $assessmentType;
     public string $crn;
     public string $term;
-    public string $componentId;
+    public int $componentId;
 
     /**
      * @var ethos_student_gradable_components_subcomponents_info_grade[]

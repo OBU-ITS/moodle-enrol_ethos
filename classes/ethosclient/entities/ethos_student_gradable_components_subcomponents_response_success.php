@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace enrol_ethos\ethosclient\entities;
+
 class ethos_student_gradable_components_subcomponents_response_success
 {
     public function __construct(object $data)
@@ -39,9 +41,9 @@ class ethos_student_gradable_components_subcomponents_response_success
         $this->grade = $data->grade;
         $this->score = $data->score;
         $this->currentReason = $data->currentReason;
-        $this->comment = $data->comment;
+        $this->comment = $data->comment ?? "";
         $this->completedDate = $data->completedDate;
-        $this->extensionDate = $data->extensionDate;
+        $this->extensionDate = $data->extensionDate ?? "";
         $this->successMessage = $data->successMessage;
     }
 }

@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace enrol_ethos\ethosclient\entities;
+
 class ethos_student_gradable_components_subcomponents_response {
     public function __construct(object $data)
     {
@@ -34,8 +36,12 @@ class ethos_student_gradable_components_subcomponents_response {
      */
     public function setSuccesses(array $successObjs)
     {
-        foreach($successObjs as $successObj) {
-            $this->successList[] = new ethos_student_gradable_components_subcomponents_response_success($successObj);
+        if (!empty($successObj)){
+            foreach($successObjs as $successObj) {
+                $this->successList[] = new ethos_student_gradable_components_subcomponents_response_success($successObj);
+            }
+        } else {
+            $this->successList[] = "";
         }
     }
 
@@ -49,8 +55,12 @@ class ethos_student_gradable_components_subcomponents_response {
      */
     public function setFailures(array $failureObjs)
     {
-        foreach($failureObjs as $failureObj) {
-            $this->failureList[] = new ethos_student_gradable_components_subcomponents_response_failure($failureObj);
+        if (!empty($failureObjs)) {
+            foreach($failureObjs as $failureObj) {
+                $this->failureList[] = new ethos_student_gradable_components_subcomponents_response_failure($failureObj);
+            }
+        } else {
+            $this->failureList[] = "";
         }
     }
 
@@ -65,7 +75,7 @@ class ethos_student_gradable_components_subcomponents_response {
         $this->componentId = $data->componentId;
         $this->crn = $data->crn;
         if(isset($data->successList)) {
-            $this->setSuccesses($data->setSuccesses);
+            $this->setSuccesses($data->successList);
         }
         if(isset($data->failureList)) {
             $this->setFailures($data->failureList);

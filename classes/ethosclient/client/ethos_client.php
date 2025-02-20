@@ -224,7 +224,8 @@ class ethos_client
                     ],
                     'body' => $body,
                 ];
-
+                echo ($url);
+                var_dump($options);
                 $response = $this->client->putAsync($url, $options)->wait();
 
                 $decodedMessages = json_decode($response->getBody()->getContents());

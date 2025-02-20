@@ -26,11 +26,12 @@ namespace enrol_ethos\ethosclient\providers;
 
 use enrol_ethos\ethosclient\entities\ethos_student_gradable_components_subcomponents_info;
 use enrol_ethos\ethosclient\providers\base\ethos_provider;
-use ethos_student_gradable_components_subcomponents_response;
+use enrol_ethos\ethosclient\entities\ethos_student_gradable_components_subcomponents_response;
 
 class ethos_student_gradable_components_subcomponents_provider extends ethos_provider
 {
-    const VERSION = 'v1.0.0';
+    //TODO:: Version hard-coded in ethos provider for put
+    const VERSION = 'v1';
     const PATH = 'student-gradable-components-subcomponents/1';
 
     private function __construct()

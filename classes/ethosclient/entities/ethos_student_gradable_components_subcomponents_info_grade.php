@@ -21,7 +21,7 @@ class ethos_student_gradable_components_subcomponents_info_grade
     public string $bannerId;
     public string $currentReason;
     public string $comment;
-    public string $score;
+    public int $score;
     public string $completedDate;
 
     public string $extensionDate;

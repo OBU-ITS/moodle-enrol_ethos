@@ -40,7 +40,11 @@ abstract class ethos_provider
     }
 
     private function buildAcceptHeader($version) : string {
-        return "application/vnd.hedtech.integration.$version+json";
+        return $this->buildAcceptHeaderRAW("vnd.hedtech.integration", $version);
+    }
+
+    private function buildAcceptHeaderRAW($prefix, $version) : string {
+        return "application/$prefix.$version+json";
     }
 
     protected function buildUrlWithCriteria($criteria) : string {
@@ -105,7 +109,8 @@ abstract class ethos_provider
     {
         $url = ethos_client::API_URL . "/api/" . $this->path;
         $body = json_encode($obj);
-        $result = $this->ethosClient->put($url, $this->acceptHeader, $body)->messages;
+        //TODO:: Hard-coded for now as the only put we use needs this format of header
+        $result = $this->ethosClient->put($url, "application/vnd.hedtech.v1+json", $body)->messages;
 
         if(gettype($result) == "array") {
             $result = $result[0];
