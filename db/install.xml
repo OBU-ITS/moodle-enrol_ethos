@@ -37,7 +37,7 @@
 
     <TABLE NAME="obu_ethos_request" COMMENT="Ethos request">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="true" />
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
         <FIELD NAME="requested" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" />
         <FIELD NAME="request_duration" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" />
         <FIELD NAME="status" TYPE="char" LENGTH="16" NOTNULL="true" SEQUENCE="false" />

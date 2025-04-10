@@ -14,19 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Flat file enrolment plugin version specification.
- *
- * @package    enrol_ethos
- * @copyright
- * @author
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+namespace enrol_ethos\ethosclient\entities;
 
-defined('MOODLE_INTERNAL') || die();
+class ethos_student_gradable_components_subcomponents_info_grade
+{
+    public string $bannerId;
+    public string $currentReason;
+    public string $comment;
+    public int $score;
+    public string $completedDate;
 
-
-$plugin->version   = 2025041001;        // The current plugin version (Date: YYYYMMDDRR)
-$plugin->requires  = 2018112800;        // Requires this Moodle version
-$plugin->component = 'enrol_ethos';  // Full name of the plugin (used for diagnostics)
-$plugin->release = '2.0.2.0';
+    public ?string $extensionDate;
+}
