@@ -24,5 +24,5 @@ class ethos_student_gradable_components_subcomponents_info_grade
     public int $score;
     public string $completedDate;
 
-    public string $extensionDate;
+    public ?string $extensionDate;
 }
