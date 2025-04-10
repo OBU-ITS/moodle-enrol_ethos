@@ -12,7 +12,7 @@ use progress_trace;
 
 class ethos_notification_service
 {
-    public const CONSUME_LIMIT = 250;
+    public const CONSUME_LIMIT = 200;
 
     private ethos_client $ethosClient;
     private db_ethos_audit_repository $ethosAuditRepo;
@@ -47,12 +47,13 @@ class ethos_notification_service
         $notifications = new ethos_notifications();
 
         $url = ethos_client::API_URL . "/consume?limit=". $limit ."&lastProcessedID=" . $lastProcessedId;
+        $trace->output("ETHOS REQUEST: $url");
 
         try {
             $ethosResponse = $this->ethosClient->getJson($url, "");
             $messages = $ethosResponse->messages;
             $recordRequest->received_count = count($messages);
-            $recordRequest->remaining_count = $ethosResponse->remainingCount;
+            $recordRequest->remaining_count = $lastProcessedId; // TEMPORARY
         }
         catch(Exception $e) {
             $this->ethosAuditRepo->updateRecordRequestAsFailed($recordRequest);
@@ -67,12 +68,12 @@ class ethos_notification_service
             $notifications->addNotification($notification);
         }
 
-        if($ethosResponse->remainingCount == 0) {
+//        if($ethosResponse->remainingCount == 0) {
             $this->ethosAuditRepo->updateRecordRequestAsDone($recordRequest);
-        }
-        else {
-            $this->ethosAuditRepo->updateRecordRequestAsComplete($recordRequest);
-        }
+//        }
+//        else {
+//            $this->ethosAuditRepo->updateRecordRequestAsComplete($recordRequest);
+//        }
 
         return $notifications;
     }

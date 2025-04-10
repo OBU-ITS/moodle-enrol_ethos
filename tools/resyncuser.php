@@ -28,12 +28,12 @@ class resyncuser_form extends moodleform {
 }
 
 function reSyncUser(\progress_trace $trace, ?object $data) : bool {
-    $personSync = \enrol_ethos\services\sync\obu_sync_person_service::getInstance();
+    // $personSync = \enrol_ethos\services\sync\obu_sync_person_service::getInstance();
     $personHoldSync = \enrol_ethos\services\sync\obu_sync_person_hold_service::getInstance();
 
     $success = true;
 
-    if(!$personSync->reSyncUser($trace, $data->userid)) $success = false;
+    // if(!$personSync->reSyncUser($trace, $data->userid)) $success = false;
     if(!$personHoldSync->reSyncUser($trace, $data->userid)) $success = false;
 
     return $success;
