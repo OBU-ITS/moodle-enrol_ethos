@@ -203,8 +203,8 @@ function enrol_ethos_myprofile_navigation(core_user\output\myprofile\tree $tree,
             continue;
         }
 
-        if ($shortname === "student_completion_date"){
-            $data = date('d-m-Y', $data);
+        if ($shortname === "student_completion_date" && is_numeric($data)) {
+            $data = date('d-m-Y', (int)$data);
         }
 
         if (strcasecmp($userType, "STAFF") == 0){
