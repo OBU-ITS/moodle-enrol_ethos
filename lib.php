@@ -203,10 +203,6 @@ function enrol_ethos_myprofile_navigation(core_user\output\myprofile\tree $tree,
             continue;
         }
 
-        if ($shortname === "student_completion_date" && is_numeric($data)) {
-            $data = date('d-m-Y', (int)$data);
-        }
-
         if (strcasecmp($userType, "STAFF") == 0){
             $node = new core_user\output\myprofile\node('profilefieldscat', $shortname, $name, null, null, $data);
             $tree->add_node($node);
