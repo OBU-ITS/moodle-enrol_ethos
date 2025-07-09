@@ -30,7 +30,7 @@ class house_keeping_handler {
 
         $updatedUsers = new obu_users_info();
         foreach($users as $user) {
-            $user->getCustomData()->personHolds = $this->personHoldsService->cleanHoldsProfileField($user->getCustomData()->personHolds);
+            $user->getCustomData()->personHolds = $this->personHoldsService->cleanHoldsProfileField($user);
             $updatedUsers->addUser($user);
         }
 
@@ -45,7 +45,7 @@ class house_keeping_handler {
 
         $updatedUsers = new obu_users_info();
         foreach ($users as $user) {
-            $user->getCustomData()->studentAdviser = $this->studentAdvisorRelationshipService->cleanStudentAdvisorProfileField($user->getCustomData()->studentAdviser);
+            $user->getCustomData()->studentAdviser = $this->studentAdvisorRelationshipService->cleanStudentAdvisorProfileField($user);
             $updatedUsers->addUser($user);
         }
 

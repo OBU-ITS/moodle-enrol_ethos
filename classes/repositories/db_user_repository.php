@@ -114,8 +114,9 @@ class db_user_repository extends \enrol_plugin
         return $user;
     }
 
-    private function convertToMoodleUser($dbUser) : ?mdl_user {
-        if(!property_exists($dbUser, "userid")) {
+    private function convertToMoodleUser($dbUser): ?mdl_user
+    {
+        if (!is_object($dbUser) || !property_exists($dbUser, "userid")) {
             return null;
         }
 
@@ -125,6 +126,7 @@ class db_user_repository extends \enrol_plugin
         $moodleUser->firstname = $dbUser->firstname ?? '';
         $moodleUser->lastname = $dbUser->lastname ?? '';
         $moodleUser->email = $dbUser->email ?? '';
+
         return $moodleUser;
     }
 
