@@ -25,10 +25,10 @@ class obu_person_hold_service
     /**
      * @param mdl_user $user
      */
-    public function cleanHoldsProfileField(mdl_user $user): string {
+    public function cleanHoldsProfileField(mdl_user $user): void {
         $obuPersonHolds = $this->deserializeHolds($user->getCustomData()->personHolds);
         $updatedData = $this->cleanHolds($obuPersonHolds);
-        return $this->serializeHolds($updatedData);
+        $user->getCustomData()->personHolds = $this->serializeHolds($updatedData);
     }
 
     /**

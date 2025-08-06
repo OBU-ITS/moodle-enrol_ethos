@@ -30,7 +30,7 @@ class house_keeping_handler {
 
         $updatedUsers = new obu_users_info();
         foreach($users as $user) {
-            $user->getCustomData()->personHolds = $this->personHoldsService->cleanHoldsProfileField($user);
+            $this->personHoldsService->cleanHoldsProfileField($user);
             $updatedUsers->addUser($user);
         }
 
