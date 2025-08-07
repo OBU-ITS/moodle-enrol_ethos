@@ -15,7 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 defined('MOODLE_INTERNAL') || die();
-require_once($CFG->dirroot.'/user/profile/lib.php');
+
+require_once($CFG->dirroot . '/user/profile/lib.php');
+
+if (!class_exists(\GuzzleHttp\Client::class)) {
+    $autoloader = __DIR__ . '/vendor/autoload.php';
+    if (file_exists($autoloader)) {
+        require_once($autoloader);
+    }
+}
 
 class enrol_ethos_plugin extends enrol_plugin {
 

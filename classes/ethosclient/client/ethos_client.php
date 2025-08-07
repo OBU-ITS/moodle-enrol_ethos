@@ -2,8 +2,6 @@
 
 namespace enrol_ethos\ethosclient\client;
 
-require_once(dirname(__FILE__) . '/../vendor/autoload.php');
-
 use enrol_ethos\ethosclient\entities\request\ethos_response;
 use Exception;
 use GuzzleHttp\Client;
