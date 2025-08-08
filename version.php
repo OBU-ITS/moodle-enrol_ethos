@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 
-$plugin->version   = 2025070701;        // The current plugin version (Date: YYYYMMDDRR)
+$plugin->version   = 2025080701;        // The current plugin version (Date: YYYYMMDDRR)
 $plugin->requires  = 2018112800;        // Requires this Moodle version
 $plugin->component = 'enrol_ethos';  // Full name of the plugin (used for diagnostics)
-$plugin->release = '2.0.2.3';
+$plugin->release = '2.0.2.6';
